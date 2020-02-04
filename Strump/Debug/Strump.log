@@ -1,0 +1,3 @@
+﻿  Memory.cpp
+C:\Users\mdann\source\repos\DMC\Strump\Memory.cpp(146,13): warning C4553: '==': result of expression not used; did you intend '='?
+  Strump.vcxproj -> C:\Users\mdann\source\repos\DMC\Strump\Debug\Strump.exe

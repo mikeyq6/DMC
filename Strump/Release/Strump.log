@@ -1,0 +1,28 @@
+﻿  Commands.cpp
+  CPU.cpp
+  Draw.cpp
+  Emulator.cpp
+C:\Users\mdann\source\repos\DMC\Strump\Emulator.cpp(43,103): warning C4305: 'argument': truncation from 'unsigned int' to 'uint8_t'
+C:\Users\mdann\source\repos\DMC\Strump\Emulator.cpp(43,55): warning C4309: 'argument': truncation of constant value
+  Main.cpp
+  Log.cpp
+  Memory.cpp
+  ROMInfo.cpp
+  test.cpp
+C:\Users\mdann\source\repos\DMC\Strump\Emulator.cpp(43,31): warning C4309: 'argument': truncation of constant value
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+CPU.obj : error LNK2001: unresolved external symbol _SDL_Quit
+CPU.obj : error LNK2001: unresolved external symbol _SDL_PollEvent
+Draw.obj : error LNK2001: unresolved external symbol _SDL_DestroyTexture
+Draw.obj : error LNK2001: unresolved external symbol _SDL_RenderCopy
+Draw.obj : error LNK2001: unresolved external symbol _SDL_RenderClear
+Draw.obj : error LNK2001: unresolved external symbol _SDL_UpdateTexture
+Draw.obj : error LNK2001: unresolved external symbol _SDL_DestroyRenderer
+Draw.obj : error LNK2001: unresolved external symbol _SDL_Init
+Draw.obj : error LNK2001: unresolved external symbol _SDL_DestroyWindow
+Draw.obj : error LNK2001: unresolved external symbol _SDL_CreateTexture
+Draw.obj : error LNK2001: unresolved external symbol _SDL_CreateRenderer
+Draw.obj : error LNK2001: unresolved external symbol _SDL_RenderPresent
+Draw.obj : error LNK2001: unresolved external symbol _SDL_CreateWindow
+MSVCRT.lib(exe_main.obj) : error LNK2001: unresolved external symbol _main
+C:\Users\mdann\source\repos\DMC\Release\Strump.exe : fatal error LNK1120: 14 unresolved externals
