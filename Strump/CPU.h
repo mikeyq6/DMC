@@ -9,6 +9,7 @@
 #include "Draw.h"
 #include "Memory.h"
 #include "test.h"
+#include <thread>
 
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma once
@@ -131,6 +132,7 @@ private:
 	string ToHexString(uint8_t val);
 	string ToHexString(uint16_t val);
 	void CheckLYCAndSetInterruptIfValid();
+	void DoCPUWait(chrono::system_clock::time_point* tp, uint8_t inst);
 
 	uint8_t running = true;
 	uint8_t pause = false;

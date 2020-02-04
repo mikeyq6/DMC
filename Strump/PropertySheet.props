@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IncludePath>C:\Users\mdann\source\repos\DMC\SDL2_ttf\include;C:\Users\mdann\source\repos\DMC\SDL2\include;C:\Users\mdann\source\repos\DMC\SDL2_image-2.0.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\mdann\source\repos\DMC\SDL2_ttf\lib\x86;C:\Users\mdann\source\repos\DMC\SDL2_image-2.0.1\lib\x86;C:\Users\mdann\source\repos\DMC\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\Users\mdann\source\repos\DMC\SDL2_ttf\lib\x86;C:\Users\mdann\source\repos\DMC\SDL2\lib\x86;C:\Users\mdann\source\repos\DMC\SDL2_image-2.0.1\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

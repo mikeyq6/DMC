@@ -123,7 +123,7 @@ void CPU::Start() {
 	stringstream strcmd;
 	isRunning = true;
 	uint16_t oldPC;
-
+	chrono::system_clock::time_point tp;
 
 	while(isRunning) {
 		if (!isPaused && 
@@ -139,6 +139,7 @@ void CPU::Start() {
 				SetLCDStatus();
 			}  
 			else {
+				tp = chrono::system_clock::now();
 				oldPC = registers->PC;
 				inst = GetNextInstruction();
 				if (registers->SP == 0xe000) {
@@ -352,12 +353,14 @@ void CPU::Start() {
 				if (InterruptsEnabled) {
 					CheckInterrupts(); 
 				}
+				DoCPUWait(&tp, inst);
 				UpdateTimer(inst);
 				SetLCDStatus();
 				UpdateGraphics(inst);
 
 				if (stepModeActive)
 					runNextStep = false;
+
 			}
 		}
 	}
@@ -425,6 +428,16 @@ short CPU::ShouldPrint() {
 #else
 	return 0;
 #endif
+}
+
+void CPU::DoCPUWait(chrono::system_clock::time_point* tp, uint8_t inst) {
+	uint8_t cycles = GetCycles(inst);
+	
+	// Determine time instruction should take in nanoseconds
+	long long duration = (cycles / (double)FREQ) * 1000000000;
+	auto finish = *tp + chrono::nanoseconds(duration);
+	this_thread::sleep_until(finish);
+
 }
 
 

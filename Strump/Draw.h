@@ -19,6 +19,10 @@ constexpr auto LT_GRAY = 0x00555555;
 constexpr auto DK_GRAY = 0x00cccccc;
 constexpr auto BLACK = 0x00000000;
 
+constexpr auto FULL_BACKGROUND_WIDTH = 256;
+constexpr auto FULL_BACKGROUND_HEIGHT = 256;
+constexpr auto FULL_BACKGROUND_PIXELS = 65536;
+
 
 class Draw
 {
@@ -41,6 +45,10 @@ private:
 	SDL_Window* tileWindow;
 	SDL_Texture* tileTexture;
 	SDL_Renderer* tileRenderer;
+
+	SDL_Window* fullBackgroundWindow;
+	SDL_Texture* fullBackgroundTexture;
+	SDL_Renderer* fullBackgroundRenderer;
 	
 	uint8_t Width, Height;
 
@@ -48,6 +56,7 @@ private:
 	void getPixel(tile* t, uint8_t col, uint8_t row, uint8_t* val);
 	void getTileAt(uint16_t address, tile* t);
 	void setBackgroundPixels();
+	void setFullBackgroundPixels();
 	void setTilePixels();
 	void setSpritePixels();
 	uint16_t GetBackgroundTileMapLocation();
@@ -63,6 +72,7 @@ private:
 
 
 	int text_width, text_height;
+	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];
 
 public:
 	Draw(Memory* _memory, Registers* _registers);
@@ -73,7 +83,7 @@ public:
 	uint32_t screenPixels[NUMPIXELS];
 	uint32_t tilePixels[NUM_TILE_PIXELS];
 
-	void drawInit(const char* title, uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height, bool fullscreen);
+	void drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen);
 	void loadBackground();
 	void loadWindow();
 	void render(bool CPUIsStopped);

@@ -9,7 +9,7 @@ Draw::Draw(Memory* _memory, Registers* _registers) {
 	registers = _registers;
 }
 
-void Draw::drawInit(const char* title, uint8_t xpos, uint8_t ypos, uint8_t width, uint8_t height, bool fullscreen) {
+void Draw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen) {
 
 	int flags = 0;
 	if (fullscreen) {
@@ -27,7 +27,7 @@ void Draw::drawInit(const char* title, uint8_t xpos, uint8_t ypos, uint8_t width
 	Height = height;
 
 	SDL_Init(SDL_INIT_EVERYTHING);
-	window = SDL_CreateWindow(title, xpos, ypos, Width, Height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | flags);
+	window = SDL_CreateWindow(title, xpos, ypos, Width*3, Height*3, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | flags);
 	renderer = SDL_CreateRenderer(window, -1, 0);
 	texture = SDL_CreateTexture(renderer,
 		SDL_PIXELFORMAT_RGB888,
@@ -39,13 +39,17 @@ void Draw::drawInit(const char* title, uint8_t xpos, uint8_t ypos, uint8_t width
 	tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 256, 192);
 
 	TTF_Init();
-	debugWindow = SDL_CreateWindow("Output", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	debugWindow = SDL_CreateWindow("Output", 1400, 400, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	debugRenderer = SDL_CreateRenderer(debugWindow, -1, 0);
 	font = TTF_OpenFont("./VeraMono.ttf", 16);
 	if (!font) {
 		cout << "TTF_OpenFont: " << TTF_GetError() << endl;
 		// handle error
 	}
+
+	fullBackgroundWindow = SDL_CreateWindow("Full Background", 350, 40, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	fullBackgroundRenderer = SDL_CreateRenderer(fullBackgroundWindow, -1, 0);
+	fullBackgroundTexture = SDL_CreateTexture(fullBackgroundRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT);
 }
 
 void Draw::render(bool CPUIsStopped) {
@@ -55,6 +59,7 @@ void Draw::render(bool CPUIsStopped) {
 	loadBackground();
 	loadWindow();
 	setBackgroundPixels(); 
+	setFullBackgroundPixels();
 	setTilePixels();
 	if(SpritesEnabled())
 		setSpritePixels();
@@ -84,6 +89,11 @@ void Draw::render(bool CPUIsStopped) {
 	SDL_RenderCopy(tileRenderer, tileTexture, NULL, NULL);
 	SDL_RenderPresent(tileRenderer);
 	//_getch();
+
+	SDL_UpdateTexture(fullBackgroundTexture, NULL, fullBackgroundPixels, FULL_BACKGROUND_WIDTH * sizeof(uint32_t));
+	SDL_RenderClear(fullBackgroundRenderer);
+	SDL_RenderCopy(fullBackgroundRenderer, fullBackgroundTexture, NULL, NULL);
+	SDL_RenderPresent(fullBackgroundRenderer);
 }
 
 string Draw::GetRegisterInfo() {
@@ -248,6 +258,46 @@ void Draw::setBackgroundPixels() {
 				}
 			}
 		}
+	}
+}
+
+void Draw::setFullBackgroundPixels() {
+	tile* cur;
+	uint8_t pixel;
+	int sPixelsIndex = 0;
+
+	// Which tile to start with
+	uint8_t pX = 0;
+	uint8_t pY = 0;
+	uint8_t wX, wY;
+	uint16_t x, y, tY, tX, index;
+	// printf("sX=%02x, sY=%02x\n", sX, sY);
+
+	for (y = 0; y < FULL_BACKGROUND_HEIGHT; y++) {
+		for (x = 0; x < FULL_BACKGROUND_WIDTH; x++, sPixelsIndex++) {
+			
+			pX = x % 8;
+			pY = y % 8;
+
+			index = ((y / 8) * 32) + (x / 8); 
+			cur = background[index];
+
+			getPixel(cur, pX, pY, &pixel);
+
+			//printf("windowPixels[%04x] = %08x\n", sPixelsIndex, sPixel);
+			fullBackgroundPixels[sPixelsIndex] = GetColourFor(pixel);
+			switch (pixel) {
+				case 0:
+					pixel = 32; break;
+				case 1:
+					pixel = 46; break;
+				case 2:
+					pixel = 56; break;
+				case 3:
+					pixel = 35; break;
+			}
+		}
+		pixel = (uint8_t)10;
 	}
 }
 

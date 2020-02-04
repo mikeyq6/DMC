@@ -99,6 +99,7 @@
     <None Include="SDL2_ttf.dll" />
     <None Include="libfreetype-6.dll" />
     <None Include="stats" />
+    <None Include="commands" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="OpenSans-Regular.ttf" />
