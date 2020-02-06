@@ -129,6 +129,20 @@ void Test::TestInstructions() {
 	commands->ADD(ADD_HL_HL);
 	assert(registers->HL.hl == 240);
 
+	registers->HL.hl = 0xffff;
+	registers->DE.de = 0x0001;
+	commands->ADD(ADD_HL_DE);
+	assert(registers->HL.hl == 0);
+	assert(memory->getFlag(C) == 1);
+	assert(memory->getFlag(H) == 1);
+
+	registers->HL.hl = 0x0fff;
+	registers->DE.de = 0x0001;
+	commands->ADD(ADD_HL_DE);
+	assert(registers->HL.hl == 0x1000);
+	assert(memory->getFlag(C) == 0);
+	assert(memory->getFlag(H) == 1);
+
 	// OR
 	registers->AF.a = 5; // 0101
 	registers->BC.b = 9; // 1001

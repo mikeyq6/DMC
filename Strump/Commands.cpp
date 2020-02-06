@@ -16,10 +16,11 @@ void Commands::ADD(uint8_t opcode) {
 }
 void Commands::ADD(uint8_t opcode, uint8_t param) {
 	uint8_t a, val = 0;
-	uint16_t val16;
+	uint16_t val16 = 0;
 	uint16_t oldHL = registers->HL.hl;
 	uint16_t oldSP = registers->SP;
 	uint32_t sum = 0;
+	int32_t unsignedSum = 0;
 
 	a = registers->AF.a;
 
@@ -41,7 +42,7 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 		case ADD_A_HL:
 			val = memory->ReadMem(registers->HL.hl); registers->AF.a += val; break;
 		case ADD_SP_n:
-			registers->SP += (int8_t)param; val = (int8_t)param; break; // convert to signed
+			registers->SP += (int8_t)param; val = param; break; // convert to signed
 		case ADD_HL_BC:
 			registers->HL.hl += registers->BC.bc; val16 = registers->BC.bc; break;
 		case ADD_HL_DE:
@@ -68,16 +69,17 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 		memory->resetFlag(N);
 	}
 	else if (opcode == ADD_SP_n) {
-		if ((((oldSP & 0xfff) + (val & 0xfff)) & 0x1000) == 0x1000)
+		if ((((oldSP & 0xf) + (val & 0xf)) & 0x10) == 0x10)
 			memory->setFlag(H);
 		else
 			memory->resetFlag(H);
 
-		sum = oldSP + val;
-		if (sum > 0xffff)
+		unsignedSum = oldSP + (int8_t)val;
+		if (unsignedSum > 0xffff)
 			memory->setFlag(C);
 		else
 			memory->resetFlag(C);
+
 		memory->resetFlag(Z);
 	}
 	else {
@@ -1292,24 +1294,24 @@ void Commands::AND(uint8_t opcode) {
 }
 void Commands::AND(uint8_t opcode, uint8_t param) {
 	switch (opcode) {
-	case AND_A:
-		registers->AF.a = 0; break;
-	case AND_B:
-		registers->AF.a &= registers->BC.b; break;
-	case AND_C:
-		registers->AF.a &= registers->BC.c; break;
-	case AND_D:
-		registers->AF.a &= registers->DE.d; break;
-	case AND_E:
-		registers->AF.a &= registers->DE.e; break;
-	case AND_H:
-		registers->AF.a &= registers->HL.h; break;
-	case AND_L:
-		registers->AF.a &= registers->HL.l; break;
-	case AND_HL:
-		registers->AF.a &= memory->ReadMem(registers->HL.hl); break;
-	case AND_n:
-		registers->AF.a &= param; break;
+		case AND_A:
+			registers->AF.a = registers->AF.a; break;
+		case AND_B:
+			registers->AF.a &= registers->BC.b; break;
+		case AND_C:
+			registers->AF.a &= registers->BC.c; break;
+		case AND_D:
+			registers->AF.a &= registers->DE.d; break;
+		case AND_E:
+			registers->AF.a &= registers->DE.e; break;
+		case AND_H:
+			registers->AF.a &= registers->HL.h; break;
+		case AND_L:
+			registers->AF.a &= registers->HL.l; break;
+		case AND_HL:
+			registers->AF.a &= memory->ReadMem(registers->HL.hl); break;
+		case AND_n:
+			registers->AF.a &= param; break;
 	}
 
 	memory->setFlag(H);
@@ -1372,24 +1374,24 @@ void Commands::CP(uint8_t opcode, uint8_t param) {
 	uint8_t oldA = registers->AF.a;
 
 	switch (opcode) {
-	case CP_A:
-		val = registers->AF.a; res = registers->AF.a - val; break;
-	case CP_B:
-		res = registers->AF.a - registers->BC.b; val = registers->BC.b; break;
-	case CP_C:
-		res = registers->AF.a - registers->BC.c; val = registers->BC.c; break;
-	case CP_D:
-		res = registers->AF.a - registers->DE.d; val = registers->DE.d; break;
-	case CP_E:
-		res = registers->AF.a - registers->DE.e; val = registers->DE.e; break;
-	case CP_H:
-		res = registers->AF.a - registers->HL.h; val = registers->HL.h; break;
-	case CP_L:
-		res = registers->AF.a - registers->HL.l; val = registers->HL.l; break;
-	case CP_HL:
-		val = memory->ReadMem(registers->HL.hl); res = registers->AF.a - val; break;
-	case CP_n:
-		res = registers->AF.a - param; val = param; break;
+		case CP_A:
+			val = registers->AF.a; res = registers->AF.a - val; break;
+		case CP_B:
+			res = registers->AF.a - registers->BC.b; val = registers->BC.b; break;
+		case CP_C:
+			res = registers->AF.a - registers->BC.c; val = registers->BC.c; break;
+		case CP_D:
+			res = registers->AF.a - registers->DE.d; val = registers->DE.d; break;
+		case CP_E:
+			res = registers->AF.a - registers->DE.e; val = registers->DE.e; break;
+		case CP_H:
+			res = registers->AF.a - registers->HL.h; val = registers->HL.h; break;
+		case CP_L:
+			res = registers->AF.a - registers->HL.l; val = registers->HL.l; break;
+		case CP_HL:
+			val = memory->ReadMem(registers->HL.hl); res = registers->AF.a - val; break;
+		case CP_n:
+			res = registers->AF.a - param; val = param; break;
 	}
 
 	if (res == 0) { memory->setFlag(Z); }
@@ -1430,14 +1432,14 @@ void Commands::RST(uint8_t opcode) {
 
 void Commands::PUSH(uint8_t opcode) {
 	switch (opcode) {
-	case PUSH_AF:
-		memory->WriteMem(--registers->SP, registers->AF.a); memory->WriteMem(--registers->SP, registers->AF.f); break;
-	case PUSH_DE:
-		memory->WriteMem(--registers->SP, registers->DE.d); memory->WriteMem(--registers->SP, registers->DE.e); break;
-	case PUSH_BC:
-		memory->WriteMem(--registers->SP, registers->BC.b); memory->WriteMem(--registers->SP, registers->BC.c); break;
-	case PUSH_HL:
-		memory->WriteMem(--registers->SP, registers->HL.h); memory->WriteMem(--registers->SP, registers->HL.l); break;
+		case PUSH_AF:
+			memory->WriteMem(--registers->SP, registers->AF.a); memory->WriteMem(--registers->SP, registers->AF.f); break;
+		case PUSH_DE:
+			memory->WriteMem(--registers->SP, registers->DE.d); memory->WriteMem(--registers->SP, registers->DE.e); break;
+		case PUSH_BC:
+			memory->WriteMem(--registers->SP, registers->BC.b); memory->WriteMem(--registers->SP, registers->BC.c); break;
+		case PUSH_HL:
+			memory->WriteMem(--registers->SP, registers->HL.h); memory->WriteMem(--registers->SP, registers->HL.l); break;
 	}
 }
 void Commands::POP(uint8_t opcode) {
@@ -1462,34 +1464,49 @@ void Commands::DAA_() {
 	memory->resetFlag(C);
 	memory->resetFlag(H);
 
-	if (nFlag) { // After subtraction
-		if (hFlag && !cFlag && (registers->AF.a & 0xf) > 5 && ((registers->AF.a >> 4) & 0xf) < 9) {
-			if (registers->AF.a + 0xfa < 0) { memory->setFlag(C); }
-			registers->AF.a += 0xfa;
-		}
-		else if (cFlag && !hFlag && (registers->AF.a & 0xf) < 0xa && ((registers->AF.a >> 4) & 0xf) > 6) {
-			if (registers->AF.a + 0xa0 < 0) { memory->setFlag(C); }
-			registers->AF.a += 0xa0;
-		}
-		else if (cFlag && hFlag && (registers->AF.a & 0xf) > 5 && ((registers->AF.a >> 4) & 0xf) > 5) {
-			if (registers->AF.a + 0x9a < 0) { memory->setFlag(C); }
-			registers->AF.a += 0x9a;
-		}
+	// note: assumes a is a uint8_t and wraps from 0xff to 0
+	if (!nFlag) {  // after an addition, adjust if (half-)carry occurred or if result is out of bounds
+		if (cFlag || registers->AF.a > 0x99) { registers->AF.a += 0x60; memory->setFlag(C); }
+		if (hFlag || (registers->AF.a & 0x0f) > 0x09) { registers->AF.a += 0x6; }
 	}
-	else {
-		if (hFlag || (registers->AF.a & 0xf) > 9) {
-			if (registers->AF.a + 0x06 > 0x100) { memory->setFlag(C); }
-			registers->AF.a += 0x6;
-		}
-		if (cFlag || ((registers->AF.a >> 4) & 0xf) > 9) {
-			if (registers->AF.a + 0x60 > 0x100) { memory->setFlag(C); }
-			registers->AF.a += 0x60;
-		}
+	else {  // after a subtraction, only adjust if (half-)carry occurredq  
+		if (cFlag) { registers->AF.a -= 0x60; }
+		if (hFlag) { registers->AF.a -= 0x6; }
 	}
 
 	if (registers->AF.a == 0) {
 		memory->setFlag(Z);
 	}
+
+
+	//if (nFlag) { // After subtraction
+	//	if (hFlag && !cFlag && (registers->AF.a & 0xf) > 5 && ((registers->AF.a >> 4) & 0xf) < 9) {
+	//		if (registers->AF.a + 0xfa < 0) { memory->setFlag(C); }
+	//		registers->AF.a += 0xfa;
+	//	}
+	//	else if (cFlag && !hFlag && (registers->AF.a & 0xf) < 0xa && ((registers->AF.a >> 4) & 0xf) > 6) {
+	//		if (registers->AF.a + 0xa0 < 0) { memory->setFlag(C); }
+	//		registers->AF.a += 0xa0;
+	//	}
+	//	else if (cFlag && hFlag && (registers->AF.a & 0xf) > 5 && ((registers->AF.a >> 4) & 0xf) > 5) {
+	//		if (registers->AF.a + 0x9a < 0) { memory->setFlag(C); }
+	//		registers->AF.a += 0x9a;
+	//	}
+	//}
+	//else {
+	//	if (hFlag || (registers->AF.a & 0xf) > 9) {
+	//		if (registers->AF.a + 0x06 > 0x100) { memory->setFlag(C); }
+	//		registers->AF.a += 0x6;
+	//	}
+	//	if (cFlag || ((registers->AF.a >> 4) & 0xf) > 9) {
+	//		if (registers->AF.a + 0x60 > 0x100) { memory->setFlag(C); }
+	//		registers->AF.a += 0x60;
+	//	}
+	//}
+
+	//if (registers->AF.a == 0) {
+	//	memory->setFlag(Z);
+	//}
 }
 
 const string Commands::CodeToString(uint8_t opcode, uint16_t PC, uint16_t param1, uint16_t param2) {
