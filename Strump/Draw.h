@@ -27,6 +27,7 @@ constexpr auto FULL_BACKGROUND_PIXELS = 65536;
 class Draw
 {
 private:
+	bool showCommandOutput, showBackgroundMap, showTileMap;
 	Memory *memory;
 	Registers* registers;
 	SDL_Event event;
@@ -69,7 +70,7 @@ private:
 	void GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite);
 	string registerInfo;
 	bool SpritesEnabled();
-
+	bool tileIsNotEmpty(tile* t);
 
 	int text_width, text_height;
 	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];
@@ -83,7 +84,7 @@ public:
 	uint32_t screenPixels[NUMPIXELS];
 	uint32_t tilePixels[NUM_TILE_PIXELS];
 
-	void drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen);
+	void drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMa);
 	void loadBackground();
 	void loadWindow();
 	void render(bool CPUIsStopped);

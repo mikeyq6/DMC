@@ -37,3 +37,10 @@
 *.user
 x64
 x86
+commands
+stats
+Debug
+DMC\\Debug
+Illuminati\\Debug
+LogReader\\Debug
+Strump\Debug

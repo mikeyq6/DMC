@@ -9,7 +9,10 @@ Draw::Draw(Memory* _memory, Registers* _registers) {
 	registers = _registers;
 }
 
-void Draw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen) {
+void Draw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap) {
+	showCommandOutput = _showCommandOutput;
+	showBackgroundMap = _showBackgroundMap;
+	showTileMap = _showTileMap;
 
 	int flags = 0;
 	if (fullscreen) {
@@ -34,22 +37,28 @@ void Draw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_
 		SDL_TEXTUREACCESS_STREAMING,
 		Width, Height);
 
-	tileWindow = SDL_CreateWindow("Tile info", 50, 260, 256, 192, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-	tileRenderer = SDL_CreateRenderer(tileWindow, -1, 0);
-	tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 256, 192);
-
-	TTF_Init();
-	debugWindow = SDL_CreateWindow("Output", 1400, 400, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-	debugRenderer = SDL_CreateRenderer(debugWindow, -1, 0);
-	font = TTF_OpenFont("./VeraMono.ttf", 16);
-	if (!font) {
-		cout << "TTF_OpenFont: " << TTF_GetError() << endl;
-		// handle error
+	if (showTileMap) {
+		tileWindow = SDL_CreateWindow("Tile info", 50, 260, 256, 192, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		tileRenderer = SDL_CreateRenderer(tileWindow, -1, 0);
+		tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 256, 192);
 	}
 
-	fullBackgroundWindow = SDL_CreateWindow("Full Background", 350, 40, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-	fullBackgroundRenderer = SDL_CreateRenderer(fullBackgroundWindow, -1, 0);
-	fullBackgroundTexture = SDL_CreateTexture(fullBackgroundRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT);
+	TTF_Init();
+	if (showCommandOutput) {
+		debugWindow = SDL_CreateWindow("Output", 1400, 400, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		debugRenderer = SDL_CreateRenderer(debugWindow, -1, 0);
+		font = TTF_OpenFont("./VeraMono.ttf", 16);
+		if (!font) {
+			cout << "TTF_OpenFont: " << TTF_GetError() << endl;
+			// handle error
+		}
+	}
+
+	if (showBackgroundMap) {
+		fullBackgroundWindow = SDL_CreateWindow("Full Background", 350, 40, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		fullBackgroundRenderer = SDL_CreateRenderer(fullBackgroundWindow, -1, 0);
+		fullBackgroundTexture = SDL_CreateTexture(fullBackgroundRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT);
+	}
 }
 
 void Draw::render(bool CPUIsStopped) {
@@ -59,41 +68,51 @@ void Draw::render(bool CPUIsStopped) {
 	loadBackground();
 	loadWindow();
 	setBackgroundPixels(); 
-	setFullBackgroundPixels();
-	setTilePixels();
+	if (showBackgroundMap) {
+		setFullBackgroundPixels();
+	}
+	if (showTileMap) {
+		setTilePixels();
+	}
 	if(SpritesEnabled())
 		setSpritePixels();
 
 	//if (!CPUIsStopped)
-		SDL_UpdateTexture(texture, NULL, screenPixels, Width * sizeof(uint32_t));
+	SDL_UpdateTexture(texture, NULL, screenPixels, Width * sizeof(uint32_t));
 	SDL_RenderClear(renderer);
-	SDL_RenderCopy(renderer, texture, NULL, NULL);
+	SDL_RenderCopy(renderer, texture, NULL, NULL); 
 	SDL_RenderPresent(renderer);
 	//SDL_PollEvent(NULL);
 
-	//textSurface = TTF_RenderText_Solid(font, (st.str()).c_str(), textColor);
-	registerInfo = GetRegisterInfo();
-	textSurface = TTF_RenderText_Blended_Wrapped(font, registerInfo.c_str(), textColor, 300);
-	debugTexture = SDL_CreateTextureFromSurface(debugRenderer, textSurface);
-	if (textSurface) {
-		text_width = textSurface->w;
-		text_height = textSurface->h;
+	if (showCommandOutput) {
+		//textSurface = TTF_RenderText_Solid(font, (st.str()).c_str(), textColor);
+		registerInfo = GetRegisterInfo();
+		textSurface = TTF_RenderText_Blended_Wrapped(font, registerInfo.c_str(), textColor, 300);   
+		debugTexture = SDL_CreateTextureFromSurface(debugRenderer, textSurface);
+		if (textSurface) {
+			text_width = textSurface->w;
+			text_height = textSurface->h;
+		}
+		renderQuad = { 20, 10, text_width, text_height };
+		SDL_RenderClear(debugRenderer);
+		SDL_RenderCopy(debugRenderer, debugTexture, NULL, &renderQuad);
+		SDL_RenderPresent(debugRenderer);
 	}
-	renderQuad = { 20, 10, text_width, text_height };
-	SDL_RenderClear(debugRenderer);
-	SDL_RenderCopy(debugRenderer, debugTexture, NULL, &renderQuad);
-	SDL_RenderPresent(debugRenderer);
 
-	SDL_UpdateTexture(tileTexture, NULL, tilePixels, 256 * sizeof(uint32_t));
-	SDL_RenderClear(tileRenderer);
-	SDL_RenderCopy(tileRenderer, tileTexture, NULL, NULL);
-	SDL_RenderPresent(tileRenderer);
+	if (showTileMap) {
+		SDL_UpdateTexture(tileTexture, NULL, tilePixels, 256 * sizeof(uint32_t));
+		SDL_RenderClear(tileRenderer);
+		SDL_RenderCopy(tileRenderer, tileTexture, NULL, NULL);
+		SDL_RenderPresent(tileRenderer);
+	}
 	//_getch();
 
-	SDL_UpdateTexture(fullBackgroundTexture, NULL, fullBackgroundPixels, FULL_BACKGROUND_WIDTH * sizeof(uint32_t));
-	SDL_RenderClear(fullBackgroundRenderer);
-	SDL_RenderCopy(fullBackgroundRenderer, fullBackgroundTexture, NULL, NULL);
-	SDL_RenderPresent(fullBackgroundRenderer);
+	if (showBackgroundMap) {
+		SDL_UpdateTexture(fullBackgroundTexture, NULL, fullBackgroundPixels, FULL_BACKGROUND_WIDTH * sizeof(uint32_t));
+		SDL_RenderClear(fullBackgroundRenderer);
+		SDL_RenderCopy(fullBackgroundRenderer, fullBackgroundTexture, NULL, NULL);
+		SDL_RenderPresent(fullBackgroundRenderer);
+	}
 }
 
 string Draw::GetRegisterInfo() {
@@ -201,15 +220,17 @@ void Draw::setBackgroundPixels() {
 	for (y = 0; y < Height; y++) {
 		for (x = 0; x < Width; x++, sPixelsIndex++) {
 
-			tY = (y + sY) % Height; // Should wrap around
-			tX = (x + sX) % Width; // Should wrap around
+			tY = (y + sY) % (32 * 8); // Should wrap around
+			tX = (x + sX) % (32 * 8); // Should wrap around
 
 			pX = tX % 8;
 			pY = tY % 8;
 
 			index = ((tY / 8) * 32) + (tX / 8);
 			cur = background[index];
-
+			if (tileIsNotEmpty(cur)) {
+				int q = 0;
+			}
 			getPixel(cur, pX, pY, &pixel);
 
 			//printf("windowPixels[%04x] = %08x\n", sPixelsIndex, sPixel);
@@ -259,6 +280,14 @@ void Draw::setBackgroundPixels() {
 			}
 		}
 	}
+}
+
+bool Draw::tileIsNotEmpty(tile *t) {
+	for (int i = 0; i < 16; i++) {
+		if (t->data[i] > 0)
+			return true;
+	}
+	return false;
 }
 
 void Draw::setFullBackgroundPixels() {
@@ -504,10 +533,13 @@ void Draw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
 void Draw::clean() {
 	SDL_DestroyWindow(window);
 	SDL_DestroyWindow(debugWindow);
+	SDL_DestroyWindow(fullBackgroundWindow);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyRenderer(debugRenderer);
+	SDL_DestroyRenderer(fullBackgroundRenderer);
 	SDL_DestroyTexture(texture);
 	SDL_DestroyTexture(debugTexture);
+	SDL_DestroyTexture(fullBackgroundTexture);
 	SDL_FreeSurface(textSurface);
 	SDL_Quit();
 }

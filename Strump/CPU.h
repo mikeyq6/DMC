@@ -17,6 +17,7 @@
 
 
 constexpr auto FREQ = 4194304;
+constexpr auto MACHINE_CYCLES = 1050000;
 constexpr auto SCOUNTER_HZ = 5000;
 
 constexpr auto I_VBlank = 0x40;
@@ -51,7 +52,7 @@ constexpr auto BIT7 = 0x80;
 #endif
 
 
-//#define RUNTESTS
+#define RUNTESTS
 //#define STEPTHROUGH 0
 #define LOG_COMMANDS 0
 #define LOG_STATS 1

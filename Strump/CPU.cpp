@@ -148,7 +148,7 @@ void CPU::Start() {
 				//if (registers->HL.hl == 0x9800) {
 				//	int y = 1;
 				//}
-				if (oldPC == 0x7d) {
+				if (oldPC == 0xc31d) {
 					int x = 1;
 				}
 				short params = GetParameters(inst, &param1, &param2);
@@ -353,7 +353,7 @@ void CPU::Start() {
 				if (InterruptsEnabled) {
 					CheckInterrupts(); 
 				}
-				DoCPUWait(&tp, inst);
+				//DoCPUWait(&tp, inst);
 				UpdateTimer(inst);
 				SetLCDStatus();
 				UpdateGraphics(inst);

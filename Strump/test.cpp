@@ -49,11 +49,14 @@ void Test::TestInstructions() {
 
 	registers->AF.a = 0x9b;
 	registers->BC.c = 0x3;
-	commands->OR(OR_C, 0);
+	commands->OR(OR_C);
 	assert(registers->AF.a == 0x9b);
 	registers->BC.c = 0x4;
-	commands->OR(OR_C, 0);
+	commands->OR(OR_C);
 	assert(registers->AF.a == 0x9f);
+	registers->AF.a = 0x99;
+	commands->OR(OR_A);
+	assert(registers->AF.a == 0x99);
 
 	registers->AF.a = 0x88;
 	commands->AND(AND_n, 0x18);
@@ -178,8 +181,8 @@ void Test::TestInstructions() {
 	registers->SP = 0xe010;
 	commands->PUSH(PUSH_AF);
 	assert(registers->SP == 0xe00e);
-	assert(memory->get(registers->SP) == 0x24);
-	assert(memory->get(registers->SP + 1) == 0x50);
+	assert(memory->get(registers->SP) == 0x50);
+	assert(memory->get(registers->SP + 1) == 0x24);
 	registers->AF.af = 0;
 	commands->POP(POP_AF);
 	assert(registers->SP == 0xe010);
@@ -189,8 +192,8 @@ void Test::TestInstructions() {
 	registers->BC.bc = 0xabcd;
 	commands->PUSH(PUSH_BC);
 	assert(registers->SP == 0xcffe);
-	assert(memory->get(registers->SP) == 0xab);
-	assert(memory->get(registers->SP + 1) == 0xcd);
+	assert(memory->get(registers->SP) == 0xcd);
+	assert(memory->get(registers->SP + 1) == 0xab);
 	registers->BC.bc = 0;
 	commands->POP(POP_BC);
 	assert(registers->SP == 0xd000);
@@ -200,8 +203,8 @@ void Test::TestInstructions() {
 	registers->DE.de = 0xabcd;
 	commands->PUSH(PUSH_DE);
 	assert(registers->SP == 0xcffe);
-	assert(memory->get(registers->SP) == 0xab);
-	assert(memory->get(registers->SP + 1) == 0xcd);
+	assert(memory->get(registers->SP) == 0xcd);
+	assert(memory->get(registers->SP + 1) == 0xab);
 	registers->DE.de = 0;
 	commands->POP(POP_DE);
 	assert(registers->SP == 0xd000);
@@ -211,8 +214,8 @@ void Test::TestInstructions() {
 	registers->HL.hl = 0xabcd;
 	commands->PUSH(PUSH_HL);
 	assert(registers->SP == 0xcffe);
-	assert(memory->get(registers->SP) == 0xab);
-	assert(memory->get(registers->SP + 1) == 0xcd);
+	assert(memory->get(registers->SP) == 0xcd);
+	assert(memory->get(registers->SP + 1) == 0xab);
 	registers->HL.hl = 0;
 	commands->POP(POP_HL);
 	assert(registers->SP == 0xd000);
@@ -318,6 +321,22 @@ void Test::TestInstructions() {
 	clearFlags();
 	registers->AF.a = 0x81;
 	commands->SUB(SUB_n, 0x83);
+	assert(registers->AF.a == 0xfe);
+	assert(memory->getFlag(H) == 1);
+	assert(memory->getFlag(C) == 1);
+	assert(memory->getFlag(Z) == 0);
+
+	clearFlags();
+	registers->AF.a = 0x12;
+	commands->SUB(SUB_n, 0x05);
+	assert(registers->AF.a == 0xd);
+	assert(memory->getFlag(H) == 1);
+	assert(memory->getFlag(C) == 0); 
+	assert(memory->getFlag(Z) == 0);
+
+	clearFlags();
+	registers->AF.a = 0x3;
+	commands->SUB(SUB_n, 0x5);
 	assert(registers->AF.a == 0xfe);
 	assert(memory->getFlag(H) == 1);
 	assert(memory->getFlag(C) == 1);
@@ -890,8 +909,8 @@ void Test::TestInstructions() {
 	commands->CALL(CALL_nn, 0x45, 0x7a);
 	assert(registers->PC == 0x7a45);
 	assert(registers->SP == 0xc787);
-	assert(memory->get(registers->SP) == 0x10);
-	assert(memory->get(registers->SP + 1) == 0x03);
+	assert(memory->get(registers->SP) == 0x03);
+	assert(memory->get(registers->SP + 1) == 0x10);
 	commands->RET_(RET, &skipPCIntTest);
 	assert(registers->PC == 0x1003);
 	assert(registers->SP == 0xc789);

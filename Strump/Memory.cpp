@@ -110,7 +110,7 @@ void Memory::WriteMem(uint16_t location, uint8_t value) {
 	if (value == 0xca) {
 		int x = 1;
 	}
-	if (location == 0xfe02) {
+	if (location == 0xc26b) {
 		int x = 1;
 	}
 	if (location == DMA) {
