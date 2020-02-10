@@ -10,6 +10,7 @@
 #include "Memory.h"
 #include "test.h"
 #include <thread>
+#include "MemoryFactory.h"
 
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma once
@@ -26,14 +27,22 @@ constexpr auto I_Timer = 0x50;
 constexpr auto I_Serial = 0x58;
 constexpr auto I_Joypad = 0x60;
 
-constexpr uint8_t A_BUTTON = 4;
-constexpr uint8_t B_BUTTON = 5;
-constexpr uint8_t SELECT_BUTTON = 6;
-constexpr uint8_t START_BUTTON = 7;
-constexpr uint8_t INPUT_UP = 2;
-constexpr uint8_t INPUT_DOWN = 3;
-constexpr uint8_t INPUT_LEFT = 1;
-constexpr uint8_t INPUT_RIGHT = 0;
+constexpr uint8_t A_BUTTON_DOWN = 4;
+constexpr uint8_t B_BUTTON_DOWN = 5;
+constexpr uint8_t SELECT_BUTTON_DOWN = 6;
+constexpr uint8_t START_BUTTON_DOWN = 7;
+constexpr uint8_t INPUT_UP_DOWN = 2;
+constexpr uint8_t INPUT_DOWN_DOWN = 3;
+constexpr uint8_t INPUT_LEFT_DOWN = 1;
+constexpr uint8_t INPUT_RIGHT_DOWN = 0;
+constexpr uint8_t A_BUTTON_UP = 12;
+constexpr uint8_t B_BUTTON_UP = 13;
+constexpr uint8_t SELECT_BUTTON_UP = 14;
+constexpr uint8_t START_BUTTON_UP = 15;
+constexpr uint8_t INPUT_UP_UP = 10;
+constexpr uint8_t INPUT_DOWN_UP = 11;
+constexpr uint8_t INPUT_LEFT_UP = 9;
+constexpr uint8_t INPUT_RIGHT_UP = 8;
 
 constexpr auto BIT0 = 0x01;
 constexpr auto BIT1 = 0x02;
@@ -123,6 +132,7 @@ private:
 	Memory* memory;
 	Registers* registers;
 	Test* test;
+	MemoryFactory* factory;
 
 	void setDefaults();
 	short GetParameters(uint8_t opcode, uint8_t* param1, uint8_t* param2);

@@ -13,9 +13,9 @@
 CPU::CPU() {
 	rominfo = new ROMInfo();
 	registers = new Registers();
-	memory = new Memory(rominfo, &registers->AF.f, &JoypadState);
-	commands = new Commands(memory, registers);
-	test = new Test(commands, memory, registers);
+
+	// Setup memory
+	factory = new MemoryFactory();
 	Halted = Stopped = WillEnableInterrupts = WillDisableInterrupts = InterruptsEnabled = 0;
 	memset(InstructionStats, 0, sizeof(InstructionStats));
 
@@ -42,6 +42,7 @@ CPU::~CPU() {
 	delete memory;
 	delete registers;
 	delete test;
+	delete factory;
 }
 
 ROMInfo* CPU::GetRomInfo() {
@@ -50,6 +51,10 @@ ROMInfo* CPU::GetRomInfo() {
 
 void CPU::initCPU() {
 	std::lock_guard<mutex> locker(cpu_mutex);
+
+	rominfo->SetCartridgeInfo();
+	memory = factory->GetMemoryByType(rominfo->CartInfo);
+	memory->init(rominfo, &registers->AF.f, &JoypadState);
 
 	memory->Startup = false;
 	memory->RomBank = 0;
@@ -61,11 +66,12 @@ void CPU::initCPU() {
 	runNextStep = false;
 	JoypadState = 0xff;
 
+	commands = new Commands(memory, registers);
+	test = new Test(commands, memory, registers);
+
 #ifdef RUNTESTS
 	test->TestInstructions();
 #endif
-
-	rominfo->SetCartridgeInfo();
 
 	setDefaults();
 }
@@ -148,8 +154,11 @@ void CPU::Start() {
 				//if (registers->HL.hl == 0x9800) {
 				//	int y = 1;
 				//}
-				if (oldPC == 0xc31d) {
+				if (oldPC == 0xc33e && registers->AF.af == 0x8000) {
 					int x = 1;
+				}
+				if (oldPC == 0x29a6) {
+					int z = 1;
 				}
 				short params = GetParameters(inst, &param1, &param2);
  				if (WillEnableInterrupts) { 
@@ -1538,11 +1547,43 @@ void CPU::InputProcess(uint8_t type) {
 
 	uint8_t val = memory->get(P1);
 
-	if(!memory->CheckBitSet(JoypadState, type))
-		SetInterrupt(I_Joypad);
-	memory->ResetBit(&JoypadState, type);
-	//JoypadState &= ((0x1 << type) ^ 0xff);
+	switch (type) {
+		case A_BUTTON_DOWN:
+		case INPUT_RIGHT_DOWN:
+			memory->ResetBit(&val, 0); break;
+		case A_BUTTON_UP:
+		case INPUT_RIGHT_UP:
+			memory->SetBit(&val, 0); break;
+		case B_BUTTON_DOWN:
+		case INPUT_LEFT_DOWN:
+			memory->ResetBit(&val, 1); break;
+		case B_BUTTON_UP:
+		case INPUT_LEFT_UP:
+			memory->SetBit(&val, 1); break;
+		case SELECT_BUTTON_DOWN:
+		case INPUT_UP_DOWN:
+			memory->ResetBit(&val, 2); break;
+		case SELECT_BUTTON_UP:
+		case INPUT_UP_UP:
+			memory->SetBit(&val, 2); break;
+		case START_BUTTON_DOWN:
+		case INPUT_DOWN_DOWN:
+			memory->ResetBit(&val, 3); break;
+		case START_BUTTON_UP:
+		case INPUT_DOWN_UP:
+			memory->SetBit(&val, 3); break;
+	}
 
+	memory->WriteMem(P1, val);
+
+	//if (type > 7) {
+	//	memory->SetBit(&JoypadState, type - 8);
+	//}
+	//else {
+	//	if (!memory->CheckBitSet(JoypadState, type))
+	//		SetInterrupt(I_Joypad);
+	//	memory->ResetBit(&JoypadState, type);
+	//}
 }
 
 

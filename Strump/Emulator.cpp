@@ -68,6 +68,7 @@ void Emulator::handleEvents() {
 				isRunning = false;
 				break;
 			case SDL_KEYDOWN:
+			case SDL_KEYUP:
 				processKeyEvent(&event);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
@@ -83,38 +84,40 @@ void Emulator::handleEvents() {
 }
 
 void Emulator::processKeyEvent(SDL_Event* event) {
+	int alter = event->type == SDL_KEYUP ? 8 : 0;
+
 	switch (event->key.keysym.sym) {
 		case SDLK_LEFT:
 			SDL_Log("Left");
-			cpu->InputProcess(INPUT_LEFT);
+			cpu->InputProcess(INPUT_LEFT_DOWN + alter);
 			break;
 		case SDLK_RIGHT:
 			SDL_Log("Right");
-			cpu->InputProcess(INPUT_RIGHT);
+			cpu->InputProcess(INPUT_RIGHT_DOWN + alter);
 			break;
 		case SDLK_UP:
 			SDL_Log("Up");
-			cpu->InputProcess(INPUT_UP);
+			cpu->InputProcess(INPUT_UP_DOWN + alter);
 			break;
 		case SDLK_DOWN:
 			SDL_Log("Down");
-			cpu->InputProcess(INPUT_DOWN);
+			cpu->InputProcess(INPUT_DOWN_DOWN + alter);
 			break;
 		case SDLK_a:
 			SDL_Log("A button pressed"); 
-			cpu->InputProcess(A_BUTTON);
+			cpu->InputProcess(A_BUTTON_DOWN + alter);
 			break;
 		case SDLK_b:
 			SDL_Log("B button pressed");
-			cpu->InputProcess(B_BUTTON);
+			cpu->InputProcess(B_BUTTON_DOWN + alter);
 			break;
 		case SDLK_1:
 			SDL_Log("Select button pressed");
-			cpu->InputProcess(SELECT_BUTTON);
+			cpu->InputProcess(SELECT_BUTTON_DOWN + alter);
 			break;
 		case SDLK_2:
 			SDL_Log("Start button pressed");
-			cpu->InputProcess(START_BUTTON);
+			cpu->InputProcess(START_BUTTON_DOWN + alter);
 			break;
 		case SDLK_r:
 			SDL_Log("Restart");  // doesn't work
