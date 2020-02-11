@@ -7,6 +7,11 @@
 Draw::Draw(Memory* _memory, Registers* _registers) {
 	memory = _memory;
 	registers = _registers;
+
+	Width = Height = 0;
+}
+Draw::~Draw() {
+	;
 }
 
 void Draw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap) {

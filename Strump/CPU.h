@@ -12,13 +12,13 @@
 #include <thread>
 #include "MemoryFactory.h"
 #include "JoypadState.h"
+#include "Timer.h"
 
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma once
 
 
 
-constexpr auto FREQ = 4194304;
 constexpr auto MACHINE_CYCLES = 1050000;
 constexpr auto SCOUNTER_HZ = 5000;
 
@@ -64,8 +64,8 @@ constexpr auto BIT7 = 0x80;
 
 #define RUNTESTS
 //#define STEPTHROUGH 0
-#define LOG_COMMANDS 0
-#define LOG_STATS 1
+//#define LOG_COMMANDS 0
+//#define LOG_STATS 1
 //#define DEBUG_TIMER
 //#define PRINT_COMMANDS 1
 
@@ -135,6 +135,7 @@ private:
 	Test* test;
 	MemoryFactory* factory;
 	JoypadState* joypadState;
+	Timer* timer;
 
 	void setDefaults();
 	short GetParameters(uint8_t opcode, uint8_t* param1, uint8_t* param2);
@@ -146,6 +147,8 @@ private:
 	string ToHexString(uint16_t val);
 	void CheckLYCAndSetInterruptIfValid();
 	void DoCPUWait(chrono::system_clock::time_point* tp, uint8_t inst);
+	bool ClockEnabled();
+	uint32_t GetClockSpeed();
 
 	uint8_t running = true;
 	uint8_t pause = false;

@@ -80,7 +80,12 @@ bool Memory::CheckBitSet(uint8_t val, uint8_t bit) {
 void Memory::SetBit(uint8_t* val, uint8_t bit) {
 	uint8_t b = 1 << bit;
 	(*val) |= b;
-}void Memory::ResetBit(uint8_t* val, uint8_t bit) {
+}
+void Memory::ResetBit(uint8_t* val, uint8_t bit) {
 	uint8_t b = (0x1 << bit) ^ 0xff;
 	(*val) &= b;
+}
+
+uint8_t* Memory::GetPointerTo(uint16_t location) {
+	return memory + location;
 }

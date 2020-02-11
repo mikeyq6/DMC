@@ -37,6 +37,8 @@ public:
 	void SetBit(uint8_t* val, uint8_t bit);
 	void ResetBit(uint8_t* val, uint8_t bit);
 
+	uint8_t* GetPointerTo(uint16_t location);
+
 private:
 
 	uint8_t internal_getFlag(uint8_t flag);

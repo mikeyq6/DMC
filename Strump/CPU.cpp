@@ -20,6 +20,7 @@ CPU::CPU() {
 	Halted = Stopped = WillEnableInterrupts = WillDisableInterrupts = InterruptsEnabled = 0;
 	memset(InstructionStats, 0, sizeof(InstructionStats));
 
+
 #if defined STEPTHROUGH || defined LOG_COMMANDS
 	int err = fopen_s(&clog, "commands", "wb");
 	if (err > 0) {
@@ -67,6 +68,7 @@ void CPU::initCPU() {
 	stepModeActive = false;
 	runNextStep = false;
 
+	timer = new Timer(memory->GetPointerTo(TAC), memory->GetPointerTo(TIMA), memory->GetPointerTo(TMA), memory->GetPointerTo(DIV));
 	commands = new Commands(memory, registers);
 	test = new Test(commands, memory, registers);
 
@@ -535,42 +537,12 @@ void CPU::ResetInterrupt(uint8_t iRegister) {
 }
 
 void CPU::UpdateTimer(uint8_t opcode) {
+
 	uint8_t cycles = GetCycles(opcode);
-	uint8_t rTAC = memory->ReadMem(TAC);
-
-	uint32_t speed = 0;
-
-	switch (rTAC & 0x3) {
-		case 0:
-			speed = FREQ / 4096; break;
-		case 1:
-			speed = FREQ / 262144; break;
-		case 2:
-			speed = FREQ / 65536; break;
-		case 3:
-			speed = FREQ / 16384; break;
+	if (timer->UpdateWillInterrupt(cycles)) {
+		SetInterrupt(I_Timer);
 	}
 
-	if (rTAC & 0x04) { // Timer is started
-		uint16_t tmp = registers->rDiv + cycles;
-
-		if (tmp >= speed) {
-			registers->rDiv = (registers->rDiv + cycles) % speed;
-			memory->setFlag(C);
-
-			memory->increment(DIV);
-			if (memory->get(DIV) == 0) {
-				// set timer interrupt
-				//printf("setting interrupt\n");
-				//_getch();
-				SetInterrupt(I_Timer);
-			}
-		}
-		else {
-			registers->rDiv += cycles;
-		}
-
-	}
 }
 
 void CPU::PushPCOntoStack() {
