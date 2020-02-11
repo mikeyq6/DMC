@@ -59,9 +59,13 @@ uint8_t MBC1Memory::internalReadMem(uint16_t location) {
 		}
 	}
 	else if (location == P1) { // Joypad register
-		//return internal_get(location);
-		lastJoypadState = *JoypadState;
-		return GetJoypadState();
+		uint8_t state = internal_get(P1);
+		if ((state & 0x10) == 0) // Bit 4 P14 low
+			return joypadState->GetDirectionalState();
+		else if ((state & 0x20) == 0) // Bit 5 P15 low
+			return joypadState->GetKeypadState();
+
+		return 0xff; // default return everything off
 	}
 	else if (location >= 0xc000 && location <= 0xffff) {
 		// Internal Work RAM

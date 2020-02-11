@@ -40,7 +40,7 @@ void Emulator::Start() {
 
 	Draw* draw;
 	draw = new Draw(cpu->GetMemory(), cpu->GetRegisters());
-	draw->drawInit("Illuminati", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, S_WIDTH, S_HEIGHT, false, false, false, false);
+	draw->drawInit("Illuminati", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, S_WIDTH, S_HEIGHT, false, false, true, true);
 
 	while (running()) {
 		handleEvents();

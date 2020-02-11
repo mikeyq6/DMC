@@ -4,6 +4,7 @@
 #include "alias.h"
 #include "ROMInfo.h"
 #include <mutex>
+#include "JoypadState.h"
 
 constexpr auto INTERNAL_ROM_SIZE = 256;
 
@@ -15,7 +16,7 @@ public:
 	uint8_t RomBank, RamBank;
 	bool Startup;
 
-	void init(ROMInfo* _rominfo, uint8_t* _zreg, uint8_t* _joypadState);
+	void init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState);
 
 	// Flags
 	uint8_t getFlag(uint8_t flag);
@@ -61,9 +62,6 @@ protected:
 	ROMInfo* rominfo;
 
 	uint8_t* zreg;
-	uint8_t* JoypadState;
-	uint8_t lastJoypadState;
-
-	uint8_t GetJoypadState();
+	JoypadState* joypadState;
 };
 

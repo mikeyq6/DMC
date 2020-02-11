@@ -2,13 +2,13 @@
 #include <iostream>
 
 
-void Memory::init(ROMInfo* _rominfo, uint8_t* _zreg, uint8_t* _joypadState) {
+void Memory::init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState) {
 
 	std::memset(memory, 0, sizeof(memory));
 	std::memset(RamBankData, 0, sizeof(RamBankData));
 	rominfo = _rominfo;
 	zreg = _zreg;
-	JoypadState = _joypadState;
+	joypadState = _joypadState;
 
 	RamEnabled = false;
 	RomBanking = true;
@@ -71,25 +71,6 @@ void Memory::setFlag(uint8_t flag) {
 }
 void Memory::resetFlag(uint8_t flag) {
 	internal_resetFlag(flag);
-}
-
-uint8_t Memory::GetJoypadState() {
-
-	uint8_t val = internal_get(P1) ^ 0xff;
-	
-	if (!CheckBitSet(val, 4)) { // Standard buttons?
-		uint8_t topJoypad = lastJoypadState >> 4;
-		topJoypad |= 0xF0; // turn the top 4 bits on
-		val &= topJoypad; // show what buttons are pressed
-	}
-	else if (!CheckBitSet(val, 5))//directional buttons
-	{
-		uint8_t bottomJoypad = lastJoypadState & 0xF;
-		bottomJoypad |= 0xF0;
-		val &= bottomJoypad;
-	}
-
-	return val;
 }
 bool Memory::CheckBitSet(uint8_t val, uint8_t bit) {
 	uint8_t b = 1 << bit;

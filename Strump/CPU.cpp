@@ -16,6 +16,7 @@ CPU::CPU() {
 
 	// Setup memory
 	factory = new MemoryFactory();
+	joypadState = new JoypadState();
 	Halted = Stopped = WillEnableInterrupts = WillDisableInterrupts = InterruptsEnabled = 0;
 	memset(InstructionStats, 0, sizeof(InstructionStats));
 
@@ -43,6 +44,7 @@ CPU::~CPU() {
 	delete registers;
 	delete test;
 	delete factory;
+	delete joypadState;
 }
 
 ROMInfo* CPU::GetRomInfo() {
@@ -54,7 +56,7 @@ void CPU::initCPU() {
 
 	rominfo->SetCartridgeInfo();
 	memory = factory->GetMemoryByType(rominfo->CartInfo);
-	memory->init(rominfo, &registers->AF.f, &JoypadState);
+	memory->init(rominfo, &registers->AF.f, joypadState);
 
 	memory->Startup = false;
 	memory->RomBank = 0;
@@ -64,7 +66,6 @@ void CPU::initCPU() {
 	isPaused = false;
 	stepModeActive = false;
 	runNextStep = false;
-	JoypadState = 0xff;
 
 	commands = new Commands(memory, registers);
 	test = new Test(commands, memory, registers);
@@ -1545,49 +1546,41 @@ string CPU::ToHexString(uint16_t val) {
 void CPU::InputProcess(uint8_t type) {
 	std::lock_guard<mutex> locker(cpu_mutex);
 
-	uint8_t val = memory->get(P1);
-
 	switch (type) {
 		case A_BUTTON_DOWN:
+			joypadState->ButtonDown(joypadState->A_BUTTON); break;
 		case INPUT_RIGHT_DOWN:
-			memory->ResetBit(&val, 0); break;
+			joypadState->ButtonDown(joypadState->RIGHT_BUTTON); break;
 		case A_BUTTON_UP:
+			joypadState->ButtonUp(joypadState->A_BUTTON); break;
 		case INPUT_RIGHT_UP:
-			memory->SetBit(&val, 0); break;
+			joypadState->ButtonUp(joypadState->RIGHT_BUTTON); break;
 		case B_BUTTON_DOWN:
+			joypadState->ButtonDown(joypadState->B_BUTTON); break;
 		case INPUT_LEFT_DOWN:
-			memory->ResetBit(&val, 1); break;
+			joypadState->ButtonDown(joypadState->LEFT_BUTTON); break;
 		case B_BUTTON_UP:
+			joypadState->ButtonUp(joypadState->B_BUTTON); break;
 		case INPUT_LEFT_UP:
-			memory->SetBit(&val, 1); break;
+			joypadState->ButtonUp(joypadState->LEFT_BUTTON); break;
 		case SELECT_BUTTON_DOWN:
+			joypadState->ButtonDown(joypadState->SELECT_BUTTON); break;
 		case INPUT_UP_DOWN:
-			memory->ResetBit(&val, 2); break;
+			joypadState->ButtonDown(joypadState->UP_BUTTON); break;
 		case SELECT_BUTTON_UP:
+			joypadState->ButtonUp(joypadState->SELECT_BUTTON); break;
 		case INPUT_UP_UP:
-			memory->SetBit(&val, 2); break;
+			joypadState->ButtonUp(joypadState->UP_BUTTON); break;
 		case START_BUTTON_DOWN:
+			joypadState->ButtonDown(joypadState->START_BUTTON); break;
 		case INPUT_DOWN_DOWN:
-			memory->ResetBit(&val, 3); break;
+			joypadState->ButtonDown(joypadState->DOWN_BUTTON); break;
 		case START_BUTTON_UP:
+			joypadState->ButtonUp(joypadState->START_BUTTON); break;
 		case INPUT_DOWN_UP:
-			memory->SetBit(&val, 3); break;
+			joypadState->ButtonUp(joypadState->DOWN_BUTTON); break;
 	}
-
-	memory->WriteMem(P1, val);
-
-	//if (type > 7) {
-	//	memory->SetBit(&JoypadState, type - 8);
-	//}
-	//else {
-	//	if (!memory->CheckBitSet(JoypadState, type))
-	//		SetInterrupt(I_Joypad);
-	//	memory->ResetBit(&JoypadState, type);
-	//}
 }
-
-
-
 
 
 #ifdef STEPTHROUGH

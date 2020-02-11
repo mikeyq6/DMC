@@ -11,6 +11,7 @@
 #include "test.h"
 #include <thread>
 #include "MemoryFactory.h"
+#include "JoypadState.h"
 
 #define _CRT_SECURE_NO_WARNINGS 1
 #pragma once
@@ -126,13 +127,14 @@ private:
 	mutex cpu_mutex;
 
 	uint32_t InstructionStats[512];
-	uint8_t Halted, Stopped, WillDisableInterrupts, WillEnableInterrupts, InterruptsEnabled, JoypadState;
+	uint8_t Halted, Stopped, WillDisableInterrupts, WillEnableInterrupts, InterruptsEnabled;
 	ROMInfo* rominfo;
 	Commands* commands;
 	Memory* memory;
 	Registers* registers;
 	Test* test;
 	MemoryFactory* factory;
+	JoypadState* joypadState;
 
 	void setDefaults();
 	short GetParameters(uint8_t opcode, uint8_t* param1, uint8_t* param2);
