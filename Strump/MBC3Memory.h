@@ -13,5 +13,8 @@ protected:
 
 private:
 	bool hasRAM = false, hasBattery = false;
+	const uint8_t MODE_16_8 = 0;
+	const uint8_t MODE_4_32 = 1;
+	uint8_t memoryMode = 0;
 };
 

@@ -3,6 +3,7 @@
 MBC3Memory::MBC3Memory(bool _hasRam, bool _hasBattery) {
 	this->hasRAM = _hasRam;
 	this->hasBattery = _hasBattery;
+	memoryMode = MODE_16_8; // default
 }
 
 // Memory
@@ -34,28 +35,24 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 		return rominfo->GetCardridgeVal(location);
 	}
 	else if (location >= 0x4000 && location < 0x8000) {
-		if (RomBank > 1) {
-			nAddress = location + ((RomBank - 1) * 0x4000);
-			return rominfo->GetCardridgeVal(nAddress);
+		if (location == 0x4000) {
+			int x = 1;
+		}
+		if (RomBank == 1) {
+			return rominfo->GetCardridgeVal(location);
 		}
 		else {
-			return rominfo->GetCardridgeVal(location);
+			nAddress = location + ((RomBank - 1) * 0x4000);
+			return rominfo->GetCardridgeVal(nAddress);
 		}
 	}
 	else if (location >= 0x8000 && location < 0xa000) {
 		return internal_get(location);
 	}
 	else if (location >= 0xa000 && location < 0xc000) {
-		// switchable Ram bank
-		if (rominfo->CartInfo->controllerType == NO_RAM) {
-			return internal_get(location);
-		}
-		else {
+		if (RamEnabled && this->hasRAM) {
 			location -= 0xa000;
-			if (RamEnabled)
-				return RamBankData[location + (RamBank * 0x2000)];
-			else
-				return 0;
+			return RamBankData[location + ((RamBank - 1) * 0x2000)];
 		}
 	}
 	else if (location == P1) { // Joypad register
@@ -76,25 +73,16 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 	std::lock_guard<mutex> locker(mem_mutex);
 
-	if (value == 0xca) {
-		int x = 1;
-	}
-	if (location == IE) {
-		int x = 1;
-	}
+	//if (value == 0xca) {
+	//	int x = 1;
+	//}
+	//if (location == IE) {
+	//	int x = 1;
+	//}
 	if (location == DMA) {
 		doDMATransfer(value);
 	}
 	else if (location == P1) {
-		if (value == 0x20) {
-			int g = 1;
-		}
-		uint8_t cur = internal_get(P1) >> 4;
-		value >>= 4;
-		cur |= value;
-		value <<= 4;
-		cur = internal_get(P1) & 0xf;
-		value |= cur;
 		internal_set(location, value);
 	}
 	//else if (location == IE) {
@@ -106,15 +94,9 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location == ENDSTART) {
 		Startup = false;
 	}
-	//else if (rominfo->CartInfo->controllerType == NO_ROMBANK) {
-	//	if (location >= 0x8000) {
-	//		internal_set(location, value);
-	//	}
-	//} 
 	else if (location >= 0 && location < 0x2000) {
-		printf("Enabling RAM/ROM: %02x\n", value);
-		//_getch();
-		if ((value & 0x15) == 0x0a) {
+		//printf("Enabling RAM/ROM: %02x\n", value);
+		if ((value & 0xa) == 0xa) {
 			RamEnabled = true;
 		}
 		else {
@@ -122,45 +104,25 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 		}
 	}
 	else if (location >= 0x2000 && location < 0x4000) { // ROM Switching
-		if (rominfo->CartInfo->controllerType == MBC1) {
-			RomBank = value & 0x0f;
-			if (RomBank == 0)
-				RomBank == 1;
-		}
-		else if (rominfo->CartInfo->controllerType == MBC3) {
-			RomBank = value & 0x7f;
-		}
-		else {
-			RomBank = 1;
-		}
+		RomBank = value & 0x7f;
+		if (RomBank == 0)
+			RomBank == 1;
 	}
-	else if (location >= 0x4000 && location < 0x6000) { // ROM/RAM Switching
-		printf("ROM/RAM Switching. RomBanking = %s, Bank=%02x\n", (RomBanking ? "true" : "false"), value);
-		//_getch();
-		if (rominfo->CartInfo->controllerType == MBC1 || rominfo->CartInfo->controllerType == MBC3) {
-			RamBank = value & 0x3;
-		}
+	else if (location >= 0x6000 && location < 0x8000) { // Set Memory mode
+		if ((value & 1) == 1)
+			memoryMode = MODE_4_32;
+		else
+			memoryMode = MODE_16_8;
 	}
-	else if (location >= 0x6000 && location < 0x8000) { // Set Rom or Ram banking
-		if (rominfo->CartInfo->controllerType == MBC1) {
-			RomBanking = (value == 0) ? true : false;
-			RomBank = 0;
-		}
-	}
-	else if (location >= 0xe000 && location < 0xfe00) { // Allow for the mirrored internal RAM
-		internal_set(location - 0x2000, value);
-		internal_set(location, value);
-	}
-	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
-		if (location + 0x2000 < 0xfe00)
-			internal_set(location + 0x2000, value);
+	else if (location >= 0x9000 && location <= 0x98ff) {
+		if (value == 0x30)
+			int c = 1;
 		internal_set(location, value);
 	}
 	else if (location >= 0xa000 && location < 0xc000) { // Writing to RAM
-		if (RamEnabled) {
+		if (RamEnabled && this->hasRAM) {
 			location -= 0xa000;
-			RamBankData[location + (RamBank * 0x2000)] = value;
-			printf("Writing (%02x) to RAM at address(%04x)\n", value, (location + (RamBank * 0x2000)));
+			RamBankData[location + ((RamBank - 1) * 0x2000)] = value;
 			//_getch();
 		}
 		else {
@@ -168,13 +130,17 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 			//_getch();
 		}
 	}
+	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
+		if (location + 0x2000 < 0xfe00)
+			internal_set(location + 0x2000, value);
+		internal_set(location, value);
+	}
+	else if (location >= 0xe000 && location < 0xfe00) { // Allow for the mirrored internal RAM
+		internal_set(location - 0x2000, value);
+		internal_set(location, value);
+	}
 	else if (location == LY) {
 		internal_set(LY, 0);
-	}
-	else if (location >= 0x9000 && location <= 0x98ff) {
-		if (value == 0x30)
-			int c = 1;
-		internal_set(location, value);
 	}
 
 	else {

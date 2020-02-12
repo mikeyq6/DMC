@@ -13,6 +13,9 @@ protected:
 	uint8_t internalReadMem(uint16_t location);
 
 private:
+	const uint8_t MODE_16_8 = 0;
+	const uint8_t MODE_4_32 = 1;
 	bool has_RAM = false, has_Battery = false;
+	uint8_t memoryMode = 0;
 };
 

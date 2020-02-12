@@ -53,7 +53,7 @@ public:
 	CartridgeInfo* CartInfo;
 
 
-	uint8_t GetCardridgeVal(uint16_t address);
+	uint8_t GetCardridgeVal(uint32_t address);
 	void SetCartridgeNames();
 	void SetCartridgeInfo();
 	void DisplayCartridgeInfo();

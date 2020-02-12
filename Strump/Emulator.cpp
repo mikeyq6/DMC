@@ -98,9 +98,11 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 			cpu->InputProcess(INPUT_DOWN_DOWN + alter);
 			break;
 		case SDLK_a:
+		case SDLK_z:
 			cpu->InputProcess(A_BUTTON_DOWN + alter);
 			break;
 		case SDLK_b:
+		case SDLK_x:
 			cpu->InputProcess(B_BUTTON_DOWN + alter);
 			break;
 		case SDLK_1:

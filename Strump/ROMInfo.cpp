@@ -229,6 +229,6 @@ void ROMInfo::SetCartridgeNames() {
 	}
 }
 
-uint8_t ROMInfo::GetCardridgeVal(uint16_t address) {
+uint8_t ROMInfo::GetCardridgeVal(uint32_t address) {
 	return cartridge[address];
 }
