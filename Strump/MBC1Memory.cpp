@@ -38,9 +38,9 @@ uint8_t MBC1Memory::internalReadMem(uint16_t location) {
 		if (location == 0x4000) {
 			int x = 1;
 		}
-		if (RomBank == 1) {
+		if (RomBank <= 1) {
 			return rominfo->GetCardridgeVal(location);
-		}
+		} 
 		else {
 			nAddress = location + ((RomBank - 1) * 0x4000);
 			return rominfo->GetCardridgeVal(nAddress);

@@ -38,7 +38,7 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 		if (location == 0x4000) {
 			int x = 1;
 		}
-		if (RomBank == 1) {
+		if (RomBank <= 1) {
 			return rominfo->GetCardridgeVal(location);
 		}
 		else {
