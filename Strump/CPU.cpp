@@ -367,8 +367,8 @@ void CPU::Start() {
 				}
 				//DoCPUWait(&tp, inst);
 				UpdateTimer(inst);
-				SetLCDStatus();
 				UpdateGraphics(inst);
+				SetLCDStatus();
 
 				if (stepModeActive)
 					runNextStep = false;
@@ -1377,7 +1377,7 @@ void CPU::UpdateGraphics(uint8_t opcode) {
 	uint8_t cycles;
 
 	if (IsLCDEnabled()) {
-		cycles = GetCycles(opcode);
+		cycles = GetCycles(opcode) * 2;
 		registers->sCounter -= cycles;
 	}
 	else return;
@@ -1421,7 +1421,6 @@ void CPU::SetLCDStatus() {
 
 	uint8_t mode = 0;
 	uint8_t reqInt = 0;
-	//printf("status=%02x, cLine=%02x, cMode=%x, sCounter=%02x\n", status, cLine, cMode, sCounter);
 
 	if (cLine >= 0x90) {
 		mode = 1;

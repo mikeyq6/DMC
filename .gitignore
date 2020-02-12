@@ -41,6 +41,7 @@ commands
 stats
 Debug
 DMC\Debug
-Illuminati\\Debug
-LogReader\\Debug
+Illuminati\Debug
+LogReader\Debug
 Strump\Debug
+*.gb

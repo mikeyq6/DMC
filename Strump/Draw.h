@@ -55,6 +55,7 @@ private:
 
 	void displayMe(void);
 	void getPixel(tile* t, uint8_t col, uint8_t row, uint8_t* val);
+	void getPixel(tile* t, uint8_t col, uint8_t row, uint8_t* val, bool xFlip, bool yFlip);
 	void getTileAt(uint16_t address, tile* t);
 	void setBackgroundPixels();
 	void setFullBackgroundPixels();

@@ -342,7 +342,7 @@ void Draw::setSpritePixels() {
 	uint8_t pixel = 0;
 	uint8_t spriteMode = (memory->ReadMem(LCDC) & 0x4) > 0 ? SPRITE_MODE_8x16 : SPRITE_MODE_8x8;
 
-	for (int i = 39; i >= 0; i--) {
+	for (int i = 0; i < 40; i++) {
 		GetSpriteByNumber(i, s);
 		if (s->X <= 0 || s->Y <= 0) {
 			continue; // Sprite is hidden
@@ -358,7 +358,7 @@ void Draw::setSpritePixels() {
 
 				for (int y = 0; y < 8; y++) {
 					for (int x = 0; x < 8; x++) {
-						getPixel(&cur, x, y, &pixel);
+						getPixel(&cur, x, y, &pixel, s->XFlip, s->YFlip);
 						uint32_t colour = GetColourFor(pixel);
 						if (colour != WHITE)
 							screenPixels[(scY + y) * 160 + (scX + x)] = colour;
@@ -374,7 +374,7 @@ void Draw::setSpritePixels() {
 					getTileAt(base + ((s->TileNumber + i) * 16), &cur);
 					for (int y = 0; y < 8; y++) {
 						for (int x = 0; x < 8; x++) {
-							getPixel(&cur, x, y, &pixel);
+							getPixel(&cur, x, y, &pixel, s->XFlip, s->YFlip);
 							uint32_t colour = GetColourFor(pixel);
 							if(colour != WHITE)
 								screenPixels[(scY + y) * 160 + (scX + x)] = colour;
@@ -418,13 +418,20 @@ void Draw::setTilePixels() {
 		}
 	}
 }
-
 void Draw::getPixel(tile* t, uint8_t col, uint8_t row, uint8_t* val) {
-	uint8_t bit = 1 << (8 - (col + 1));
-	//printf("bit=%x, ", bit);
-	uint8_t rIndex = (row * 2);
-	//printf("row=%u, col=%u, rIndex=%u, bit=%x\n", row, col, rIndex, bit);
-	//printf("t->data[%u] = %x, t->data[%u + 1] = %x\n", rIndex, t->data[rIndex], rIndex, t->data[rIndex+1]);
+	return getPixel(t, col, row, val, false, false);
+}
+void Draw::getPixel(tile* t, uint8_t col, uint8_t row, uint8_t* val, bool xFlip, bool yFlip) {
+	uint8_t bit = 0;
+	uint8_t rIndex = 0;
+	if (xFlip)
+		bit = 0x80 >> (8 - (col + 1));
+	else
+		bit = 1 << (8 - (col + 1));
+	if (yFlip)
+		rIndex = 16 - (row * 2);
+	else
+		rIndex = (row * 2);
 	*val = ((t->data[rIndex] & bit) ? 1 : 0) + (((t->data[rIndex + 1]) & bit) ? 2 : 0);
 }
 void Draw::getTileAt(uint16_t address, tile* t) {
