@@ -258,6 +258,7 @@ void Commands::LD(uint8_t opcode, uint8_t param1, uint8_t param2) {
 	uint16_t address = (param2 << 8) + param1;
 	uint16_t temp = address;
 	uint32_t t = 0;
+	uint8_t tempVal = 0;
 
 	switch (opcode) {
 	case LD_A_A:
@@ -411,7 +412,11 @@ void Commands::LD(uint8_t opcode, uint8_t param1, uint8_t param2) {
 	case LD_SP_nn:
 		registers->SP = address; break;
 	case LD_nn_SP:
-		memory->WriteMem(address, registers->SP); break;
+		tempVal = registers->SP & 0xFF;
+		memory->WriteMem(address, tempVal);
+		tempVal = (registers->SP >> 8);
+		memory->WriteMem(address+1, tempVal);
+		break;
 	case LD_BC_A:
 		memory->WriteMem(registers->BC.bc, registers->AF.a); break;
 	case LD_DE_A:
