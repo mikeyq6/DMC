@@ -5,6 +5,8 @@
 #include <iomanip>
 #include <sstream>
 #include <fstream>
+#include <vector>
+#include <algorithm>
 #include "SDL_ttf.h"
 #include "Memory.h"
 #include "registers.h"
@@ -19,10 +21,20 @@ constexpr auto LT_GRAY = 0x00555555;
 constexpr auto DK_GRAY = 0x00cccccc;
 constexpr auto BLACK = 0x00000000;
 
+constexpr auto CLASSIC_WHITE = 0x00e0f8d0;
+constexpr auto CLASSIC_LT_GRAY = 0x0088c070;
+constexpr auto CLASSIC_DK_GRAY = 0x00346856;
+constexpr auto CLASSIC_BLACK = 0x00081820;
+
+constexpr auto MODE_CLASSIC = 1;
+constexpr auto MODE_CLEAR = 0;
+
+
 constexpr auto FULL_BACKGROUND_WIDTH = 256;
 constexpr auto FULL_BACKGROUND_HEIGHT = 256;
 constexpr auto FULL_BACKGROUND_PIXELS = 65536;
 
+bool compareSpriteX(Sprite* s1, Sprite* s2);
 
 class Draw
 {
@@ -75,6 +87,7 @@ private:
 
 	int text_width, text_height;
 	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];
+	uint8_t colourMode;
 
 public:
 	Draw(Memory* _memory, Registers* _registers);
@@ -94,6 +107,9 @@ public:
 
 	uint32_t GetColourFor(uint8_t number);
 	uint32_t GetColourForPaletteNumber(uint8_t pNumber);
+
+	void SetColourMode(uint8_t mode);
+	void ToggleColourMode();
 
 	FILE* out;
 

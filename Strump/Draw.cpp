@@ -67,9 +67,7 @@ void Draw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_
 }
 
 void Draw::render(bool CPUIsStopped) {
-	//printf("Refresh...");
-	//_getch();
-	//glutMainLoopEvent();
+
 	loadBackground();
 	loadWindow();
 	setBackgroundPixels(); 
@@ -82,15 +80,12 @@ void Draw::render(bool CPUIsStopped) {
 	if(SpritesEnabled())
 		setSpritePixels();
 
-	//if (!CPUIsStopped)
 	SDL_UpdateTexture(texture, NULL, screenPixels, Width * sizeof(uint32_t));
 	SDL_RenderClear(renderer);
 	SDL_RenderCopy(renderer, texture, NULL, NULL); 
 	SDL_RenderPresent(renderer);
-	//SDL_PollEvent(NULL);
 
 	if (showCommandOutput) {
-		//textSurface = TTF_RenderText_Solid(font, (st.str()).c_str(), textColor);
 		registerInfo = GetRegisterInfo();
 		textSurface = TTF_RenderText_Blended_Wrapped(font, registerInfo.c_str(), textColor, 300);   
 		debugTexture = SDL_CreateTextureFromSurface(debugRenderer, textSurface);
@@ -110,7 +105,6 @@ void Draw::render(bool CPUIsStopped) {
 		SDL_RenderCopy(tileRenderer, tileTexture, NULL, NULL);
 		SDL_RenderPresent(tileRenderer);
 	}
-	//_getch();
 
 	if (showBackgroundMap) {
 		SDL_UpdateTexture(fullBackgroundTexture, NULL, fullBackgroundPixels, FULL_BACKGROUND_WIDTH * sizeof(uint32_t));
@@ -305,7 +299,6 @@ void Draw::setFullBackgroundPixels() {
 	uint8_t pY = 0;
 	uint8_t wX, wY;
 	uint16_t x, y, tY, tX, index;
-	// printf("sX=%02x, sY=%02x\n", sX, sY);
 
 	for (y = 0; y < FULL_BACKGROUND_HEIGHT; y++) {
 		for (x = 0; x < FULL_BACKGROUND_WIDTH; x++, sPixelsIndex++) {
@@ -318,7 +311,6 @@ void Draw::setFullBackgroundPixels() {
 
 			getPixel(cur, pX, pY, &pixel);
 
-			//printf("windowPixels[%04x] = %08x\n", sPixelsIndex, sPixel);
 			fullBackgroundPixels[sPixelsIndex] = GetColourFor(pixel);
 			switch (pixel) {
 				case 0:
@@ -336,15 +328,21 @@ void Draw::setFullBackgroundPixels() {
 }
 
 void Draw::setSpritePixels() {
-	Sprite* s = new Sprite();
+	Sprite* sprite = new Sprite();
 	tile cur;
 	uint16_t base = 0x8000;
 	uint8_t pixel = 0;
 	uint8_t spriteMode = (memory->ReadMem(LCDC) & 0x4) > 0 ? SPRITE_MODE_8x16 : SPRITE_MODE_8x8;
+	vector<Sprite*> sprites = {};
 
 	for (int i = 0; i < 40; i++) {
-		GetSpriteByNumber(i, s);
-		if (s->X <= 0 || s->Y <= 0) {
+		GetSpriteByNumber(i, sprite);
+	//	sprites.push_back(sprite);
+	//}
+	//// Sort sprites by X
+	////sort(sprites.begin(), sprites.end(), compareSpriteX);
+	//for(Sprite* s : sprites) {
+		if (sprite->X <= 0 || sprite->Y <= 0) {
 			continue; // Sprite is hidden
 		}
 		else {
@@ -352,13 +350,13 @@ void Draw::setSpritePixels() {
 			uint8_t scX, scY;
 
 			if (spriteMode == SPRITE_MODE_8x8) {
-				scX = s->X - 8;
-				scY = s->Y - 16;
-				getTileAt(base + (s->TileNumber * 16), &cur);
+				scX = sprite->X - 8;
+				scY = sprite->Y - 16;
+				getTileAt(base + (sprite->TileNumber * 16), &cur);
 
 				for (int y = 0; y < 8; y++) {
 					for (int x = 0; x < 8; x++) {
-						getPixel(&cur, x, y, &pixel, s->XFlip, s->YFlip);
+						getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
 						uint32_t colour = GetColourFor(pixel);
 						if (colour != WHITE)
 							screenPixels[(scY + y) * 160 + (scX + x)] = colour;
@@ -368,13 +366,13 @@ void Draw::setSpritePixels() {
 			else 
 			{ // 8x16 sprites
 				for (int i = 0; i < 2; i++) {
-					scX = s->X - 8;
-					scY = s->Y - 16 + (i*8);
+					scX = sprite->X - 8;
+					scY = sprite->Y - 16 + (i*8);
 
-					getTileAt(base + ((s->TileNumber + i) * 16), &cur);
+					getTileAt(base + ((sprite->TileNumber + i) * 16), &cur);
 					for (int y = 0; y < 8; y++) {
 						for (int x = 0; x < 8; x++) {
-							getPixel(&cur, x, y, &pixel, s->XFlip, s->YFlip);
+							getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
 							uint32_t colour = GetColourFor(pixel);
 							if(colour != WHITE)
 								screenPixels[(scY + y) * 160 + (scX + x)] = colour;
@@ -387,6 +385,10 @@ void Draw::setSpritePixels() {
 }
 bool Draw::SpritesEnabled() {
 	return (memory->ReadMem(LCDC) & 0x2) == 0x2;
+}
+bool compareSpriteX(Sprite *s1, Sprite *s2)
+{
+	return (s1->X > s2->X);
 }
 
 void Draw::setTilePixels() {  
@@ -425,43 +427,20 @@ void Draw::getPixel(tile* t, uint8_t col, uint8_t row, uint8_t* val, bool xFlip,
 	uint8_t bit = 0;
 	uint8_t rIndex = 0;
 	if (xFlip)
-		bit = 0x80 >> (8 - (col + 1));
+		bit = 0x80 >> (7 - col);
 	else
-		bit = 1 << (8 - (col + 1));
+		bit = 1 << (7 - col);
 	if (yFlip)
 		rIndex = 16 - (row * 2);
 	else
 		rIndex = (row * 2);
+
 	*val = ((t->data[rIndex] & bit) ? 1 : 0) + (((t->data[rIndex + 1]) & bit) ? 2 : 0);
 }
 void Draw::getTileAt(uint16_t address, tile* t) {
-	//printf("address=%04x\n", address);
 	for (int i = 0; i < 16; i++) {
 		t->data[i] = memory->ReadMem(address + i);
-		//printf("row[%u] = %x, ReadMem(%02x) = %x\n", i, t->data[i], address + i, ReadMem(address + i));
 	}
-
-	// uint8_t val = 0;
-	// if(address != 0x8000) {
-		// printf("Tile data: ");
-		// for(int k=0; k<16; k++) {
-			// printf("%02x ", t->data[k]);
-		// }
-		// printf("\n");
-		// for(int i=0; i<8; i++) {
-			// for(int j=0; j<8; j++) {
-				// getPixel(t, i, j, &val);
-				// if(val > 0) {
-					// printf("%u", val);
-				// } else {
-					// printf(" ");
-				// }
-			// }
-			// printf("\n");
-		// }
-		// printf("\n");
-	// }
-
 }
 
 uint32_t Draw::GetColourFor(uint8_t number) {
@@ -482,16 +461,38 @@ uint32_t Draw::GetColourFor(uint8_t number) {
 uint32_t Draw::GetColourForPaletteNumber(uint8_t pNumber) {
 	switch (pNumber) {
 		case 0:
-			return WHITE; break;
+			if (colourMode == MODE_CLEAR)
+				return WHITE;
+			else
+				return CLASSIC_WHITE;
+			break;
 		case 1:
-			return DK_GRAY; break;
+			if (colourMode == MODE_CLEAR)
+				return DK_GRAY;
+			else
+				return CLASSIC_LT_GRAY;
+			break;
 		case 2:
-			return LT_GRAY; break;
+			if (colourMode == MODE_CLEAR)
+				return LT_GRAY;
+			else
+				return CLASSIC_DK_GRAY;
+			break;
 		case 3:
-			return BLACK; break;
+			if (colourMode == MODE_CLEAR)
+				return BLACK;
+			else
+				return CLASSIC_BLACK;
+			break;
 		default:
 			return WHITE; break;
 	}
+}
+void Draw::SetColourMode(uint8_t mode) {
+	colourMode = mode;
+}
+void Draw::ToggleColourMode() {
+	colourMode = colourMode == MODE_CLASSIC ? MODE_CLEAR : MODE_CLASSIC;
 }
 
 uint16_t Draw::GetBackgroundTileMapLocation() {
