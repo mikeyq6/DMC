@@ -45,3 +45,5 @@ Illuminati\Debug
 LogReader\Debug
 Strump\Debug
 *.gb
+*.gbc
+*.sav
