@@ -1265,6 +1265,7 @@ uint8_t CPU::GetCycles(uint8_t opcode) {
 	case POP_HL:
 	case LD_HL_SP_n:
 	case LD__HL__n:
+	case CB:
 		cycles = 12; break;
 	case LD_BC_A:
 	case LD_DE_A:
