@@ -184,10 +184,7 @@
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="commands" />
     <None Include="libfreetype-6.dll" />
-    <None Include="Pokemon Blue.gb" />
-    <None Include="Pokemon Red.gb" />
     <None Include="SDL2.dll" />
     <None Include="SDL2_image.dll" />
     <None Include="SDL2_ttf.dll" />
