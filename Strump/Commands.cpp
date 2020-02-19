@@ -48,7 +48,7 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 		case ADD_HL_DE:
 			registers->HL.hl += registers->DE.de; val16 = registers->DE.de; break;
 		case ADD_HL_HL:
-			registers->HL.hl += registers->HL.hl; val16 = registers->HL.hl; break;
+			val16 = registers->HL.hl; registers->HL.hl += registers->HL.hl; break; // Get the val before we do the addition
 		case ADD_HL_SP:
 			registers->HL.hl += registers->SP; val16 = registers->SP; break;
 		case ADD_A_n:
@@ -1483,35 +1483,6 @@ void Commands::DAA_() {
 		memory->setFlag(Z);
 	}
 
-
-	//if (nFlag) { // After subtraction
-	//	if (hFlag && !cFlag && (registers->AF.a & 0xf) > 5 && ((registers->AF.a >> 4) & 0xf) < 9) {
-	//		if (registers->AF.a + 0xfa < 0) { memory->setFlag(C); }
-	//		registers->AF.a += 0xfa;
-	//	}
-	//	else if (cFlag && !hFlag && (registers->AF.a & 0xf) < 0xa && ((registers->AF.a >> 4) & 0xf) > 6) {
-	//		if (registers->AF.a + 0xa0 < 0) { memory->setFlag(C); }
-	//		registers->AF.a += 0xa0;
-	//	}
-	//	else if (cFlag && hFlag && (registers->AF.a & 0xf) > 5 && ((registers->AF.a >> 4) & 0xf) > 5) {
-	//		if (registers->AF.a + 0x9a < 0) { memory->setFlag(C); }
-	//		registers->AF.a += 0x9a;
-	//	}
-	//}
-	//else {
-	//	if (hFlag || (registers->AF.a & 0xf) > 9) {
-	//		if (registers->AF.a + 0x06 > 0x100) { memory->setFlag(C); }
-	//		registers->AF.a += 0x6;
-	//	}
-	//	if (cFlag || ((registers->AF.a >> 4) & 0xf) > 9) {
-	//		if (registers->AF.a + 0x60 > 0x100) { memory->setFlag(C); }
-	//		registers->AF.a += 0x60;
-	//	}
-	//}
-
-	//if (registers->AF.a == 0) {
-	//	memory->setFlag(Z);
-	//}
 }
 
 const string Commands::CodeToString(uint8_t opcode, uint16_t PC, uint16_t param1, uint16_t param2) {
