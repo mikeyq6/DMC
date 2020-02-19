@@ -10,6 +10,7 @@ class Emulator
 private:
 	CPU* cpu;
 	FILE* fp;
+	Draw* draw;
 	const char* cartridgeFileName;
 
 	void handleEvents();
