@@ -236,10 +236,10 @@ void Commands::SBC(uint8_t opcode, uint8_t param) {
 	if (registers->AF.a == 0) { memory->setFlag(Z); }
 
 	// Half carry and full carry
-	if (((val + cFlag) & 0xf) > (oldA & 0xf)) {
+	if ((val & 0xf) > (oldA & 0xf)) {
 		memory->setFlag(H);
 	}
-	if ((val + cFlag) > oldA) {
+	if (val > oldA) {
 		memory->setFlag(C);
 	}
 }
@@ -449,12 +449,12 @@ void Commands::LD(uint8_t opcode, uint8_t param1, uint8_t param2) {
 		memory->resetFlag(Z);
 		memory->resetFlag(N);
 		t = registers->SP + (int8_t)param1;
-		if (((registers->SP & 0xfff) + ((int8_t)param1 & 0xfff)) & 0x1000)
+		if ((((registers->SP & 0xf) + ((int8_t)param1 & 0xf)) & 0x10) == 0x10)
 			memory->setFlag(H);
 		else
 			memory->resetFlag(H);
 
-		if (t > 0xffff)
+		if ((((registers->SP & 0xff) + ((int8_t)param1 & 0xff)) & 0x100) == 0x100)
 			memory->setFlag(C);
 		else
 			memory->resetFlag(C);
