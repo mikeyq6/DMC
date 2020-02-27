@@ -254,6 +254,7 @@ void Test::TestInstructions() {
 	assert(registers->BC.b == 0x34);
 	assert(memory->getFlag(C) == 1);
 
+	// DAA
 	clearFlags();
 	registers->AF.a = 0x25;
 	registers->DE.e = 0x17;
@@ -263,6 +264,33 @@ void Test::TestInstructions() {
 	assert(memory->getFlag(C) == 0);
 	commands->DAA_();
 	assert(registers->AF.a == 0x42);
+	clearFlags();
+	registers->AF.a = 0x60;
+	registers->DE.e = 0x60;
+	commands->ADD(ADD_A_E, 0);
+	assert(registers->AF.a == 0xc0);
+	assert(memory->getFlag(H) == 0);
+	assert(memory->getFlag(C) == 0);
+	commands->DAA_();
+	assert(registers->AF.a == 0x20);
+	clearFlags();
+	registers->AF.a = 0x90;
+	registers->DE.e = 0x90;
+	commands->ADD(ADD_A_E, 0);
+	assert(registers->AF.a == 0x20);
+	assert(memory->getFlag(H) == 0);
+	assert(memory->getFlag(C) == 1);
+	commands->DAA_();
+	assert(registers->AF.a == 0x80);
+	clearFlags();
+	registers->AF.a = 0x10;
+	registers->DE.e = 0x01;
+	commands->SUB(SUB_E, 0);
+	assert(registers->AF.a == 0xf);
+	assert(memory->getFlag(H) == 1);
+	assert(memory->getFlag(C) == 0);
+	commands->DAA_();
+	assert(registers->AF.a == 0x09);
 
 	// ADC
 	clearFlags();
