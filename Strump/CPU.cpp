@@ -139,29 +139,27 @@ void CPU::Start() {
 			(!stepModeActive || (stepModeActive && runNextStep))) {
 
 			if (Halted) {
-				//cout << "Halted" << endl;
+				UpdateTimer(inst);
 
 				if (InterruptsEnabled) {
 					CheckInterrupts();
 				}
-				UpdateTimer(inst);
-				SetLCDStatus();
 			}  
 			else {
 				tp = chrono::system_clock::now();
 				oldPC = registers->PC;
 				inst = GetNextInstruction();
-				if (registers->SP == 0xe000) {
+				if (registers->SP == 0xa2f6) {
 					int y = 1;
 				}
-				//if (registers->HL.hl == 0x9800) {
+				//if (registers->HL.hl == 0x9800) {s
 				//	int y = 1;
 				//}
 				if (oldPC == 0xc33e && registers->AF.af == 0x8000) {
 					int x = 1;
 				}
 				if (oldPC == 0x29a6) {
-					int z = 1;
+					int z = 1; 
 				}
 				short params = GetParameters(inst, &param1, &param2);
  				if (WillEnableInterrupts) { 
@@ -177,7 +175,6 @@ void CPU::Start() {
 				if (params == 0) {
 					if (ShouldPrint()) {
 						cout << commands->CodeToString(inst, registers->PC, static_cast<uint16_t>(param1), static_cast<uint16_t>(param2));
-						//cout << hex << setfill('0') << setw(4) << registers->PC << commands->CodeToString(inst, &strcmd);
 					}
 					Run(inst, 0, 0);
 				}
@@ -185,11 +182,9 @@ void CPU::Start() {
 					if (ShouldPrint()) {
 						if (inst == CB) {
 							cout << commands->CodeToString(inst, registers->PC, static_cast<uint16_t>(param1), static_cast<uint16_t>(param2)) << commands->CBCodeToString(param1);
-							//cout << hex << registers->PC << commands->CodeToString(inst) << commands->CBCodeToString(param1);
 						}
 						else {
 							cout << commands->CodeToString(inst, registers->PC, static_cast<uint16_t>(param1), static_cast<uint16_t>(param2));
-							//cout << hex << registers->PC << commands->CodeToString(inst) << param1;
 						}
 					}
 
@@ -198,7 +193,6 @@ void CPU::Start() {
 				else if (params == 2) {
 					if (ShouldPrint()) {
 						cout << commands->CodeToString(static_cast<uint16_t>(inst), registers->PC, static_cast<uint16_t>(param1), static_cast<uint16_t>(param2));
-						//cout << hex << registers->PC << commands->CodeToString(inst) << param1 << param2;
 					}
 					Run(inst, param1, param2);
 				}
@@ -362,13 +356,14 @@ void CPU::Start() {
 				}
 #endif
 
-				if (InterruptsEnabled) {
-					CheckInterrupts(); 
-				}
 				//DoCPUWait(&tp, inst);
 				UpdateTimer(inst);
 				UpdateGraphics(inst);
 				SetLCDStatus();
+
+				if (InterruptsEnabled) {
+					CheckInterrupts();
+				}
 
 				if (stepModeActive)
 					runNextStep = false;
@@ -476,14 +471,12 @@ void CPU::CheckInterrupts() {
 		Halted = false;
 	} 
 	// Check Timer
-	//printf("iflag=%02x, bit=%02x\n", ifFlag, bit);
 	if (ifFlag & ieFlag & (bit << 2)) {
 		PushPCOntoStack();
 		registers->PC = I_Timer;
 		ResetInterrupt(I_Timer);
 		InterruptsEnabled = 0;
 		Halted = false;
-		//_getch();
 	} 
 	// Check Serial
 	if (ifFlag & ieFlag & (bit << 3)) {
@@ -848,8 +841,13 @@ void CPU::Run(uint8_t opcode, uint8_t param1, uint8_t param2) {
 	case CPL:
 		registers->AF.a ^= 0xff; memory->setFlag(N); memory->setFlag(H); break;
 	case HALT:
-		// Halted = 1; break; Forget Halt for now TODO
-		Halted = 0; break;
+		if (InterruptsEnabled) { // Don't halt unless interrupts enabled
+			//Halted = 1;
+		} 
+		// else {
+		//	registers->PC; // Mimic the HALT bug
+		//}
+		break; 
 	case STOP:
 		Stopped = 1; break;
 	case DI:

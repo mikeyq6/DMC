@@ -79,7 +79,6 @@ public:
 
 	// Init
 	void initCPU();
-	uint8_t ProcessNextInstruction();
 	void Start();
 	void Stop();
 	bool IsRunning();
