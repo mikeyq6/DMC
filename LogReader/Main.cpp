@@ -54,6 +54,18 @@ int main(int argc, char* argv[]) {
 			silentMode = false;
 		}
 
+		if (regcheck != "") {
+			if ((regcheck.compare("hl") == 0 && hl == regval) || (regcheck.compare("af") == 0 && af == regval) || (regcheck.compare("bc") == 0 && bc == regval)
+				|| (regcheck.compare("de") == 0 && de == regval) || (regcheck.compare("sp") == 0 && sp == regval) ||
+				(regcheck.compare("h") == 0 && ((hl >> 8) & 0xff) == (regval & 0xff)) || (regcheck.compare("l") == 0 && (hl & 0xff) == (regval & 0xff)) ||
+				(regcheck.compare("a") == 0 && ((af >> 8) & 0xff) == (regval & 0xff)) || (regcheck.compare("f") == 0 && (af & 0xff) == (regval & 0xff)) ||
+				(regcheck.compare("b") == 0 && ((bc >> 8) & 0xff) == (regval & 0xff)) || (regcheck.compare("c") == 0 && (bc & 0xff) == (regval & 0xff)) ||
+				(regcheck.compare("d") == 0 && ((de >> 8) & 0xff) == (regval & 0xff)) || (regcheck.compare("e") == 0 && (de & 0xff) == (regval & 0xff))
+				) {
+				skipUntil = 0; silentMode = false; regcheck = "";
+			}
+		}
+
 		if (!silentMode)
 			cout << CodeToString(c, pc, p1, p2);
 		//for (i = 0; i < params; i++) {
@@ -92,18 +104,6 @@ int main(int argc, char* argv[]) {
 		if (!silentMode)
 			cout << ", SP:" << hex << setw(4) << setfill('0') << sp << endl;
 
-		if (regcheck != "") {
-			if ((regcheck.compare("hl") == 0 && hl == regval) || (regcheck.compare("af") == 0 && af == regval) || (regcheck.compare("bc") == 0 && bc == regval) 
-					|| (regcheck.compare("de") == 0 && de == regval) || (regcheck.compare("sp") == 0 && sp == regval) ||
-				(regcheck.compare("h") == 0 && ((hl >> 8) & 0xff) == (regval & 0xff)) || (regcheck.compare("l") == 0 && (hl & 0xff) == (regval & 0xff)) ||
-				(regcheck.compare("a") == 0 && ((af >> 8) & 0xff) == (regval & 0xff)) || (regcheck.compare("f") == 0 && (af & 0xff) == (regval & 0xff)) ||
-				(regcheck.compare("b") == 0 && ((bc >> 8) & 0xff) == (regval & 0xff)) || (regcheck.compare("c") == 0 && (bc & 0xff) == (regval & 0xff)) ||
-				(regcheck.compare("d") == 0 && ((de >> 8) & 0xff) == (regval & 0xff)) || (regcheck.compare("e") == 0 && (de & 0xff) == (regval & 0xff))
-				) {
-					skipUntil = 0; regcheck = "";
-			}
-		}
-
 		if (skipUntil == 0) {
 			char v = _getch();
 			switch (v) {
@@ -116,8 +116,15 @@ int main(int argc, char* argv[]) {
 					skipUntil = -1;
 					cout << "Enter register: ";
 					cin >> regcheck;
-					cout << "Break when " << reg << " hits: ";
+					cout << "Break when " << regcheck << " hits: ";
 					cin >> hex >> regval; break;
+				case 'R':
+					skipUntil = -1;
+					cout << "Enter register: ";
+					cin >> regcheck;
+					cout << "Run silently until " << regcheck << " hits: ";
+					cin >> hex >> regval; 
+					silentMode = true; break;
 			}
 		}
 	} while (c != EOF);
