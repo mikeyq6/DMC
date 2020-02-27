@@ -14,8 +14,8 @@ typedef struct _tile {
 class Sprite
 {
 	public:
-		uint8_t X, Y, TileNumber, Attributes, CGBPalette, Number;
-		bool SpritePriority, YFlip, XFlip, GBPal, CGBVbank;
+		uint8_t X, Y, TileNumber, Attributes, CGBPalette, Number, SpritePriority;
+		bool YFlip, XFlip, CGBVbank;
 
 		void GetSpriteTile(Memory* memory, tile* t);
 };
