@@ -40,7 +40,7 @@ bool Timer::UpdateWillInterrupt(uint8_t cycles) {
 	if (ClockEnabled()) {
 		
 		timerCounter -= cycles;
-		if (timerCounter <= 0) {
+		//if (timerCounter <= 0) {
 			timerCounter = GetClockSpeed();
 			uint8_t currentCount = (*tima);
 
@@ -52,7 +52,7 @@ bool Timer::UpdateWillInterrupt(uint8_t cycles) {
 				(*tima) = currentCount + 1;
 			}
 
-		}
+		//}
 	}
 
 	return willInterrupt;
