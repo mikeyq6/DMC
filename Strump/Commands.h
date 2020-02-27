@@ -16,6 +16,12 @@ private:
 	Memory* memory;
 	Registers* registers;
 
+	bool IsHalfCarry(uint8_t val1, uint8_t val2);
+	bool IsHalfCarry(uint8_t val1, int8_t val2);
+	bool IsHalfCarry(uint16_t val1, uint8_t val2);
+	bool IsHalfCarry(uint16_t val1, int8_t val2);
+	bool IsHalfCarry(uint16_t val1, uint16_t val2);
+
 public:
 	Commands(Memory* _memory, Registers* _registers);
 	~Commands();

@@ -9,6 +9,37 @@ Commands::Commands(Memory* _memory, Registers* _registers) {
 Commands::~Commands() {}
 
 
+bool Commands::IsHalfCarry(uint8_t val1, uint8_t val2) {
+	if ((((val1 & 0xf) + (val2 & 0xf)) & 0x10) == 0x10)
+		return true;
+	else
+		return false;
+}
+bool Commands::IsHalfCarry(uint8_t val1, int8_t val2) {
+	if ((((val1 & 0xf) + (val2 & 0xf)) & 0x10) == 0x10)
+		return true;
+	else
+		return false;
+}
+bool Commands::IsHalfCarry(uint16_t val1, uint8_t val2) {
+	if ((((val1 & 0xf) + (val2 & 0xf)) & 0x10) == 0x10)
+		return true;
+	else
+		return false;
+}
+bool Commands::IsHalfCarry(uint16_t val1, int8_t val2) {
+	if ((((val1 & 0xf) + (val2 & 0xf)) & 0x10) == 0x10)
+		return true;
+	else
+		return false;
+}
+bool Commands::IsHalfCarry(uint16_t val1, uint16_t val2) {
+	if ((((val1 & 0xfff) + (val2 & 0xfff)) & 0x1000) == 0x1000)
+		return true;
+	else
+		return false;
+}
+
 #pragma region ALU methods
 
 void Commands::ADD(uint8_t opcode) {
@@ -20,13 +51,14 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 	uint16_t oldHL = registers->HL.hl;
 	uint16_t oldSP = registers->SP;
 	uint32_t sum = 0;
-	int32_t unsignedSum = 0;
+	int8_t paramU = (int8_t)param;
 
 	a = registers->AF.a;
+	memory->resetFlag(N);
 
 	switch (opcode) {
 		case ADD_A_A:
-			registers->AF.a += registers->AF.a; val = registers->AF.a; break;
+			val = registers->AF.a; registers->AF.a += registers->AF.a; break;
 		case ADD_A_B:
 			registers->AF.a += registers->BC.b; val = registers->BC.b; break;
 		case ADD_A_C:
@@ -42,7 +74,17 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 		case ADD_A_HL:
 			val = memory->ReadMem(registers->HL.hl); registers->AF.a += val; break;
 		case ADD_SP_n:
-			registers->SP += (int8_t)param; val = param; break; // convert to signed
+			if(IsHalfCarry(registers->SP, paramU))
+			//if ((((registers->SP & 0xf) + (paramU & 0xf)) & 0x10) == 0x10)
+				memory->setFlag(H);
+			else
+				memory->resetFlag(H);
+			if ((((registers->SP & 0xff) + (paramU & 0xff)) & 0x100) == 0x100)
+				memory->setFlag(C);
+			else
+				memory->resetFlag(C);
+			registers->SP += paramU; break; // convert to signed
+			memory->resetFlag(Z);
 		case ADD_HL_BC:
 			registers->HL.hl += registers->BC.bc; val16 = registers->BC.bc; break;
 		case ADD_HL_DE:
@@ -56,7 +98,8 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 	}
 
 	if (opcode == ADD_HL_BC || opcode == ADD_HL_DE || opcode == ADD_HL_HL || opcode == ADD_HL_SP) {
-		if (((oldHL & 0xfff) + (val16 & 0xfff)) > 0xfff)
+		if (IsHalfCarry(oldHL, val16))
+		//if (((oldHL & 0xfff) + (val16 & 0xfff)) > 0xfff)
 			memory->setFlag(H);
 		else
 			memory->resetFlag(H);
@@ -66,24 +109,10 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 			memory->setFlag(C);
 		else
 			memory->resetFlag(C);
-		memory->resetFlag(N);
 	}
-	else if (opcode == ADD_SP_n) {
-		if ((((oldSP & 0xf) + (val & 0xf)) & 0x10) == 0x10)
-			memory->setFlag(H);
-		else
-			memory->resetFlag(H);
-
-		unsignedSum = oldSP + (int8_t)val;
-		if (unsignedSum > 0xffff)
-			memory->setFlag(C);
-		else
-			memory->resetFlag(C);
-
-		memory->resetFlag(Z);
-	}
-	else {
-		if ((((a & 0xf) + (val & 0xf)) & 0x10) == 0x10)
+	else if(opcode != ADD_SP_n){
+		if (IsHalfCarry(a, val))
+		//if ((((a & 0xf) + (val & 0xf)) & 0x10) == 0x10)
 			memory->setFlag(H);
 		else
 			memory->resetFlag(H);
@@ -101,7 +130,6 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 			memory->resetFlag(Z);
 		}
 	}
-	memory->resetFlag(N);
 }
 void Commands::ADC(uint8_t opcode) {
 	return ADC(opcode, 0);
@@ -115,7 +143,7 @@ void Commands::ADC(uint8_t opcode, uint8_t param) {
 
 	switch (opcode) {
 		case ADC_A_A:
-			registers->AF.a += registers->AF.a + flag; val = registers->AF.a; break;
+			val = registers->AF.a; registers->AF.a += registers->AF.a + flag; break;
 		case ADC_A_B:
 			registers->AF.a += registers->BC.b + flag; val = registers->BC.b; break;
 		case ADC_A_C:
@@ -134,7 +162,8 @@ void Commands::ADC(uint8_t opcode, uint8_t param) {
 			registers->AF.a += param + flag; val = param; break;
 	}
 
-	if ((((a & 0xf) + (val & 0xf) + flag) & 0x10) == 0x10)
+	if (IsHalfCarry(a, (uint8_t)(val + flag)))
+	//if ((((a & 0xf) + (val & 0xf) + flag) & 0x10) == 0x10)
 		memory->setFlag(H);
 	else
 		memory->resetFlag(H);
@@ -168,7 +197,7 @@ void Commands::SUB(uint8_t opcode, uint8_t param) {
 
 	switch (opcode) {
 	case SUB_A:
-		registers->AF.a -= registers->AF.a; val = registers->AF.a; break;
+		val = registers->AF.a; registers->AF.a -= registers->AF.a; break;
 	case SUB_B:
 		registers->AF.a -= registers->BC.b; val = registers->BC.b; break;
 	case SUB_C:
@@ -191,10 +220,10 @@ void Commands::SUB(uint8_t opcode, uint8_t param) {
 
 	// Half carry and full carry
 	//printf("registers->AF.a = 0x%x, val = 0x%x, (registers->AF.a & 0xf) - (val & 0xf) = 0x%x\n", registers->AF.a, val, (registers->AF.a & 0xf) - (val & 0xf));
-	if ((val & 0xf) > (oldA & 0xf)) {
+	if ((oldA & 0xf) < (val & 0xf)) {
 		memory->setFlag(H);
 	}
-	if (val > oldA) {
+	if (oldA < val) {
 		memory->setFlag(C);
 	}
 }
@@ -236,10 +265,10 @@ void Commands::SBC(uint8_t opcode, uint8_t param) {
 	if (registers->AF.a == 0) { memory->setFlag(Z); }
 
 	// Half carry and full carry
-	if ((val & 0xf) > (oldA & 0xf)) {
+	if ((oldA & 0xf) < (val & 0xf)) {
 		memory->setFlag(H);
 	}
-	if (val > oldA) {
+	if (oldA < val) {
 		memory->setFlag(C);
 	}
 }
@@ -1465,23 +1494,67 @@ void Commands::DAA_() {
 	uint8_t cFlag = memory->getFlag(C);
 	uint8_t nFlag = memory->getFlag(N);
 
-	memory->resetFlag(Z);
 	memory->resetFlag(C);
 	memory->resetFlag(H);
 
-	// note: assumes a is a uint8_t and wraps from 0xff to 0
-	if (!nFlag) {  // after an addition, adjust if (half-)carry occurred or if result is out of bounds
-		if (cFlag || registers->AF.a > 0x99) { registers->AF.a += 0x60; memory->setFlag(C); }
-		if (hFlag || (registers->AF.a & 0x0f) > 0x09) { registers->AF.a += 0x6; }
+	//uint32_t temp = registers->AF.a;
+
+	//if (!nFlag) {  // after an addition, adjust if (half-)carry occurred or if result is out of bounds
+	//	if (hFlag || (registers->AF.a & 0xf) > 0x09) { registers->AF.a += 0x6; temp = registers->AF.a + 0x6; }
+	//	if (cFlag || (registers->AF.a > 0x9f)) {
+	//		registers->AF.a += 0x60; 
+	//		temp = registers->AF.a + 0x60;
+	//	}
+	//}
+	//else {  // after a subtraction, only adjust if (half-)carry occurredq  
+	//	if (hFlag) { registers->AF.a -= 0x6; }
+	//	if (cFlag) { registers->AF.a -= 0x60; }
+	//}
+
+	//if (registers->AF.a == 0) {
+	//	memory->setFlag(Z);
+	//}
+	//if (temp > 0xff) {
+ 	//	memory->setFlag(C);
+	//}
+
+	uint8_t correction = 0;
+	if (hFlag || (!nFlag && (registers->AF.a & 0xf) > 9)) {
+		correction |= 0x6;
 	}
-	else {  // after a subtraction, only adjust if (half-)carry occurredq  
-		if (cFlag) { registers->AF.a -= 0x60; }
-		if (hFlag) { registers->AF.a -= 0x6; }
+	if (cFlag || (!nFlag && registers->AF.a > 0x99)) {
+		correction |= 0x60;
+		memory->setFlag(C);
 	}
+	registers->AF.a += nFlag ? -correction : correction;
 
 	if (registers->AF.a == 0) {
 		memory->setFlag(Z);
 	}
+
+
+	//let correction = 0;
+
+	//let setFlagC = 0;
+	//if (flagH || (!flagN && (value & 0xf) > 9)) {
+	//	correction |= 0x6;
+	//}
+
+	//if (flagC || (!flagN && value > 0x99)) {
+	//	correction |= 0x60;
+	//	setFlagC = FLAG_C;
+	//}
+
+	//value += flagN ? -correction : correction;
+
+	//value &= 0xff;
+
+	//const setFlagZ = value == = 0 ? FLAG_Z : 0;
+
+	//regF &= ~(FLAG_H | FLAG_Z | FLAG_C);
+	//regF |= setFlagC | setFlagZ;
+
+	//return { output, carry, zero };
 
 }
 
