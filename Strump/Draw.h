@@ -20,6 +20,7 @@ constexpr auto WHITE = 0x00ffffff;
 constexpr auto LT_GRAY = 0x00555555;
 constexpr auto DK_GRAY = 0x00cccccc;
 constexpr auto BLACK = 0x00000000;
+constexpr auto TRANSPARENT = -1;
 
 constexpr auto CLASSIC_WHITE = 0x00e0f8d0;
 constexpr auto CLASSIC_LT_GRAY = 0x0088c070;
@@ -84,6 +85,7 @@ private:
 	string registerInfo;
 	bool SpritesEnabled();
 	bool tileIsNotEmpty(tile* t);
+	uint32_t GetSpriteColourFor(uint8_t number, uint8_t palette);
 
 	int text_width, text_height;
 	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];

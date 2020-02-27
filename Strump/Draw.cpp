@@ -28,14 +28,14 @@ void Draw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_
 		background[i] = new tile();
 		windowX[i] = new tile();
 	}
-	
+
 	int gogogo = 1;
 
 	Width = width;
 	Height = height;
 
 	SDL_Init(SDL_INIT_EVERYTHING);
-	window = SDL_CreateWindow(title, xpos, ypos, Width*3, Height*3, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | flags);
+	window = SDL_CreateWindow(title, xpos, ypos, Width * 3, Height * 3, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | flags);
 	renderer = SDL_CreateRenderer(window, -1, 0);
 	texture = SDL_CreateTexture(renderer,
 		SDL_PIXELFORMAT_RGB888,
@@ -70,24 +70,24 @@ void Draw::render(bool CPUIsStopped) {
 
 	loadBackground();
 	loadWindow();
-	setBackgroundPixels(); 
+	setBackgroundPixels();
 	if (showBackgroundMap) {
 		setFullBackgroundPixels();
 	}
 	if (showTileMap) {
 		setTilePixels();
 	}
-	if(SpritesEnabled())
+	if (SpritesEnabled())
 		setSpritePixels();
 
 	SDL_UpdateTexture(texture, NULL, screenPixels, Width * sizeof(uint32_t));
 	SDL_RenderClear(renderer);
-	SDL_RenderCopy(renderer, texture, NULL, NULL); 
+	SDL_RenderCopy(renderer, texture, NULL, NULL);
 	SDL_RenderPresent(renderer);
 
 	if (showCommandOutput) {
 		registerInfo = GetRegisterInfo();
-		textSurface = TTF_RenderText_Blended_Wrapped(font, registerInfo.c_str(), textColor, 300);   
+		textSurface = TTF_RenderText_Blended_Wrapped(font, registerInfo.c_str(), textColor, 300);
 		debugTexture = SDL_CreateTextureFromSurface(debugRenderer, textSurface);
 		if (textSurface) {
 			text_width = textSurface->w;
@@ -122,9 +122,9 @@ string Draw::GetRegisterInfo() {
 	st << "BC: " << ToHexString(registers->BC.bc) << "  HL: " << ToHexString(registers->HL.hl) << endl;
 	st << "SP: " << ToHexString(registers->SP) << "  PC: " << ToHexString(registers->PC) << endl;
 	st << "ZNHC: " << (memory->getFlag(Z) == 0 ? '0' : '1') << (memory->getFlag(N) == 0 ? '0' : '1') << (memory->getFlag(H) == 0 ? '0' : '1') << (memory->getFlag(C) == 0 ? '0' : '1') << endl;
-	st << "TMA:  " << ToHexString(memory->get(TMA))  << "  TIMA: " << ToHexString(memory->get(TIMA)) << endl;
+	st << "TMA:  " << ToHexString(memory->get(TMA)) << "  TIMA: " << ToHexString(memory->get(TIMA)) << endl;
 	st << "LCDC: " << ToHexString(memory->get(LCDC)) << "  STAT: " << ToHexString(memory->get(STAT)) << endl;
-	st << "IE:   " << ToHexString(memory->get(IE))   << "  IF:   " << ToHexString(memory->get(IF)) << endl;
+	st << "IE:   " << ToHexString(memory->get(IE)) << "  IF:   " << ToHexString(memory->get(IF)) << endl;
 	st << "ROMB: " << ToHexString(memory->RomBank) << endl;
 
 	return st.str();
@@ -235,14 +235,14 @@ void Draw::setBackgroundPixels() {
 			//printf("windowPixels[%04x] = %08x\n", sPixelsIndex, sPixel);
 			screenPixels[sPixelsIndex] = GetColourFor(pixel);
 			switch (pixel) {
-				case 0:
-					pixel = 32; break;
-				case 1:
-					pixel = 46; break;
-				case 2:
-					pixel = 56; break;
-				case 3:
-					pixel = 35; break;
+			case 0:
+				pixel = 32; break;
+			case 1:
+				pixel = 46; break;
+			case 2:
+				pixel = 56; break;
+			case 3:
+				pixel = 35; break;
 			}
 		}
 		pixel = (uint8_t)10;
@@ -281,7 +281,7 @@ void Draw::setBackgroundPixels() {
 	}
 }
 
-bool Draw::tileIsNotEmpty(tile *t) {
+bool Draw::tileIsNotEmpty(tile* t) {
 	for (int i = 0; i < 16; i++) {
 		if (t->data[i] > 0)
 			return true;
@@ -302,30 +302,32 @@ void Draw::setFullBackgroundPixels() {
 
 	for (y = 0; y < FULL_BACKGROUND_HEIGHT; y++) {
 		for (x = 0; x < FULL_BACKGROUND_WIDTH; x++, sPixelsIndex++) {
-			
+
 			pX = x % 8;
 			pY = y % 8;
 
-			index = ((y / 8) * 32) + (x / 8); 
+			index = ((y / 8) * 32) + (x / 8);
 			cur = background[index];
 
 			getPixel(cur, pX, pY, &pixel);
 
 			fullBackgroundPixels[sPixelsIndex] = GetColourFor(pixel);
 			switch (pixel) {
-				case 0:
-					pixel = 32; break;
-				case 1:
-					pixel = 46; break;
-				case 2:
-					pixel = 56; break;
-				case 3:
-					pixel = 35; break;
+			case 0:
+				pixel = 32; break;
+			case 1:
+				pixel = 46; break;
+			case 2:
+				pixel = 56; break;
+			case 3:
+				pixel = 35; break;
 			}
 		}
 		pixel = (uint8_t)10;
 	}
 }
+
+#pragma region Sprite Methods
 
 void Draw::setSpritePixels() {
 	Sprite* sprite = new Sprite();
@@ -337,11 +339,11 @@ void Draw::setSpritePixels() {
 
 	for (int i = 0; i < 40; i++) {
 		GetSpriteByNumber(i, sprite);
-	//	sprites.push_back(sprite);
-	//}
-	//// Sort sprites by X
-	////sort(sprites.begin(), sprites.end(), compareSpriteX);
-	//for(Sprite* s : sprites) {
+		//	sprites.push_back(sprite);
+		//}
+		//// Sort sprites by X
+		////sort(sprites.begin(), sprites.end(), compareSpriteX);
+		//for(Sprite* s : sprites) {
 		if (sprite->X <= 0 || sprite->Y <= 0) {
 			continue; // Sprite is hidden
 		}
@@ -357,25 +359,31 @@ void Draw::setSpritePixels() {
 				for (int y = 0; y < 8; y++) {
 					for (int x = 0; x < 8; x++) {
 						getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
-						uint32_t colour = GetColourFor(pixel);
-						if (colour != WHITE)
-							screenPixels[(scY + y) * 160 + (scX + x)] = colour;
+						uint8_t curPixel = screenPixels[(scY + y) * 160 + (scX + x)];
+						if (sprite->SpritePriority == 0 || (sprite->SpritePriority == 1 && curPixel != WHITE && curPixel != CLASSIC_WHITE)) {
+							uint32_t colour = GetSpriteColourFor(pixel, sprite->CGBPalette);
+							if(colour != TRANSPARENT)
+								screenPixels[(scY + y) * 160 + (scX + x)] = colour;
+						}
 					}
 				}
 			}
-			else 
+			else
 			{ // 8x16 sprites
 				for (int i = 0; i < 2; i++) {
 					scX = sprite->X - 8;
-					scY = sprite->Y - 16 + (i*8);
+					scY = sprite->Y - 16 + (i * 8);
 
 					getTileAt(base + ((sprite->TileNumber + i) * 16), &cur);
 					for (int y = 0; y < 8; y++) {
 						for (int x = 0; x < 8; x++) {
 							getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
-							uint32_t colour = GetColourFor(pixel);
-							if(colour != WHITE)
-								screenPixels[(scY + y) * 160 + (scX + x)] = colour;
+							uint8_t curPixel = screenPixels[(scY + y) * 160 + (scX + x)];
+							if (sprite->SpritePriority == 0 || (sprite->SpritePriority == 1 && curPixel != WHITE && curPixel != CLASSIC_WHITE)) {
+								uint32_t colour = GetSpriteColourFor(pixel, sprite->CGBPalette);
+								if (colour != TRANSPARENT)
+									screenPixels[(scY + y) * 160 + (scX + x)] = colour;
+							}
 						}
 					}
 				}
@@ -386,12 +394,60 @@ void Draw::setSpritePixels() {
 bool Draw::SpritesEnabled() {
 	return (memory->ReadMem(LCDC) & 0x2) == 0x2;
 }
-bool compareSpriteX(Sprite *s1, Sprite *s2)
+bool compareSpriteX(Sprite* s1, Sprite* s2)
 {
 	return (s1->X > s2->X);
 }
+void Draw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
+	uint16_t address = 0xfe00 + (spriteNum * 4); // Start address of sprite data
+	if (address == 0xfe04) {
+		int x = 1;
+	}
+	if (spriteNum == 0 && memory->ReadMem(address) == 0x10) {
+		int y = 1;
+	}
+	uint8_t attributes = memory->ReadMem(address + 3);
+	uint8_t spriteMode = (memory->ReadMem(LCDC) & 0x4) > 0 ? SPRITE_MODE_8x16 : SPRITE_MODE_8x8;
 
-void Draw::setTilePixels() {  
+	sprite->Y = memory->ReadMem(address);
+	sprite->X = memory->ReadMem(address + 1);
+	if (spriteMode == SPRITE_MODE_8x8)
+		sprite->TileNumber = memory->ReadMem(address + 2);
+	else
+		sprite->TileNumber = memory->ReadMem(address + 2) & 0xfe;
+	sprite->Attributes = attributes;
+	sprite->CGBPalette = (attributes & 0x10) == 0x10 ? 1 : 0;
+	sprite->SpritePriority = ((attributes & 0x80) == 0x80) ? 1 : 0;
+	sprite->YFlip = (attributes & 0x40) == 0x40;
+	sprite->XFlip = (attributes & 0x20) == 0x20;
+	sprite->CGBVbank = (attributes & 0x08) == 0x08;
+	sprite->Number = spriteNum + 1;
+	if (address == 0xfe04 && sprite->TileNumber != 0x02) {
+		int x = 1;
+	}
+}
+uint32_t Draw::GetSpriteColourFor(uint8_t number, uint8_t paletteSwitch) {
+	uint8_t palette = paletteSwitch == 1 ? memory->ReadMem(OBP1) : memory->ReadMem(OBP0);
+	switch (number) {
+		case 0:
+			if (paletteSwitch == 0)
+				return TRANSPARENT;
+			else
+				return GetColourForPaletteNumber(palette & 0x03); 
+			break;
+		case 1:
+			return GetColourForPaletteNumber((palette & 0x0c) >> 2); break;
+		case 2:
+			return GetColourForPaletteNumber((palette & 0x30) >> 4); break;
+		case 3:
+			return GetColourForPaletteNumber((palette & 0xc0) >> 6); break;
+	}
+	return WHITE;
+}
+
+#pragma endregion
+
+void Draw::setTilePixels() {
 	tile tile;
 	uint8_t pX = 0;
 	uint8_t pY = 0;
@@ -402,7 +458,7 @@ void Draw::setTilePixels() {
 	uint16_t rwidth = 256;
 
 	for (i = 0x8000; i <= 0x9fff; i += 0x10, tile_index++) {
-		
+
 		getTileAt(i, &tile);
 
 		for (y = 0; y < 8; y++) {
@@ -460,34 +516,35 @@ uint32_t Draw::GetColourFor(uint8_t number) {
 }
 uint32_t Draw::GetColourForPaletteNumber(uint8_t pNumber) {
 	switch (pNumber) {
-		case 0:
-			if (colourMode == MODE_CLEAR)
-				return WHITE;
-			else
-				return CLASSIC_WHITE;
-			break;
-		case 1:
-			if (colourMode == MODE_CLEAR)
-				return DK_GRAY;
-			else
-				return CLASSIC_LT_GRAY;
-			break;
-		case 2:
-			if (colourMode == MODE_CLEAR)
-				return LT_GRAY;
-			else
-				return CLASSIC_DK_GRAY;
-			break;
-		case 3:
-			if (colourMode == MODE_CLEAR)
-				return BLACK;
-			else
-				return CLASSIC_BLACK;
-			break;
-		default:
-			return WHITE; break;
+	case 0:
+		if (colourMode == MODE_CLEAR)
+			return WHITE;
+		else
+			return CLASSIC_WHITE;
+		break;
+	case 1:
+		if (colourMode == MODE_CLEAR)
+			return DK_GRAY;
+		else
+			return CLASSIC_LT_GRAY;
+		break;
+	case 2:
+		if (colourMode == MODE_CLEAR)
+			return LT_GRAY;
+		else
+			return CLASSIC_DK_GRAY;
+		break;
+	case 3:
+		if (colourMode == MODE_CLEAR)
+			return BLACK;
+		else
+			return CLASSIC_BLACK;
+		break;
+	default:
+		return WHITE; break;
 	}
 }
+
 void Draw::SetColourMode(uint8_t mode) {
 	colourMode = mode;
 }
@@ -511,35 +568,6 @@ bool Draw::GetWindowEnabled() {
 	uint8_t val = memory->get(LCDC);
 	return (val & (1 << 5)) == 1;
 
-}
-void Draw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
-	uint16_t address = 0xfe00 + (spriteNum * 4); // Start address of sprite data
-	if (address == 0xfe04) {
-		int x = 1;
-	}
-	if (spriteNum == 0 && memory->ReadMem(address) == 0x10) {
-		int y = 1; 
-	}
-	uint8_t attributes = memory->ReadMem(address + 3);
-	uint8_t spriteMode = (memory->ReadMem(LCDC) & 0x4) > 0 ? SPRITE_MODE_8x16 : SPRITE_MODE_8x8;
-
-	sprite->Y = memory->ReadMem(address);
-	sprite->X = memory->ReadMem(address + 1);
-	if (spriteMode == SPRITE_MODE_8x8)
-		sprite->TileNumber = memory->ReadMem(address + 2);
-	else
-		sprite->TileNumber = memory->ReadMem(address + 2) & 0xfe;
-	sprite->Attributes = attributes;
-	sprite->CGBPalette = attributes & 0x07;
-	sprite->SpritePriority = (attributes & 0x80) == 0x80;
-	sprite->YFlip = (attributes & 0x40) == 0x40;
-	sprite->XFlip = (attributes & 0x20) == 0x20;
-	sprite->GBPal = (attributes & 0x10) == 0x10;
-	sprite->CGBVbank = (attributes & 0x08) == 0x08;
-	sprite->Number = spriteNum + 1;
-	if (address == 0xfe04 && sprite->TileNumber != 0x02) {
-		int x = 1;
-	}
 }
 
 
