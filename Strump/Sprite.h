@@ -1,7 +1,7 @@
 #pragma once
 
 #include "alias.h"
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #include "Memory.h"
 
 const int SPRITE_MODE_8x8 = 0;

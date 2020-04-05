@@ -126,7 +126,7 @@ void RamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 		if (rominfo->CartInfo->controllerType == MBC1) {
 			RomBank = value & 0x0f;
 			if (RomBank == 0)
-				RomBank == 1;
+				RomBank = 1;
 		}
 		else if (rominfo->CartInfo->controllerType == MBC3) {
 			RomBank = value & 0x7f;
@@ -173,8 +173,8 @@ void RamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 		internal_set(LY, 0);
 	}
 	else if (location >= 0x9000 && location <= 0x98ff) {
-		if (value == 0x30)
-			int c = 1;
+		// if (value == 0x30)
+		// 	int c = 1;
 		internal_set(location, value);
 	}
 

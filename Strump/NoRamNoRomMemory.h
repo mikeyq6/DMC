@@ -1,6 +1,6 @@
 #pragma once
 #include "Memory.h"
-class NoRamNoRomMemory sealed :
+class NoRamNoRomMemory final :
 	public Memory
 {
 public:

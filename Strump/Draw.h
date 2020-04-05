@@ -1,13 +1,13 @@
 #pragma once
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <cstdio>
 #include <iomanip>
 #include <sstream>
 #include <fstream>
 #include <vector>
 #include <algorithm>
-#include "SDL_ttf.h"
 #include "Memory.h"
 #include "registers.h"
 #include "Sprite.h"

@@ -5,7 +5,7 @@
 
 #include "alias.h"
 #include "registers.h"
-#include "SDL_Config.h"
+//#include <SDL2/SDL_Config.h>
 #include "Memory.h"
 #include "registers.h"
 #include <sstream>

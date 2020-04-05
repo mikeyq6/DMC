@@ -106,7 +106,7 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location >= 0x2000 && location < 0x4000) { // ROM Switching
 		RomBank = value & 0x1f;
 		if (RomBank == 0)
-			RomBank == 1;
+			RomBank = 1;
 	}
 	else if (location >= 0x4000 && location < 0x6000) { // ROM/RAM Switching
 		value &= 3;

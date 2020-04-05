@@ -124,7 +124,7 @@ void MBC2Memory::WriteMem(uint16_t location, uint8_t value) {
 		if (rominfo->CartInfo->controllerType == MBC1) {
 			RomBank = value & 0x0f;
 			if (RomBank == 0)
-				RomBank == 1;
+				RomBank = 1;
 		}
 		else if (rominfo->CartInfo->controllerType == MBC3) {
 			RomBank = value & 0x7f;

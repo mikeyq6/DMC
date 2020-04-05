@@ -1,5 +1,4 @@
 #include <iostream>
-#include <conio.h>
 #include <thread>  
 #include "CPU.h"
 #include "Emulator.h"

@@ -4,7 +4,7 @@
 #define REGISTERS_H
 
 #include "alias.h"
-#include "SDL.h"
+#include <SDL2/SDL.h>
 
 constexpr auto Z = 128;
 constexpr auto N = 64;

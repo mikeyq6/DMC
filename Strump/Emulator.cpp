@@ -1,5 +1,4 @@
 #include "Emulator.h"
-#include <conio.h>
 
 Emulator::Emulator(const char* _cartridgeFileName) {
 	cartridgeFileName = _cartridgeFileName;
@@ -18,8 +17,8 @@ void Emulator::End() {
 
 bool Emulator::Init() {
 	// Try to open ROM file
-	int err = fopen_s(&fp, cartridgeFileName, "r");
-	if (err > 0) {
+	fp = fopen(cartridgeFileName, "r");
+	if (fp == NULL) {
 		cout << "Coulnd't open file \n" << cartridgeFileName << endl;
 		return false;
 	}

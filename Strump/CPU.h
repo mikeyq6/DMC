@@ -3,7 +3,7 @@
 #include "alias.h"
 #include "opcodes.h"
 #include "registers.h"
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #include "ROMInfo.h"
 #include "Commands.h"
 #include "Draw.h"

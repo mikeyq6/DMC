@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <sstream>
-#include <conio.h>
 #include <stdlib.h>
 #include <iomanip>
 
@@ -22,14 +21,14 @@ CPU::CPU() {
 
 
 #if defined STEPTHROUGH || defined LOG_COMMANDS
-	int err = fopen_s(&clog, "commands", "wb");
-	if (err > 0) {
+	clog = fopen("commands", "wb");
+	if (clog == NULL) {
 		cout << "Couldn't open file 'commands'" << endl;
 	}
 #endif
 #ifdef LOG_STATS
-	err = fopen_s(&statlog, "stats", "wb");
-	if (err > 0) {
+	statlog = fopen("stats", "wb");
+	if (statlog == NULL) {
 		cout << "Couldn't open file 'stats'" << endl;
 	}
 #endif
@@ -222,7 +221,7 @@ void CPU::Start() {
 				else {
 					DisplayState();
 					skipuntil = 0;
-					char x = _getch();
+					char x = getchar();
 					if (x == 'q') { break; }
 					else if (x == 'p') {
 						printf("Break when SP reaches: ");
@@ -553,7 +552,7 @@ void CPU::Run(uint8_t opcode, uint8_t param1, uint8_t param2) {
 #endif
 	// if(opcode == 0xff) {
 		// printf("PC=%04x", PC);
-		// _getch();
+		// getchar();
 	// }
 	if (registers->PC > 0xcc00) {
 		int x = 1;

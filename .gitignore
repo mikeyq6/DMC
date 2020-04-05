@@ -46,4 +46,6 @@ LogReader\Debug
 Strump\Debug
 *.gb
 *.gbc
-*.sav
+*.savstrump
+Strump/strump
+Strump/commands
