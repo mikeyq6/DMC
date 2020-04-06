@@ -3,7 +3,7 @@ OBJS=Commands.cpp CPU.cpp JoypadState.cpp Draw.cpp Emulator.cpp Log.cpp Memory.c
 #OBJS=Main.cpp
 SDL2dir=~/Library/Frameworks/SDL2.framework/Headers
 
-LFLAGS=-lSDL2 -lSDL2_image -lSDL2_ttf -v
+LFLAGS=-lSDL2 -lSDL2_image -lSDL2_ttf
 SUPPRESS=-Wno-unused-variable -Wno-unused-private-field
 
 debug:
