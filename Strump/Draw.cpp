@@ -360,7 +360,7 @@ void Draw::setSpritePixels() {
 					for (int x = 0; x < 8; x++) {
 						getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
 						uint32_t curPixel = screenPixels[(scY + y) * 160 + (scX + x)];
-						if (sprite->SpritePriority == 0 || (sprite->SpritePriority == 1 && curPixel != WHITE && curPixel != CLASSIC_WHITE)) {
+						if (sprite->SpritePriority == 0 || (sprite->SpritePriority == 1 && (curPixel == WHITE || curPixel == CLASSIC_WHITE))) {
 							uint32_t colour = GetSpriteColourFor(pixel, sprite->CGBPalette);
 							if(colour != TRANSPARENT)
 								screenPixels[(scY + y) * 160 + (scX + x)] = colour;
@@ -379,7 +379,7 @@ void Draw::setSpritePixels() {
 						for (int x = 0; x < 8; x++) {
 							getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
 							uint32_t curPixel = screenPixels[(scY + y) * 160 + (scX + x)];
-							if (sprite->SpritePriority == 0 || (sprite->SpritePriority == 1 && curPixel != WHITE && curPixel != CLASSIC_WHITE)) {
+							if (sprite->SpritePriority == 0 || (sprite->SpritePriority == 1 && (curPixel == WHITE || curPixel == CLASSIC_WHITE))) {
 								uint32_t colour = GetSpriteColourFor(pixel, sprite->CGBPalette);
 								if (colour != TRANSPARENT)
 									screenPixels[(scY + y) * 160 + (scX + x)] = colour;
