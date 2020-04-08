@@ -1,5 +1,7 @@
 #include "MBC3Memory.h"
 
+MBC3Memory::~MBC3Memory() {}
+
 MBC3Memory::MBC3Memory(bool _hasRam, bool _hasBattery) {
 	this->hasRAM = _hasRam;
 	this->hasBattery = _hasBattery;

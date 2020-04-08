@@ -4,12 +4,13 @@ class RamNoRomMemory :
 	public Memory
 {
 public:
+	~RamNoRomMemory() override;
 	RamNoRomMemory(bool _hasBattery);
 
-	void WriteMem(uint16_t location, uint8_t value);
-	uint8_t ReadMem(uint16_t location);
+	void WriteMem(uint16_t location, uint8_t value) override;
+	uint8_t ReadMem(uint16_t location) override;
 protected:
-	uint8_t internalReadMem(uint16_t location);
+	uint8_t internalReadMem(uint16_t location) override;
 
 private:
 	bool hasBattery = false;

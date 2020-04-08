@@ -5,6 +5,7 @@ MBC1Memory::MBC1Memory(bool hasRam, bool hasBattery) {
 	this->has_Battery = hasBattery;
 	memoryMode = MODE_16_8; // default
 }
+MBC1Memory::~MBC1Memory() {}
 
 // Memory
 uint8_t MBC1Memory::ReadMem(uint16_t location) {

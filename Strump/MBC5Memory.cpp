@@ -1,5 +1,7 @@
 #include "MBC5Memory.h"
 
+MBC5Memory::~MBC5Memory() {}
+
 MBC5Memory::MBC5Memory(bool _hasRam, bool _hasBattery, bool _hasRumble, bool _hasSRAM)
 {
 	this->hasRAM = _hasRam;

@@ -3,6 +3,7 @@
 MBC2Memory::MBC2Memory(bool hasBattery) {
 	this->has_Battery = hasBattery;
 }
+MBC2Memory::~MBC2Memory() {}
 
 // Memory
 uint8_t MBC2Memory::ReadMem(uint16_t location) {

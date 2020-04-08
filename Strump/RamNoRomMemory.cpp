@@ -2,6 +2,8 @@
 
 #include "RamNoRomMemory.h"
 
+RamNoRomMemory::~RamNoRomMemory() {}
+
 RamNoRomMemory::RamNoRomMemory(bool _hasBattery) {
 	this->hasBattery = _hasBattery;
 }

@@ -4,12 +4,13 @@ class MBC2Memory :
 	public Memory
 {
 public:
+	~MBC2Memory() override;
 	MBC2Memory(bool hasBattery);
 
-	void WriteMem(uint16_t location, uint8_t value);
-	uint8_t ReadMem(uint16_t location);
+	void WriteMem(uint16_t location, uint8_t value) override;
+	uint8_t ReadMem(uint16_t location) override;
 protected:
-	uint8_t internalReadMem(uint16_t location);
+	uint8_t internalReadMem(uint16_t location) override;
 
 private:
 	bool has_Battery = false;

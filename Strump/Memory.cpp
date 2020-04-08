@@ -1,6 +1,7 @@
 #include "Memory.h"
 #include <iostream>
 
+Memory::~Memory() {}
 
 void Memory::init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState) {
 

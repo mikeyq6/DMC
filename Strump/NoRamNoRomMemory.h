@@ -4,9 +4,11 @@ class NoRamNoRomMemory final :
 	public Memory
 {
 public:
-	void WriteMem(uint16_t location, uint8_t value);
-	uint8_t ReadMem(uint16_t location);
+	~NoRamNoRomMemory() override;
+
+	void WriteMem(uint16_t location, uint8_t value) override;
+	uint8_t ReadMem(uint16_t location) override;
 protected:
-	uint8_t internalReadMem(uint16_t location);
+	uint8_t internalReadMem(uint16_t location) override;
 };
 

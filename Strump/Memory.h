@@ -16,6 +16,7 @@ public:
 	uint8_t RomBank, RamBank;
 	bool Startup;
 
+	virtual ~Memory() = 0;
 	void init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState);
 
 	// Flags

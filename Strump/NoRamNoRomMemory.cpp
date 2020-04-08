@@ -1,5 +1,6 @@
 #include "NoRamNoRomMemory.h"
 
+NoRamNoRomMemory::~NoRamNoRomMemory() {}
 // Memory
 uint8_t NoRamNoRomMemory::ReadMem(uint16_t location) {
 	std::lock_guard<mutex> locker(mem_mutex);
