@@ -1,4 +1,4 @@
-#pragma once;
+#pragma once
 
 
 constexpr auto NOP = 0x00;

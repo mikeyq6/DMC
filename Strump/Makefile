@@ -9,5 +9,9 @@ SUPPRESS=-Wno-unused-variable -Wno-unused-private-field
 debug:
 	${CC} -Wall ${SUPPRESS} -I${SDL2dir} ${LFLAGS} -o strump ${OBJS}
 
+logreader:
+	${CC} -Wall ${SUPPRESS} -o ../LogReader/LogReader ../LogReader/Main.cpp
+
 clean:
 	rm -rf strump *.o commands
+	rm -rf ../LogReader/*.o ../LogReader/LogReader

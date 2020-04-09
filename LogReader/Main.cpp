@@ -2,7 +2,6 @@
 #include "opcodes.h"
 #include <iomanip>
 #include <sstream>
-#include <conio.h>
 
 using namespace std;
 
@@ -20,8 +19,8 @@ int main(int argc, char* argv[]) {
 
 	int i = 0;
 	FILE* f;
-	int err = fopen_s(&f, argv[1], "rb");
-	if (err > 0 || f == 0) {
+	f = fopen(argv[1], "rb");
+	if (f == NULL) {
 		cout << "Couldn't open file '" << argv[1] << "'" << endl;
 		return 2;
 	}
@@ -105,7 +104,7 @@ int main(int argc, char* argv[]) {
 			cout << ", SP:" << hex << setw(4) << setfill('0') << sp << endl;
 
 		if (skipUntil == 0) {
-			char v = _getch();
+			char v = getch();
 			switch (v) {
 				case 's':
 					cin >> hex >> skipUntil; break;
