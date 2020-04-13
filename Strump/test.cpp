@@ -157,6 +157,13 @@ void Test::TestInstructions() {
 	assert(memory->getFlag(C) == 0);
 	assert(memory->getFlag(H) == 1);
 
+	registers->SP = 0xffff;
+	int8_t param = -1;
+	commands->ADD(ADD_SP_n, param);
+	assert(registers->SP == 0xfffe);
+	assert(memory->getFlag(H) == 1);
+	assert(memory->getFlag(C) == 1);
+
 	// OR
 	registers->AF.a = 5; // 0101
 	registers->BC.b = 9; // 1001

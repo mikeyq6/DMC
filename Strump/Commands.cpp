@@ -51,7 +51,7 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 	uint16_t oldHL = registers->HL.hl;
 	uint16_t oldSP = registers->SP;
 	uint32_t sum = 0;
-	int8_t paramU = (int8_t)param;
+	int8_t paramS = (int8_t)param;
 
 	a = registers->AF.a;
 	memory->resetFlag(N);
@@ -74,17 +74,16 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 		case ADD_A_HL:
 			val = memory->ReadMem(registers->HL.hl); registers->AF.a += val; break;
 		case ADD_SP_n:
-			if(IsHalfCarry(registers->SP, paramU))
-			//if ((((registers->SP & 0xf) + (paramU & 0xf)) & 0x10) == 0x10)
+			if(IsHalfCarry(registers->SP, paramS))
 				memory->setFlag(H);
 			else
 				memory->resetFlag(H);
-			if ((((registers->SP & 0xff) + (paramU & 0xff)) & 0x100) == 0x100)
+			if ((((registers->SP & 0xff) + (paramS & 0xff)) & 0x100) == 0x100)
 				memory->setFlag(C);
 			else
 				memory->resetFlag(C);
-			registers->SP += paramU; break; // convert to signed
-			memory->resetFlag(Z);
+			registers->SP += paramS;
+			memory->resetFlag(Z); break; // convert to signed
 		case ADD_HL_BC:
 			registers->HL.hl += registers->BC.bc; val16 = registers->BC.bc; break;
 		case ADD_HL_DE:

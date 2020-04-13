@@ -64,7 +64,7 @@ constexpr auto BIT7 = 0x80;
 
 #define RUNTESTS
 //#define STEPTHROUGH 0
-#define LOG_COMMANDS 0
+// #define LOG_COMMANDS 0
 //#define LOG_STATS 1
 //#define DEBUG_TIMER
 //#define PRINT_COMMANDS 1
