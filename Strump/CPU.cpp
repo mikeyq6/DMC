@@ -355,7 +355,7 @@ void CPU::Start() {
 				}
 #endif
 
-				//DoCPUWait(&tp, inst);
+				DoCPUWait(&tp, inst);
 				UpdateTimer(inst);
 				UpdateGraphics(inst);
 				SetLCDStatus();
