@@ -161,8 +161,8 @@ void Commands::ADC(uint8_t opcode, uint8_t param) {
 			registers->AF.a += param + flag; val = param; break;
 	}
 
-	if (IsHalfCarry(a, (uint8_t)(val + flag)))
-	//if ((((a & 0xf) + (val & 0xf) + flag) & 0x10) == 0x10)
+	// if (IsHalfCarry(a, (uint8_t)(val + flag)))
+	if ((((a & 0xf) + (val & 0xf) + flag) & 0x10) == 0x10)
 		memory->setFlag(H);
 	else
 		memory->resetFlag(H);
