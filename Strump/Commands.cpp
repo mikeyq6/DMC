@@ -237,37 +237,42 @@ void Commands::SBC(uint8_t opcode, uint8_t param) {
 	memory->resetFlag(H);
 	memory->resetFlag(C);
 
-	uint8_t val = 0;
 	uint8_t oldA = registers->AF.a;
+	uint8_t res = 0;
+	uint8_t valToSub = 0;
 
 	switch (opcode) {
-	case SBC_A_A:
-		val = registers->AF.a + cFlag; registers->AF.a -= val; break;
-	case SBC_A_B:
-		val = registers->BC.b + cFlag; registers->AF.a -= val; break;
-	case SBC_A_C:
-		val = registers->BC.c + cFlag; registers->AF.a -= val; break;
-	case SBC_A_D:
-		val = registers->DE.d + cFlag; registers->AF.a -= val; break;
-	case SBC_A_E:
-		val = registers->DE.e + cFlag; registers->AF.a -= val; break;
-	case SBC_A_H:
-		val = registers->HL.h + cFlag; registers->AF.a -= val; break;
-	case SBC_A_L:
-		val = registers->HL.l + cFlag; registers->AF.a -= val; break;
-	case SBC_A_HL:
-		val = memory->ReadMem(registers->HL.hl) + cFlag; registers->AF.a -= val; break;
-	case SBC_A_n:
-		val = param + cFlag; registers->AF.a -= val; break;
+		case SBC_A_A:
+			valToSub = registers->AF.a; break;
+		case SBC_A_B:
+			valToSub = registers->BC.b; break;
+		case SBC_A_C:
+			valToSub = registers->BC.c; break;
+		case SBC_A_D:
+			valToSub = registers->DE.d; break;
+		case SBC_A_E:
+			valToSub = registers->DE.e; break;
+		case SBC_A_H:
+			valToSub = registers->HL.h; break;
+		case SBC_A_L:
+			valToSub = registers->HL.l; break;
+		case SBC_A_HL:
+			valToSub = memory->ReadMem(registers->HL.hl); break;
+		case SBC_A_n:
+			valToSub = param; break;
 	}
+
+	res = registers->AF.a - valToSub;
+	res -= cFlag;
+	registers->AF.a = res;
 
 	if (registers->AF.a == 0) { memory->setFlag(Z); }
 
 	// Half carry and full carry
-	if ((oldA & 0xf) < (val & 0xf)) {
+	if (((oldA & 0xf) - (valToSub & 0xf) - cFlag) < 0) {
 		memory->setFlag(H);
 	}
-	if (oldA < val) {
+	if ((oldA - valToSub - cFlag) < 0) {
 		memory->setFlag(C);
 	}
 }
