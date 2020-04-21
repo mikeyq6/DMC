@@ -1227,9 +1227,6 @@ void Commands::RRCA_() {
 	if (c) {
 		memory->setFlag(C);
 	}
-	if (registers->AF.a == 0) {
-		memory->setFlag(Z);
-	}
 }
 void Commands::RRA() {
 	uint8_t oldC = memory->getFlag(C);
@@ -1259,9 +1256,6 @@ void Commands::RLCA_() {
 	registers->AF.a += c >> 7;
 	if (c) {
 		memory->setFlag(C);
-	}
-	if (registers->AF.a == 0) {
-		memory->setFlag(Z);
 	}
 }
 void Commands::RLA_() {

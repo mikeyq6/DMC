@@ -736,14 +736,12 @@ void Test::TestInstructions() {
 	commands->RRCA_();
 	assert(registers->AF.a == 0x5a);
 	assert(memory->getFlag(C) == 0);
-	assert(memory->getFlag(Z) == 0);
 
 	clearFlags();
 	registers->AF.a = 0;
 	commands->RRCA_();
 	assert(registers->AF.a == 0);
 	assert(memory->getFlag(C) == 0);
-	assert(memory->getFlag(Z) == 1);
 
 	clearFlags();
 	registers->AF.a = 0xb5;
@@ -786,14 +784,12 @@ void Test::TestInstructions() {
 	commands->RLCA_();
 	assert(registers->AF.a == 0xd6);
 	assert(memory->getFlag(C) == 0);
-	assert(memory->getFlag(Z) == 0);
 
 	clearFlags();
 	registers->AF.a = 0;
 	commands->RLCA_();
 	assert(registers->AF.a == 0);
 	assert(memory->getFlag(C) == 0);
-	assert(memory->getFlag(Z) == 1);
 
 	clearFlags();
 	registers->AF.a = 0xb5;
