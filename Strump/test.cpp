@@ -872,12 +872,46 @@ void Test::TestInstructions() {
 	assert(memory->getFlag(Z) == 0);
 
 	clearFlags();
+	registers->AF.a = 0x9c;
+	commands->SRA(SRA_A);
+	assert(registers->AF.a == 0xce);
+	assert(memory->getFlag(C) == 0);
+	assert(memory->getFlag(Z) == 0);
+
+	clearFlags();
 	registers->HL.l = 0x1d;
 	commands->SRA(SRA_L);
 	assert(registers->HL.l == 0xe);
 	assert(memory->getFlag(C) == 1);
 	assert(memory->getFlag(Z) == 0); 
 
+	clearFlags();
+	registers->DE.e = 0xbf;
+	commands->SRA(SRA_E);
+	assert(registers->DE.e == 0xdf);
+	assert(memory->getFlag(C) == 1);
+	assert(memory->getFlag(Z) == 0); 
+
+	clearFlags();
+	registers->BC.b = 0xff;
+	commands->SLA(SLA_B);
+	assert(registers->BC.b == 0xfe);
+	assert(memory->getFlag(C) == 1);
+	assert(memory->getFlag(Z) == 0);
+
+	clearFlags();
+	registers->BC.c = 0;
+	commands->SLA(SLA_C);
+	assert(registers->BC.c == 0);
+	assert(memory->getFlag(C) == 0);
+	assert(memory->getFlag(Z) == 1);
+
+	clearFlags();
+	registers->DE.d = 1;
+	commands->SLA(SLA_D);
+	assert(registers->DE.d == 0x2);
+	assert(memory->getFlag(C) == 0);
+	assert(memory->getFlag(Z) == 0);
 
 	// SET / RES / BIT
 	registers->BC.b = 0;
