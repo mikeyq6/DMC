@@ -354,8 +354,9 @@ void CPU::Start() {
 					}
 				}
 #endif
-
+				#ifdef REAL_TIME_CPU
 				DoCPUWait(&tp, inst);
+				#endif
 				UpdateTimer(inst);
 				UpdateGraphics(inst);
 				SetLCDStatus();
@@ -727,6 +728,7 @@ void CPU::Run(uint8_t opcode, uint8_t param1, uint8_t param2) {
 		commands->SBC(opcode); break;
 	case SBC_A_n:
 		commands->SBC(opcode, param1); break;
+	case CP_A:
 	case CP_B:
 	case CP_C:
 	case CP_D:
