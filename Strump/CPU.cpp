@@ -1137,7 +1137,7 @@ void CPU::RunCBInstruction(uint8_t opcode) {
 	case SRA_L:
 	case SRA_H:
 	case SRA_HL:
-		commands->SRA(opcode);
+		commands->SRA(opcode); break;
 	case SLA_A:
 	case SLA_B:
 	case SLA_C:
@@ -1146,7 +1146,7 @@ void CPU::RunCBInstruction(uint8_t opcode) {
 	case SLA_L:
 	case SLA_H:
 	case SLA_HL:
-		commands->SLA(opcode);
+		commands->SLA(opcode); break;
 	case SRL_A:
 	case SRL_B:
 	case SRL_C:
@@ -1155,7 +1155,7 @@ void CPU::RunCBInstruction(uint8_t opcode) {
 	case SRL_L:
 	case SRL_H:
 	case SRL_HL:
-		commands->SRL(opcode);
+		commands->SRL(opcode); break;
 	}
 }
 uint8_t CPU::GetNextInstruction() {

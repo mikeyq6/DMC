@@ -1136,28 +1136,27 @@ void Commands::SRL(uint8_t opcode) {
 	uint8_t val = 0;
 
 	switch (opcode) {
-	case SRL_A:
-		if (registers->AF.a & 1) { memory->setFlag(C); }; registers->AF.a >>= 1; val = registers->AF.a; break;
-	case SRL_B:
-		if (registers->BC.b & 1) { memory->setFlag(C); }; registers->BC.b >>= 1; val = registers->BC.b; break;
-	case SRL_C:
-		if (registers->BC.c & 1) { memory->setFlag(C); }; registers->BC.c >>= 1; val = registers->BC.c; break;
-	case SRL_D:
-		if (registers->DE.d & 1) { memory->setFlag(C); }; registers->DE.d >>= 1; val = registers->DE.d; break;
-	case SRL_E:
-		if (registers->DE.e & 1) { memory->setFlag(C); }; registers->DE.e >>= 1; val = registers->DE.e; break;
-	case SRL_H:
-		if (registers->HL.h & 1) { memory->setFlag(C); }; registers->HL.h >>= 1; val = registers->HL.h; break;
-	case SRL_L:
-		if (registers->HL.l & 1) { memory->setFlag(C); }; registers->HL.l >>= 1; val = registers->HL.l; break;
-	case SRL_HL:
-		val = memory->ReadMem(registers->HL.hl); if (val & 1) { memory->setFlag(C); }; val >>= 1; memory->WriteMem(registers->HL.hl, val); break;
+		case SRL_A:
+			if (registers->AF.a & 1) { memory->setFlag(C); }; registers->AF.a >>= 1; val = registers->AF.a; break;
+		case SRL_B:
+			if (registers->BC.b & 1) { memory->setFlag(C); }; registers->BC.b >>= 1; val = registers->BC.b; break;
+		case SRL_C:
+			if (registers->BC.c & 1) { memory->setFlag(C); }; registers->BC.c >>= 1; val = registers->BC.c; break;
+		case SRL_D:
+			if (registers->DE.d & 1) { memory->setFlag(C); }; registers->DE.d >>= 1; val = registers->DE.d; break;
+		case SRL_E:
+			if (registers->DE.e & 1) { memory->setFlag(C); }; registers->DE.e >>= 1; val = registers->DE.e; break;
+		case SRL_H:
+			if (registers->HL.h & 1) { memory->setFlag(C); }; registers->HL.h >>= 1; val = registers->HL.h; break;
+		case SRL_L:
+			if (registers->HL.l & 1) { memory->setFlag(C); }; registers->HL.l >>= 1; val = registers->HL.l; break;
+		case SRL_HL:
+			val = memory->ReadMem(registers->HL.hl); if (val & 1) { memory->setFlag(C); }; val >>= 1; memory->WriteMem(registers->HL.hl, val); break;
 	}
 
 	if (val == 0) {
 		memory->setFlag(Z);
 	}
-
 }
 void Commands::SRA(uint8_t opcode) {
 	memory->resetFlag(N);
@@ -1168,24 +1167,24 @@ void Commands::SRA(uint8_t opcode) {
 	uint8_t bit7 = 0;
 
 	switch (opcode) {
-	case SRA_A:
-		if (registers->AF.a & 1) { memory->setFlag(C); }; bit7 = (registers->AF.a & 0x80); registers->AF.a >>= 1; registers->AF.a ^= bit7; val = registers->AF.a; break;
-	case SRA_B:
-		if (registers->BC.b & 1) { memory->setFlag(C); }; bit7 = (registers->BC.b & 0x80); registers->BC.b >>= 1; registers->BC.b ^= bit7; val = registers->BC.b; break;
-	case SRA_C:
-		if (registers->BC.c & 1) { memory->setFlag(C); }; bit7 = (registers->BC.c & 0x80); registers->BC.c >>= 1; registers->BC.c ^= bit7; val = registers->BC.c; break;
-	case SRA_D:
-		if (registers->DE.d & 1) { memory->setFlag(C); }; bit7 = (registers->DE.d & 0x80); registers->DE.d >>= 1; registers->DE.d ^= bit7; val = registers->DE.d; break;
-	case SRA_E:
-		if (registers->DE.e & 1) { memory->setFlag(C); }; bit7 = (registers->DE.e & 0x80); registers->DE.e >>= 1; registers->DE.e ^= bit7; val = registers->DE.e; break;
-	case SRA_H:
-		if (registers->HL.h & 1) { memory->setFlag(C); }; bit7 = (registers->HL.h & 0x80); registers->HL.h >>= 1; registers->HL.h ^= bit7; val = registers->HL.h; break;
-	case SRA_L:
-		if (registers->HL.l & 1) { memory->setFlag(C); }; bit7 = (registers->HL.l & 0x80);  registers->HL.l >>= 1; registers->HL.l ^= bit7; val = registers->HL.l; break;
-	case SRA_HL:
-		val = memory->ReadMem(registers->HL.hl); if (val & 1) { memory->setFlag(C); }; bit7 = (val & 0x80); val >>= 1; val ^= bit7; memory->WriteMem(registers->HL.hl, val); break;
-	default:
-		return;
+		case SRA_A:
+			if (registers->AF.a & 1) { memory->setFlag(C); }; bit7 = (registers->AF.a & 0x80); registers->AF.a >>= 1; registers->AF.a ^= bit7; val = registers->AF.a; break;
+		case SRA_B:
+			if (registers->BC.b & 1) { memory->setFlag(C); }; bit7 = (registers->BC.b & 0x80); registers->BC.b >>= 1; registers->BC.b ^= bit7; val = registers->BC.b; break;
+		case SRA_C:
+			if (registers->BC.c & 1) { memory->setFlag(C); }; bit7 = (registers->BC.c & 0x80); registers->BC.c >>= 1; registers->BC.c ^= bit7; val = registers->BC.c; break;
+		case SRA_D:
+			if (registers->DE.d & 1) { memory->setFlag(C); }; bit7 = (registers->DE.d & 0x80); registers->DE.d >>= 1; registers->DE.d ^= bit7; val = registers->DE.d; break;
+		case SRA_E:
+			if (registers->DE.e & 1) { memory->setFlag(C); }; bit7 = (registers->DE.e & 0x80); registers->DE.e >>= 1; registers->DE.e ^= bit7; val = registers->DE.e; break;
+		case SRA_H:
+			if (registers->HL.h & 1) { memory->setFlag(C); }; bit7 = (registers->HL.h & 0x80); registers->HL.h >>= 1; registers->HL.h ^= bit7; val = registers->HL.h; break;
+		case SRA_L:
+			if (registers->HL.l & 1) { memory->setFlag(C); }; bit7 = (registers->HL.l & 0x80);  registers->HL.l >>= 1; registers->HL.l ^= bit7; val = registers->HL.l; break;
+		case SRA_HL:
+			val = memory->ReadMem(registers->HL.hl); if (val & 1) { memory->setFlag(C); }; bit7 = (val & 0x80); val >>= 1; val ^= bit7; memory->WriteMem(registers->HL.hl, val); break;
+		default:
+			return;
 	}
 
 	if (val == 0) {
@@ -1200,22 +1199,22 @@ void Commands::SLA(uint8_t opcode) {
 	uint8_t val = 0;
 
 	switch (opcode) {
-	case SLA_A:
-		if (registers->AF.a & 0x80) { memory->setFlag(C); }; registers->AF.a <<= 1; val = registers->AF.a; break;
-	case SLA_B:
-		if (registers->BC.b & 0x80) { memory->setFlag(C); }; registers->BC.b <<= 1; val = registers->BC.b; break;
-	case SLA_C:
-		if (registers->BC.c & 0x80) { memory->setFlag(C); }; registers->BC.c <<= 1; val = registers->BC.c; break;
-	case SLA_D:
-		if (registers->DE.d & 0x80) { memory->setFlag(C); }; registers->DE.d <<= 1; val = registers->DE.d; break;
-	case SLA_E:
-		if (registers->DE.e & 0x80) { memory->setFlag(C); }; registers->DE.e <<= 1; val = registers->DE.e; break;
-	case SLA_H:
-		if (registers->HL.h & 0x80) { memory->setFlag(C); }; registers->HL.h <<= 1; val = registers->HL.h; break;
-	case SLA_L:
-		if (registers->HL.l & 0x80) { memory->setFlag(C); }; registers->HL.l <<= 1; val = registers->HL.l; break;
-	case SLA_HL:
-		val = memory->ReadMem(registers->HL.hl); if (val & 0x80) { memory->setFlag(C); }; val <<= 1; memory->WriteMem(registers->HL.hl, val); break;
+		case SLA_A:
+			if (registers->AF.a & 0x80) { memory->setFlag(C); }; registers->AF.a <<= 1; val = registers->AF.a; break;
+		case SLA_B:
+			if (registers->BC.b & 0x80) { memory->setFlag(C); }; registers->BC.b <<= 1; val = registers->BC.b; break;
+		case SLA_C:
+			if (registers->BC.c & 0x80) { memory->setFlag(C); }; registers->BC.c <<= 1; val = registers->BC.c; break;
+		case SLA_D:
+			if (registers->DE.d & 0x80) { memory->setFlag(C); }; registers->DE.d <<= 1; val = registers->DE.d; break;
+		case SLA_E:
+			if (registers->DE.e & 0x80) { memory->setFlag(C); }; registers->DE.e <<= 1; val = registers->DE.e; break;
+		case SLA_H:
+			if (registers->HL.h & 0x80) { memory->setFlag(C); }; registers->HL.h <<= 1; val = registers->HL.h; break;
+		case SLA_L:
+			if (registers->HL.l & 0x80) { memory->setFlag(C); }; registers->HL.l <<= 1; val = registers->HL.l; break;
+		case SLA_HL:
+			val = memory->ReadMem(registers->HL.hl); if (val & 0x80) { memory->setFlag(C); }; val <<= 1; memory->WriteMem(registers->HL.hl, val); break;
 	}
 
 	if (val == 0) {
