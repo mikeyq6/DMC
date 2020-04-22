@@ -515,32 +515,34 @@ void Commands::INC(uint8_t opcode) {
 		memory->resetFlag(H);
 	}
 	uint8_t val = 0;
+	uint8_t acc = 0;
 
 	switch (opcode) {
-	case INC_A:
-		val = registers->AF.a; registers->AF.a++; if (registers->AF.a == 0) { memory->setFlag(Z); } break;
-	case INC_B:
-		val = registers->BC.b; registers->BC.b++; if (registers->BC.b == 0) { memory->setFlag(Z); }  break;
-	case INC_C:
-		val = registers->BC.c; registers->BC.c++; if (registers->BC.c == 0) { memory->setFlag(Z); }  break;
-	case INC_D:
-		val = registers->DE.d; registers->DE.d++; if (registers->DE.d == 0) { memory->setFlag(Z); }  break;
-	case INC_E:
-		val = registers->DE.e; registers->DE.e++; if (registers->DE.e == 0) { memory->setFlag(Z); }  break;
-	case INC_H:
-		val = registers->HL.h; registers->HL.h++; if (registers->HL.h == 0) { memory->setFlag(Z); }  break;
-	case INC_L:
-		val = registers->HL.l; registers->HL.l++; if (registers->HL.l == 0) { memory->setFlag(Z); }  break;
-	case INC__HL_:
-		val = memory->ReadMem(registers->HL.hl); memory->WriteMem(registers->HL.hl, val + 1); if ((val + 1) == 0) { memory->setFlag(Z); }  break;
-	case INC_BC:
-		registers->BC.bc++; break;
-	case INC_DE:
-		registers->DE.de++; break;
-	case INC_HL:
-		registers->HL.hl++; break;
-	case INC_SP:
-		registers->SP++; break;
+		case INC_A:
+			val = registers->AF.a; registers->AF.a++; if (registers->AF.a == 0) { memory->setFlag(Z); } break;
+		case INC_B:
+			val = registers->BC.b; registers->BC.b++; if (registers->BC.b == 0) { memory->setFlag(Z); }  break;
+		case INC_C:
+			val = registers->BC.c; registers->BC.c++; if (registers->BC.c == 0) { memory->setFlag(Z); }  break;
+		case INC_D:
+			val = registers->DE.d; registers->DE.d++; if (registers->DE.d == 0) { memory->setFlag(Z); }  break;
+		case INC_E:
+			val = registers->DE.e; registers->DE.e++; if (registers->DE.e == 0) { memory->setFlag(Z); }  break;
+		case INC_H:
+			val = registers->HL.h; registers->HL.h++; if (registers->HL.h == 0) { memory->setFlag(Z); }  break;
+		case INC_L:
+			val = registers->HL.l; registers->HL.l++; if (registers->HL.l == 0) { memory->setFlag(Z); }  break;
+		case INC__HL_:
+			acc = val = memory->ReadMem(registers->HL.hl);
+			memory->WriteMem(registers->HL.hl, ++acc); if (acc == 0) { memory->setFlag(Z); }  break;
+		case INC_BC:
+			registers->BC.bc++; break;
+		case INC_DE:
+			registers->DE.de++; break;
+		case INC_HL:
+			registers->HL.hl++; break;
+		case INC_SP:
+			registers->SP++; break;
 	}
 
 	if (flagsAffected) {
