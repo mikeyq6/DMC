@@ -114,7 +114,16 @@ int main(int argc, char* argv[]) {
 		c = (int)fgetc(f);
 		sp += c << 8;
 		if (!silentMode)
-			cout << ", SP:" << hex << setw(4) << setfill('0') << sp << endl;
+			cout << ", SP:" << hex << setw(4) << setfill('0') << sp;
+		c = (int)fgetc(f);
+		if (!silentMode)
+			cout << ", IME:" << hex << setw(1) << setfill('0') << c;
+		c = (int)fgetc(f);
+		if (!silentMode)
+			cout << ", IE:" << hex << setw(1) << setfill('0') << c;
+		c = (int)fgetc(f);
+		if (!silentMode)
+			cout << ", IF:" << hex << setw(1) << setfill('0') << c << endl;
 
 		if (skipUntil == 0) {
 			char v = getchar();

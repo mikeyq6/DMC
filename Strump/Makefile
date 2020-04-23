@@ -7,10 +7,10 @@ LFLAGS=-lSDL2 -lSDL2_image -lSDL2_ttf
 SUPPRESS=-Wno-unused-variable -Wno-unused-private-field
 
 debug:
-	${CC} -Wall ${SUPPRESS} -I${SDL2dir} ${LFLAGS} -o strump ${OBJS}
+	${CC} -Wall ${SUPPRESS} -DRUNTESTS=1 -I${SDL2dir} ${LFLAGS} -o strump ${OBJS}
 
 log:
-	${CC} -Wall ${SUPPRESS} -DLOG_COMMANDS=1 -I${SDL2dir} ${LFLAGS} -o strump ${OBJS}
+	${CC} -Wall ${SUPPRESS} -DLOG_COMMANDS=1 -DRUNTESTS=1 -I${SDL2dir} ${LFLAGS} -o strump ${OBJS}
 
 release:
 	${CC} -Wall ${SUPPRESS} -DREAL_TIME_CPU=1 -I${SDL2dir} ${LFLAGS} -o strump ${OBJS}

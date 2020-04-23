@@ -152,16 +152,6 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 				SDL_Log("Quit");
 				isRunning = false;
 				break;
-			case SDLK_s: // Start/end step mode
-				SDL_Log("Step mode");
-				if (cpu->StepModeActive())
-					cpu->DeactivateStepMode();
-				else
-					cpu->ActivateStepMode();
-				break;
-			case SDLK_SPACE: // Step
-				if (cpu->StepModeActive())
-					cpu->NextStep();
 			case SDLK_t: // Toggle colour mode
 				draw->ToggleColourMode();
 				break;

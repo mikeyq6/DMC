@@ -62,12 +62,12 @@ constexpr auto BIT7 = 0x80;
 #endif
 
 
-#define RUNTESTS
-//#define STEPTHROUGH 0
+// #define RUNTESTS
 // #define LOG_COMMANDS 0
 //#define LOG_STATS 1
 //#define DEBUG_TIMER
 //#define PRINT_COMMANDS 1
+// #define REAL_TIME_CPU 0
 
 
 class CPU
@@ -126,7 +126,7 @@ private:
 	mutex cpu_mutex;
 
 	uint32_t InstructionStats[512];
-	uint8_t Halted, Stopped, WillDisableInterrupts, WillEnableInterrupts, InterruptsEnabled;
+	uint8_t Halted, Stopped, WillDisableInterrupts, WillEnableInterrupts, IME;
 	ROMInfo* rominfo;
 	Commands* commands;
 	Memory* memory;
@@ -157,29 +157,17 @@ private:
 	uint8_t param2 = 0;
 	uint8_t inst = 0;
 	string lastInst;
-
+	
+	bool doHaltBug = false;
 	bool isRunning = false;
 	bool isPaused = false;
+	bool isHalting = false;
 	bool stepModeActive = false;
 	bool runNextStep = false;
 
-#if defined STEPTHROUGH || defined LOG_COMMANDS
-	FILE* clog;
-#endif
-#ifdef STEPTHROUGH 
-	void DisplayState();
-	void LogState();
-	uint64_t skip = 0;
-	int skipuntil = 0;
-	short tempShow = 1;
-	uint8_t bdata[BACKGROUNDTILES * 16];
-	FILE* fp;
-	string command = "";
-	string instruction = "";
-	long long int iCounter = 0;
-#endif
 #ifdef LOG_COMMANDS
-	void LogCommand(uint16_t* pc, uint8_t* inst, uint8_t* param1, uint8_t* param2, short* params);
+	FILE* clog;
+	void LogCommand(uint16_t* pc, uint8_t* inst, uint8_t* param1, uint8_t* param2, short* params, uint8_t* ime, uint8_t* _if, uint8_t* ie);
 #endif
 #ifdef LOG_STATS
 	FILE* statlog;
