@@ -98,7 +98,6 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 
 	if (opcode == ADD_HL_BC || opcode == ADD_HL_DE || opcode == ADD_HL_HL || opcode == ADD_HL_SP) {
 		if (IsHalfCarry(oldHL, val16))
-		//if (((oldHL & 0xfff) + (val16 & 0xfff)) > 0xfff)
 			memory->setFlag(H);
 		else
 			memory->resetFlag(H);
@@ -111,7 +110,6 @@ void Commands::ADD(uint8_t opcode, uint8_t param) {
 	}
 	else if(opcode != ADD_SP_n){
 		if (IsHalfCarry(a, val))
-		//if ((((a & 0xf) + (val & 0xf)) & 0x10) == 0x10)
 			memory->setFlag(H);
 		else
 			memory->resetFlag(H);
@@ -138,7 +136,7 @@ void Commands::ADC(uint8_t opcode, uint8_t param) {
 	uint32_t sum = 0;
 
 	a = registers->AF.a;
-	short flag = memory->getFlag(C);
+	uint8_t flag = memory->getFlag(C);
 
 	switch (opcode) {
 		case ADC_A_A:
@@ -1247,9 +1245,6 @@ void Commands::RRA() {
 	if (c) {
 		memory->setFlag(C);
 	}
-	if (registers->AF.a == 0) {
-		memory->setFlag(Z);
-	}
 }
 void Commands::RLCA_() {
 	memory->resetFlag(Z);
@@ -1276,9 +1271,6 @@ void Commands::RLA_() {
 	registers->AF.a += oldC;
 	if (c) {
 		memory->setFlag(C);
-	}
-	if (registers->AF.a == 0) {
-		memory->setFlag(Z);
 	}
 }
 
