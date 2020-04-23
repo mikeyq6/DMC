@@ -50,3 +50,6 @@ Strump\Debug
 Strump/strump
 Strump/commands
 roms
+Strump/out.log
+LogReader/LogReader
+.vscode
