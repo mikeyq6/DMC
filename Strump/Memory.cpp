@@ -60,9 +60,7 @@ void Memory::internal_setFlag(uint8_t flag) {
 	*zreg |= flag;
 }
 void Memory::internal_resetFlag(uint8_t flag) {
-	uint8_t mask = ~flag;
-	*zreg &= mask;
-	//printf("mask: %x, flag: %x, flags: %x\n", mask, flag, flags);
+	*zreg &= (~flag);
 }
 uint8_t Memory::getFlag(uint8_t flag) {
 	return internal_getFlag(flag);
