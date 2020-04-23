@@ -27,11 +27,12 @@ int main(int argc, char* argv[]) {
 
 	int params = 0;
 	int skipUntil = 0;
+	int skipUntilCommand = -1;
 	bool silentMode = false;
 	string regcheck = "";
 	uint16_t regval = 0;
 
-	int c = 0, p1 = 0, p2 = 0, pc = 0, reg = 0;
+	int c = 0, p1 = 0, p2 = 0, pc = 0, reg = 0, tmp = 0;
 	uint16_t af = 0, bc = 0, de = 0, hl = 0, sp = 0;
 	do {
 		c = (int)fgetc(f);
@@ -62,6 +63,18 @@ int main(int argc, char* argv[]) {
 				(regcheck.compare("d") == 0 && ((de >> 8) & 0xff) == (regval & 0xff)) || (regcheck.compare("e") == 0 && (de & 0xff) == (regval & 0xff))
 				) {
 				skipUntil = 0; silentMode = false; regcheck = "";
+			}
+		}
+		if(skipUntilCommand > -1) {
+			//cout << skipUntilCommand << " :: " << c << endl;
+			tmp = c;
+			if(c == 0xcb) {
+				tmp = p1;
+			}
+			if(tmp == skipUntilCommand || (c == 0xcb && (tmp + 0xff) == skipUntilCommand)) {
+				skipUntil = 0;
+				skipUntilCommand = -1;
+				silentMode = false;
 			}
 		}
 
@@ -104,7 +117,7 @@ int main(int argc, char* argv[]) {
 			cout << ", SP:" << hex << setw(4) << setfill('0') << sp << endl;
 
 		if (skipUntil == 0) {
-			char v = getch();
+			char v = getchar();
 			switch (v) {
 				case 's':
 					cin >> hex >> skipUntil; break;
@@ -123,6 +136,26 @@ int main(int argc, char* argv[]) {
 					cin >> regcheck;
 					cout << "Run silently until " << regcheck << " hits: ";
 					cin >> hex >> regval; 
+					silentMode = true; break;
+				case 'i':
+					skipUntil = -1;
+					cout << "Enter command: ";
+					cin >> hex >> skipUntilCommand;
+					if(skipUntilCommand == 0xcb) {
+						cout << "Enter secondary command: ";
+						cin >> hex >> skipUntilCommand;
+						skipUntilCommand += 0xff;
+					}
+					silentMode = false; break;
+				case 'I':
+					skipUntil = -1;
+					cout << "Enter command: ";
+					cin >> hex >> skipUntilCommand;
+					if(skipUntilCommand == 0xcb) {
+						cout << "Enter secondary command: ";
+						cin >> hex >> skipUntilCommand;
+						skipUntilCommand += 0xff;
+					}
 					silentMode = true; break;
 			}
 		}
@@ -197,7 +230,7 @@ string CodeToString(uint8_t opcode, uint16_t PC, uint16_t param1, uint16_t param
 
 	switch (opcode) {
 		case CB:
-			ss << CBCodeToString(param1); break;
+			ss << " " << CBCodeToString(param1); break;
 		case NOP:
 			ss << " NOP "; break;
 		case DAA:
