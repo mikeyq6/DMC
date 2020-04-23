@@ -1485,68 +1485,36 @@ void Commands::DAA_() {
 	uint8_t cFlag = memory->getFlag(C);
 	uint8_t nFlag = memory->getFlag(N);
 
-	memory->resetFlag(C);
+	// Always reset H
 	memory->resetFlag(H);
 
-	//uint32_t temp = registers->AF.a;
-
-	//if (!nFlag) {  // after an addition, adjust if (half-)carry occurred or if result is out of bounds
-	//	if (hFlag || (registers->AF.a & 0xf) > 0x09) { registers->AF.a += 0x6; temp = registers->AF.a + 0x6; }
-	//	if (cFlag || (registers->AF.a > 0x9f)) {
-	//		registers->AF.a += 0x60; 
-	//		temp = registers->AF.a + 0x60;
-	//	}
-	//}
-	//else {  // after a subtraction, only adjust if (half-)carry occurredq  
-	//	if (hFlag) { registers->AF.a -= 0x6; }
-	//	if (cFlag) { registers->AF.a -= 0x60; }
-	//}
-
-	//if (registers->AF.a == 0) {
-	//	memory->setFlag(Z);
-	//}
-	//if (temp > 0xff) {
- 	//	memory->setFlag(C);
-	//}
-
-	uint8_t correction = 0;
-	if (hFlag || (!nFlag && (registers->AF.a & 0xf) > 9)) {
-		correction |= 0x6;
+	/* This attempt came from here: https://forums.nesdev.com/viewtopic.php?t=15944 */
+	uint8_t a = registers->AF.a;
+	// note: assumes a is a uint8_t and wraps from 0xff to 0
+	if (!nFlag) {  // after an addition, adjust if (half-)carry occurred or if result is out of bounds
+		if (cFlag || a > 0x99) { 
+			a += 0x60; 
+			memory->setFlag(C); 
+		}
+		if (hFlag || (a & 0x0f) > 0x09) { 
+			a += 0x6; 
+		}
+	} else {  // after a subtraction, only adjust if (half-)carry occurred
+		if (cFlag) { 
+			a -= 0x60; 
+		}
+		if (hFlag) { 
+			a -= 0x6; 
+		}
 	}
-	if (cFlag || (!nFlag && registers->AF.a > 0x99)) {
-		correction |= 0x60;
-		memory->setFlag(C);
-	}
-	registers->AF.a += nFlag ? -correction : correction;
 
-	if (registers->AF.a == 0) {
+	// set z flag
+	if(a == 0) 
 		memory->setFlag(Z);
-	}
+	else 
+		memory->resetFlag(Z);
 
-
-	//let correction = 0;
-
-	//let setFlagC = 0;
-	//if (flagH || (!flagN && (value & 0xf) > 9)) {
-	//	correction |= 0x6;
-	//}
-
-	//if (flagC || (!flagN && value > 0x99)) {
-	//	correction |= 0x60;
-	//	setFlagC = FLAG_C;
-	//}
-
-	//value += flagN ? -correction : correction;
-
-	//value &= 0xff;
-
-	//const setFlagZ = value == = 0 ? FLAG_Z : 0;
-
-	//regF &= ~(FLAG_H | FLAG_Z | FLAG_C);
-	//regF |= setFlagC | setFlagZ;
-
-	//return { output, carry, zero };
-
+	registers->AF.a = a;
 }
 
 const string Commands::CodeToString(uint8_t opcode, uint16_t PC, uint16_t param1, uint16_t param2) {
