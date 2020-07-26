@@ -1065,143 +1065,144 @@ uint8_t CPU::GetCycles(uint8_t opcode) {
 	uint8_t cycles = 4;
 
 	switch (opcode) {
-	case CALL_nn:
-		cycles = 24; break;
-	case LD_nn_SP:
-		cycles = 20; break;
-	case RET:
-	case RETI:
-	case RST_00H:
-	case RST_08H:
-	case RST_10H:
-	case RST_18H:
-	case RST_20H:
-	case RST_28H:
-	case RST_30H:
-	case RST_38H:
-	case PUSH_AF:
-	case PUSH_BC:
-	case PUSH_DE:
-	case PUSH_HL:
-	case JP_nn:
-	case ADD_SP_n:
-	case LD_nn_A:
-	case LD_A_nn:
-		cycles = 16; break;
-	case LD_BC_nn:
-	case LD_DE_nn:
-	case LD_HL_nn:
-	case LD_SP_nn:
-	case JR_n:
-	case LDH_A_n:
-	case LDH_n_A:
-	case POP_AF:
-	case POP_BC:
-	case POP_DE:
-	case POP_HL:
-	case LD_HL_SP_n:
-	case LD__HL__n:
-	case CB:
-		cycles = 12; break;
-	case LD_BC_A:
-	case LD_DE_A:
-	case LD_HLM_A:
-	case LD_HLP_A:
-	case LD_A_BC:
-	case LD_A_DE:
-	case LD_A_HLP:
-	case LD_A_HLM:
-	case INC_BC:
-	case INC_DE:
-	case INC_HL:
-	case INC_SP:
-	case DEC_BC:
-	case DEC_DE:
-	case DEC_HL:
-	case DEC_SP:
-	case LD_A_n:
-	case LD_B_n:
-	case LD_C_n:
-	case LD_D_n:
-	case LD_E_n:
-	case LD_H_n:
-	case LD_L_n:
-	case LD_A_HL:
-	case LD_B_HL:
-	case LD_C_HL:
-	case LD_D_HL:
-	case LD_E_HL:
-	case LD_H_HL:
-	case LD_L_HL:
-	case LD_HL_A:
-	case LD_HL_B:
-	case LD_HL_C:
-	case LD_HL_D:
-	case LD_HL_E:
-	case LD_HL_H:
-	case LD_HL_L:
-	case LD__C__A:
-	case LD_A__C_:
-	case LD_SP_HL:
-	case ADD_HL_BC:
-	case ADD_HL_DE:
-	case ADD_HL_HL:
-	case ADD_HL_SP:
-	case ADD_A_n:
-	case ADD_A_HL:
-	case ADC_A_n:
-	case ADC_A_HL:
-	case SUB_n:
-	case SUB_HL:
-	case SBC_A_n:
-	case SBC_A_HL:
-	case AND_n:
-	case AND_HL:
-	case OR_n:
-	case OR_HL:
-	case XOR_n:
-	case XOR_HL:
-	case CP_n:
-	case CP_HL:
-		cycles = 8; break;
-	case JR_Z_n:
-		if (memory->getFlag(Z)) { cycles = 12; }
-		else { cycles = 8; }; break;
-	case JR_C_n:
-		if (memory->getFlag(C)) { cycles = 12; }
-		else { cycles = 8; }; break;
-	case JR_NZ_n:
-		if (!memory->getFlag(Z)) { cycles = 12; }
-		else { cycles = 8; }; break;
-	case JR_NC_n:
-		if (!memory->getFlag(C)) { cycles = 12; }
-		else { cycles = 8; }; break;
-	case RET_Z:
-		if (memory->getFlag(Z)) { cycles = 20; }
-		else { cycles = 8; }; break;
-	case RET_C:
-		if (memory->getFlag(C)) { cycles = 20; }
-		else { cycles = 8; }; break;
-	case RET_NZ:
-		if (!memory->getFlag(Z)) { cycles = 20; }
-		else { cycles = 8; }; break;
-	case RET_NC:
-		if (!memory->getFlag(C)) { cycles = 20; }
-		else { cycles = 8; }; break;
-	case CALL_C_nn:
-		if (memory->getFlag(C)) { cycles = 24; }
-		else { cycles = 12; }; break;
-	case CALL_Z_nn:
-		if (memory->getFlag(Z)) { cycles = 24; }
-		else { cycles = 12; }; break;
-	case CALL_NC_nn:
-		if (!memory->getFlag(C)) { cycles = 24; }
-		else { cycles = 12; }; break;
-	case CALL_NZ_nn:
-		if (!memory->getFlag(Z)) { cycles = 24; }
-		else { cycles = 12; }; break;
-	default:
-		cycles = 4; break;
+		case RST_00H:
+		case RST_08H:
+		case RST_10H:
+		case RST_18H:
+		case RST_20H:
+		case RST_28H:
+		case RST_30H:
+		case RST_38H:
+			cycles = 32; break;
+		case CALL_nn:
+			cycles = 24; break;
+		case LD_nn_SP:
+			cycles = 20; break;
+		case RET:
+		case RETI:
+		case PUSH_AF:
+		case PUSH_BC:
+		case PUSH_DE:
+		case PUSH_HL:
+		case JP_nn:
+		case ADD_SP_n:
+		case LD_nn_A:
+		case LD_A_nn:
+			cycles = 16; break;
+		case LD_BC_nn:
+		case LD_DE_nn:
+		case LD_HL_nn:
+		case LD_SP_nn:
+		case JR_n:
+		case LDH_A_n:
+		case LDH_n_A:
+		case POP_AF:
+		case POP_BC:
+		case POP_DE:
+		case POP_HL:
+		case LD_HL_SP_n:
+		case LD__HL__n:
+		case CB:
+			cycles = 12; break;
+		case LD_BC_A:
+		case LD_DE_A:
+		case LD_HLM_A:
+		case LD_HLP_A:
+		case LD_A_BC:
+		case LD_A_DE:
+		case LD_A_HLP:
+		case LD_A_HLM:
+		case INC_BC:
+		case INC_DE:
+		case INC_HL:
+		case INC_SP:
+		case DEC_BC:
+		case DEC_DE:
+		case DEC_HL:
+		case DEC_SP:
+		case LD_A_n:
+		case LD_B_n:
+		case LD_C_n:
+		case LD_D_n:
+		case LD_E_n:
+		case LD_H_n:
+		case LD_L_n:
+		case LD_A_HL:
+		case LD_B_HL:
+		case LD_C_HL:
+		case LD_D_HL:
+		case LD_E_HL:
+		case LD_H_HL:
+		case LD_L_HL:
+		case LD_HL_A:
+		case LD_HL_B:
+		case LD_HL_C:
+		case LD_HL_D:
+		case LD_HL_E:
+		case LD_HL_H:
+		case LD_HL_L:
+		case LD__C__A:
+		case LD_A__C_:
+		case LD_SP_HL:
+		case ADD_HL_BC:
+		case ADD_HL_DE:
+		case ADD_HL_HL:
+		case ADD_HL_SP:
+		case ADD_A_n:
+		case ADD_A_HL:
+		case ADC_A_n:
+		case ADC_A_HL:
+		case SUB_n:
+		case SUB_HL:
+		case SBC_A_n:
+		case SBC_A_HL:
+		case AND_n:
+		case AND_HL:
+		case OR_n:
+		case OR_HL:
+		case XOR_n:
+		case XOR_HL:
+		case CP_n:
+		case CP_HL:
+			cycles = 8; break;
+		case JR_Z_n:
+			if (memory->getFlag(Z)) { cycles = 12; }
+			else { cycles = 8; }; break;
+		case JR_C_n:
+			if (memory->getFlag(C)) { cycles = 12; }
+			else { cycles = 8; }; break;
+		case JR_NZ_n:
+			if (!memory->getFlag(Z)) { cycles = 12; }
+			else { cycles = 8; }; break;
+		case JR_NC_n:
+			if (!memory->getFlag(C)) { cycles = 12; }
+			else { cycles = 8; }; break;
+		case RET_Z:
+			if (memory->getFlag(Z)) { cycles = 20; }
+			else { cycles = 8; }; break;
+		case RET_C:
+			if (memory->getFlag(C)) { cycles = 20; }
+			else { cycles = 8; }; break;
+		case RET_NZ:
+			if (!memory->getFlag(Z)) { cycles = 20; }
+			else { cycles = 8; }; break;
+		case RET_NC:
+			if (!memory->getFlag(C)) { cycles = 20; }
+			else { cycles = 8; }; break;
+		case CALL_C_nn:
+			if (memory->getFlag(C)) { cycles = 24; }
+			else { cycles = 12; }; break;
+		case CALL_Z_nn:
+			if (memory->getFlag(Z)) { cycles = 24; }
+			else { cycles = 12; }; break;
+		case CALL_NC_nn:
+			if (!memory->getFlag(C)) { cycles = 24; }
+			else { cycles = 12; }; break;
+		case CALL_NZ_nn:
+			if (!memory->getFlag(Z)) { cycles = 24; }
+			else { cycles = 12; }; break;
+		default:
+			cycles = 4; break;
 
 	}
 
@@ -1388,6 +1389,49 @@ void CPU::InputProcess(uint8_t type) {
 		case INPUT_DOWN_UP:
 			joypadState->ButtonUp(joypadState->DOWN_BUTTON); break;
 	}
+}
+void CPU::GetState(uint8_t *state) {
+	uint32_t index = 0;
+	*(state+index++) = registers->AF.a; 
+	*(state+index++) = registers->AF.f;
+	*(state+index++) = registers->BC.b;
+	*(state+index++) = registers->BC.c;
+	*(state+index++) = registers->DE.d;
+	*(state+index++) = registers->DE.e;
+	*(state+index++) = registers->HL.h;
+	*(state+index++) = registers->HL.l;
+	*(state+index++) = registers->SP & 0xff;
+	*(state+index++) = (registers->SP >> 8) & 0xff;
+	*(state+index++) = registers->PC & 0xff;
+	*(state+index++) = (registers->PC >> 8) & 0xff;
+	*(state+index++) = registers->rDiv & 0xff;
+	*(state+index++) = (registers->rDiv >> 8) & 0xff;
+	*(state+index++) = registers->sCounter & 0xff;
+	*(state+index++) = (registers->sCounter >> 8) & 0xff;
+	*(state+index++) = (registers->sCounter >> 16) & 0xff;
+	*(state+index++) = (registers->sCounter >> 24) & 0xff;
+
+	timer->GetState(state, REGISTERS_STATE_SIZE);
+	memory->GetState(state, REGISTERS_STATE_SIZE + TIMER_STATE_SIZE);
+}
+
+void CPU::SetState(uint8_t *state) {
+	uint32_t index = 0;
+	registers->AF.a = *(state+index++);
+	registers->AF.f = *(state+index++);
+	registers->BC.b = *(state+index++);
+	registers->BC.c = *(state+index++);
+	registers->DE.d = *(state+index++);
+	registers->DE.e = *(state+index++);
+	registers->HL.h = *(state+index++);
+	registers->HL.l = *(state+index++);
+	registers->SP = *(state+index) + (*(state+index+1) << 8); index += 2;
+	registers->PC = *(state+index) + (*(state+index+1) << 8); index += 2;
+	registers->rDiv = *(state+index) + (*(state+index+1) << 8); index += 2;
+	registers->sCounter = *(state+index) + (*(state+index+1) << 8) + (*(state+index+2) << 16) + (*(state+index+3) << 24);
+
+	timer->SetState(state, REGISTERS_STATE_SIZE);
+	memory->SetState(state, REGISTERS_STATE_SIZE + TIMER_STATE_SIZE);
 }
 
 #ifdef LOG_COMMANDS

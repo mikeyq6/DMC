@@ -88,3 +88,29 @@ void Memory::ResetBit(uint8_t* val, uint8_t bit) {
 uint8_t* Memory::GetPointerTo(uint16_t location) {
 	return memory + location;
 }
+void Memory::GetState(uint8_t* state, uint32_t index) {
+	for(int i=0; i<RAM_SIZE; i++) {
+		*(state+index+i) = memory[i];
+	}
+	for(int i=0; i<RAM_BANK_SIZE; i++) {
+		*(state+index+i) = RamBankData[i];
+	}
+	index = RAM_SIZE + RAM_BANK_SIZE;
+	*(state+index) = (uint8_t)RamEnabled;
+	*(state+index+1) = (uint8_t)RomBanking;
+	*(state+index+2) = (uint8_t)RomBank;
+	*(state+index+3) = (uint8_t)RamBank;
+}
+void Memory::SetState(uint8_t* state, uint32_t index) {
+	for(int i=0; i<RAM_SIZE; i++) {
+		memory[i] = *(state+index+i);
+	}
+	for(int i=0; i<RAM_BANK_SIZE; i++) {
+		RamBankData[i] = *(state+index+i);
+	}
+	index = RAM_SIZE + RAM_BANK_SIZE;
+	RamEnabled = *(state+index);
+	RomBanking = *(state+index+1);
+	RomBank = *(state+index+2);
+	RamBank = *(state+index+3);
+}

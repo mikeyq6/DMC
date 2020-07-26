@@ -67,3 +67,24 @@ void Timer::UpdateDivRegister(uint8_t cycles) {
 		(*div) = currentDiv + 1;
 	}
 }
+
+void Timer::GetState(uint8_t* state, uint32_t index) {
+	*(state+index++) = *tac;
+	*(state+index++) = *tima;
+	*(state+index++) = *tma;
+	*(state+index++) = *div;
+	for(int i=0; i<4; i++) {
+		*(state+index) = (timerCounter >> (i * 8)) & 0xff;
+		*(state + 4 + index++) = (divCounter >> (i * 8)) & 0xff;
+	}
+}
+void Timer::SetState(uint8_t* state, uint32_t index) {
+	*tac = *(state+index++);
+	*tima = *(state+index++);
+	*tma = *(state+index++);
+	*div = *(state+index++);
+	for(int i=0; i<4; i++) {
+		*(state + index + i) = (timerCounter >> (i * 8)) & 0xff;
+		*(state + 4 + index + i) = (divCounter >> (i * 8)) & 0xff;
+	}
+}

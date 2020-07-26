@@ -28,6 +28,10 @@ constexpr auto I_Timer = 0x50;
 constexpr auto I_Serial = 0x58;
 constexpr auto I_Joypad = 0x60;
 
+constexpr auto TIMER_STATE_SIZE = 12;
+constexpr auto REGISTERS_STATE_SIZE = 18;
+constexpr auto RAM_STATE_SIZE = 18;
+
 constexpr uint8_t A_BUTTON_DOWN = 4;
 constexpr uint8_t B_BUTTON_DOWN = 5;
 constexpr uint8_t SELECT_BUTTON_DOWN = 6;
@@ -121,6 +125,9 @@ public:
 
 	// Controls
 	void InputProcess(uint8_t type);
+	
+	void GetState(uint8_t *state);
+	void SetState(uint8_t *state);
 
 private:
 	mutex cpu_mutex;

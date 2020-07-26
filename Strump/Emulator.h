@@ -11,7 +11,8 @@ private:
 	CPU* cpu;
 	FILE* fp;
 	Draw* draw;
-	const char* cartridgeFileName;
+	string cartridgeFileName;
+	string saveFileName; 
 
 	void handleEvents();
 	void update();
@@ -20,6 +21,9 @@ private:
 	bool isRunning;
 
 	void processKeyEvent(SDL_Event* event);
+
+	void saveGameState();
+	void loadGameState();
 
 public:
 	Emulator(const char* _cartridgeFileName);

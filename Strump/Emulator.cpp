@@ -1,7 +1,8 @@
 #include "Emulator.h"
 
 Emulator::Emulator(const char* _cartridgeFileName) {
-	cartridgeFileName = _cartridgeFileName;
+	string s(_cartridgeFileName);
+	cartridgeFileName = s;
 	draw = NULL;
 
 	cpu = new CPU();
@@ -17,11 +18,13 @@ void Emulator::End() {
 
 bool Emulator::Init() {
 	// Try to open ROM file
-	fp = fopen(cartridgeFileName, "r");
+	fp = fopen(cartridgeFileName.c_str(), "r");
 	if (fp == NULL) {
-		cout << "Coulnd't open file \n" << cartridgeFileName << endl;
+		cout << "Couldn't open file \n" << cartridgeFileName << endl;
 		return false;
 	}
+
+	saveFileName = cartridgeFileName + ".sav";
 
 	isRunning = true;
 
@@ -40,7 +43,7 @@ void Emulator::Start() {
 	cpu_thread.detach();
 
 	draw = new Draw(cpu->GetMemory(), cpu->GetRegisters());
-	draw->drawInit("Illuminati", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, S_WIDTH, S_HEIGHT, false, false, true, true);
+	draw->drawInit(cartridgeFileName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, S_WIDTH, S_HEIGHT, false, false, true, true);
 
 	while (running()) {
 		handleEvents();
@@ -155,7 +158,12 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 			case SDLK_t: // Toggle colour mode
 				draw->ToggleColourMode();
 				break;
-
+			case SDLK_l: // Load state
+				loadGameState();
+				break;
+			case SDLK_s: // Save state
+				saveGameState();
+				break;
 			default:
 				break;
 		}
@@ -164,4 +172,59 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 
 void Emulator::update() {
 	//
+}
+
+void Emulator::saveGameState() {
+	cpu->Pause();
+
+	uint32_t size = RAM_SIZE + RAM_BANK_SIZE + TIMER_STATE_SIZE + REGISTERS_STATE_SIZE + RAM_STATE_SIZE;
+	uint32_t index = 0;
+	uint32_t *pIndex = &index;
+
+	uint8_t* gameState = (uint8_t*)malloc(sizeof(uint8_t) * size);
+	for(int i=0; i<size; i++) {
+		*(gameState + i) = 0;
+	}
+	cpu->GetState(gameState);
+
+	// Try to open ROM file
+	cout << "save file: " << saveFileName << endl;
+	FILE *sfp = fopen(saveFileName.c_str(), "wb");
+	if (sfp == NULL) {
+		cout << "Couldn't open save file \n" << saveFileName << endl;
+	} else {
+		fwrite(gameState, sizeof(uint8_t), sizeof(uint8_t) * size, sfp);
+	}
+	fclose(sfp);
+	free(gameState);
+
+	cpu->Unpause();
+}
+void Emulator::loadGameState() {
+	cpu->Pause();
+
+	uint32_t size = RAM_SIZE + RAM_BANK_SIZE + TIMER_STATE_SIZE + REGISTERS_STATE_SIZE + RAM_STATE_SIZE;
+	uint32_t index = 0;
+	uint32_t *pIndex = &index;
+
+	uint8_t* gameState = (uint8_t*)malloc(sizeof(uint8_t) * size);
+	for(int i=0; i<size; i++) {
+		*(gameState + i) = 0;
+	}
+
+	// Try to open ROM file
+	cout << "save file: " << saveFileName << endl;
+	FILE *sfp = fopen(saveFileName.c_str(), "rb");
+	if (sfp == NULL) {
+		cout << "Couldn't open save file \n" << saveFileName << endl;
+	} else {
+		fread(gameState, sizeof(uint8_t), sizeof(uint8_t) * size, sfp);
+	}
+	fclose(sfp);
+
+	cpu->SetState(gameState);
+
+	free(gameState);
+
+	cpu->Unpause();
 }
