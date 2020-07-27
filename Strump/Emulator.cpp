@@ -86,6 +86,7 @@ void Emulator::handleEvents() {
 
 void Emulator::processKeyEvent(SDL_Event* event) {
 	int alter = event->type == SDL_KEYUP ? 8 : 0;
+	uint16_t mod = SDL_GetModState(); 
 
 	if (event->type == SDL_KEYUP) {
 		switch (event->key.keysym.sym) {
@@ -159,10 +160,14 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 				draw->ToggleColourMode();
 				break;
 			case SDLK_l: // Load state
-				loadGameState();
+				if(SDL_GetModState() & KMOD_SHIFT) {
+					loadGameState();
+				}
 				break;
 			case SDLK_s: // Save state
-				saveGameState();
+				if(SDL_GetModState() & KMOD_SHIFT) {
+					saveGameState();
+				}
 				break;
 			default:
 				break;
