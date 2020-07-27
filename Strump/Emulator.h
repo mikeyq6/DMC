@@ -13,10 +13,12 @@ private:
 	Draw* draw;
 	string cartridgeFileName;
 	string saveFileName; 
+	string windowTitle;
 
 	void handleEvents();
 	void update();
 	bool running() { return isRunning; }
+	void setWindowTitle();
 
 	bool isRunning;
 

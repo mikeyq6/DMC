@@ -25,6 +25,7 @@ bool Emulator::Init() {
 	}
 
 	saveFileName = cartridgeFileName + ".sav";
+	setWindowTitle();
 
 	isRunning = true;
 
@@ -43,7 +44,7 @@ void Emulator::Start() {
 	cpu_thread.detach();
 
 	draw = new Draw(cpu->GetMemory(), cpu->GetRegisters());
-	draw->drawInit(cartridgeFileName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, S_WIDTH, S_HEIGHT, false, false, true, true);
+	draw->drawInit(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, S_WIDTH, S_HEIGHT, false, false, true, true);
 
 	while (running()) {
 		handleEvents();
@@ -53,10 +54,19 @@ void Emulator::Start() {
 	draw->clean();
 
 	cpu->Stop();
+}
 
+void Emulator::setWindowTitle() {
+	windowTitle = cartridgeFileName;
 
-	//printf("\nAny key to quit");
-	//_getch();
+	// Remove any path characters
+	int pos;	
+	while ((pos = windowTitle.find("/")) != string::npos) {
+		windowTitle.erase(0, pos + 1);
+	}
+	if((pos = windowTitle.find(".")) != string::npos) {
+		windowTitle.erase(pos, windowTitle.length() - pos);
+	}
 }
 
 void Emulator::handleEvents() {
