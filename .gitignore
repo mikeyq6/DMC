@@ -46,7 +46,7 @@ LogReader\Debug
 Strump\Debug
 *.gb
 *.gbc
-*.savstrump
+*.sav
 Strump/strump
 Strump/commands
 roms
