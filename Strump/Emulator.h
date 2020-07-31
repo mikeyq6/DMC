@@ -27,6 +27,9 @@ private:
 	void saveGameState();
 	void loadGameState();
 
+	void viewMemory();
+	void editMemory();
+
 public:
 	Emulator(const char* _cartridgeFileName);
 	~Emulator();

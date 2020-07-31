@@ -179,6 +179,13 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 					saveGameState();
 				}
 				break;
+			case SDLK_m: // edit memory
+				if(SDL_GetModState() & KMOD_SHIFT) {
+					editMemory();
+				} else {
+					viewMemory();
+				}
+				break;
 			default:
 				break;
 		}
@@ -240,6 +247,42 @@ void Emulator::loadGameState() {
 	cpu->SetState(gameState);
 
 	free(gameState);
+
+	cpu->Unpause();
+}
+
+void Emulator::viewMemory() {
+	cpu->Pause();
+
+	uint16_t location;
+	uint8_t value;
+
+	cout << "View memory at location: ";
+	cin >> hex >> location;
+	value = cpu->GetMemory()->get(location);
+
+	cout << "Value at location " << hex << setw(4) << setfill('0') << location;
+	cout << ": ";
+	cout << hex << setw(2) << setfill('0') << static_cast<int>(value) << endl;
+
+	cpu->Unpause();
+}
+
+void Emulator::editMemory() {
+	cpu->Pause();
+
+	uint16_t location;
+	int invalue;
+
+	cout << "Edit memory location: ";
+	cin >> hex >> location;
+	cout << "Set value: ";
+	cin >> hex >> invalue;
+	uint8_t value = static_cast<uint8_t>(invalue);
+
+	cout << "Will edit: " << hex << setw(4) << setfill('0') << location;
+	cout << ", set to: " << hex << setw(2) << setfill('0') << static_cast<int>(value) << endl;
+	cpu->GetMemory()->set(location, value);
 
 	cpu->Unpause();
 }
