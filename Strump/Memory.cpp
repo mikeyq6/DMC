@@ -93,7 +93,7 @@ void Memory::GetState(uint8_t* state, uint32_t index) {
 		*(state+index+i) = memory[i];
 	}
 	for(int i=0; i<RAM_BANK_SIZE; i++) {
-		*(state+index+i) = RamBankData[i];
+		*(state+index+i+RAM_SIZE) = RamBankData[i];
 	}
 	index = RAM_SIZE + RAM_BANK_SIZE;
 	*(state+index) = (uint8_t)RamEnabled;
@@ -105,7 +105,7 @@ void Memory::SetState(uint8_t* state, uint32_t index) {
 	for(int i=0; i<RAM_SIZE; i++) {
 		memory[i] = *(state+index+i);
 	}
-	for(int i=0; i<RAM_BANK_SIZE; i++) {
+	for(int i=RAM_SIZE; i<RAM_BANK_SIZE+RAM_SIZE; i++) {
 		RamBankData[i] = *(state+index+i);
 	}
 	index = RAM_SIZE + RAM_BANK_SIZE;
