@@ -16,14 +16,14 @@ Build from the command line with the following:
 `make debug` - for the debug version
 
 # In-application commands
-Use the arrow keys to emulate the joypad
-`z` or `a` - A button
-`x` or `b` - B button
-`1` - SELECT button
-`2` - START button
-`q` - quit
-`t` - toggle black&white/original colour modes
-`S` - save emulator state
-`L` - load emulator state (nb. Sometimes freezes after load, in this case try restarting the emulator)
-`m` - view memory location
-`M` - write to memory location
+* Use the arrow keys to emulate the joypad
+* `z` or `a` - A button
+* `x` or `b` - B button
+* `1` - SELECT button
+* `2` - START button
+* `q` - quit
+* `t` - toggle black&white/original colour modes
+* `S` - save emulator state
+* `L` - load emulator state (nb. Sometimes freezes after load, in this case try restarting the emulator)
+* `m` - view memory location
+* `M` - write to memory location
