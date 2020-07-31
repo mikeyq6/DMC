@@ -430,11 +430,7 @@ uint32_t Draw::GetSpriteColourFor(uint8_t number, uint8_t paletteSwitch) {
 	uint8_t palette = paletteSwitch == 1 ? memory->ReadMem(OBP1) : memory->ReadMem(OBP0);
 	switch (number) {
 		case 0:
-			if (paletteSwitch == 0)
-				return TRANSPARENT;
-			else
-				return GetColourForPaletteNumber(palette & 0x03); 
-			break;
+			return TRANSPARENT; break;
 		case 1:
 			return GetColourForPaletteNumber((palette & 0x0c) >> 2); break;
 		case 2:
