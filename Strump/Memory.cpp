@@ -5,8 +5,8 @@ Memory::~Memory() {}
 
 void Memory::init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState) {
 
-	std::memset(memory, 0, sizeof(memory));
-	std::memset(RamBankData, 0, sizeof(RamBankData));
+	memset(memory, 0, sizeof(memory));
+	memset(RamBankData, 0, sizeof(RamBankData));
 	rominfo = _rominfo;
 	zreg = _zreg;
 	joypadState = _joypadState;

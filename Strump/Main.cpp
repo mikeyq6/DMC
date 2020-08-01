@@ -13,6 +13,8 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
+	cout<<"starting emulator"<<endl;
+
 	Emulator* emulator = new Emulator(argv[1]);
 	if (!emulator->Init())
 		return 2;
