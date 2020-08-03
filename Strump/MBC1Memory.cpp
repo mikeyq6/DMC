@@ -96,13 +96,9 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 		Startup = false;
 	}
 	else if (location >= 0 && location < 0x2000) {
-		//printf("Enabling RAM/ROM: %02x\n", value);
-		if ((value & 0xa) == 0xa) {
-			RamEnabled = true;
-		}
-		else {
-			RamEnabled = false;
-		}
+		// printf("Enabling RAM/ROM: %02x: ", value);
+		RamEnabled = ((value & 0xf) == 0xa);
+		// printf("%s\n", (RamEnabled ? "enabled" : "disabled"));
 	}
 	else if (location >= 0x2000 && location < 0x4000) { // ROM Switching
 		RomBank = value & 0x1f;
