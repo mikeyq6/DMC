@@ -24,6 +24,6 @@ Build from the command line with the following:
 * `q` - quit
 * `t` - toggle black&white/original colour modes
 * `S` - save emulator state
-* `L` - load emulator state (nb. Sometimes freezes after load, in this case try restarting the emulator)
+* `L` - load emulator state
 * `m` - view memory location
 * `M` - write to memory location
