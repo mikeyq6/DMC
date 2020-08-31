@@ -71,15 +71,17 @@ void Draw::render(bool CPUIsStopped) {
 	loadBackground();
 	loadWindow();
 	setBackgroundPixels();
-	if (showBackgroundMap) {
-		setFullBackgroundPixels();
+	if(!CPUIsStopped) {
+		if (showBackgroundMap) {
+			setFullBackgroundPixels();
+		}
+		if (showTileMap) {
+			setTilePixels();
+		}
+		if (SpritesEnabled()) {
+			setSpritePixels();
+		}
 	}
-	if (showTileMap) {
-		setTilePixels();
-	}
-	if (SpritesEnabled())
-		setSpritePixels();
-
 	SDL_UpdateTexture(texture, NULL, screenPixels, Width * sizeof(uint32_t));
 	SDL_RenderClear(renderer);
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
