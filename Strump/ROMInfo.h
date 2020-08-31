@@ -57,6 +57,7 @@ public:
 	void SetCartridgeNames();
 	void SetCartridgeInfo();
 	void DisplayCartridgeInfo();
+	uint8_t GetNumberOfRomBanks();
 
 private:
 	mutex rom_mutex;

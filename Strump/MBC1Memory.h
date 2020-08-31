@@ -14,9 +14,14 @@ protected:
 	uint8_t internalReadMem(uint16_t location) override;
 
 private:
+	virtual uint8_t GetRomBank();
 	const uint8_t MODE_16_8 = 0;
 	const uint8_t MODE_4_32 = 1;
 	bool has_RAM = false, has_Battery = false;
-	uint8_t memoryMode = 0;
+	uint8_t MODE = 0;
+	bool RAMG = false;
+	uint8_t BANK1 = 1;
+	uint8_t BANK2 = 0;
+
 };
 

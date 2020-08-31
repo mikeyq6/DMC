@@ -193,26 +193,26 @@ void ROMInfo::SetCartridgeNames() {
 	}
 
 	switch (CartInfo->romType) {
-	case 0:
-		CartInfo->romTypeName = "256Kbit =  32KByte = 2 banks"; break;
-	case 1:
-		CartInfo->romTypeName = "512Kbit =  64KByte = 4 banks"; break;
-	case 2:
-		CartInfo->romTypeName = "  1Mbit = 128KByte = 8 banks"; break;
-	case 3:
-		CartInfo->romTypeName = "  2Mbit = 256KByte = 16 banks"; break;
-	case 4:
-		CartInfo->romTypeName = "  4Mbit = 512KByte = 32 banks"; break;
-	case 5:
-		CartInfo->romTypeName = "  8Mbit =   1MByte = 64 banks"; break;
-	case 6:
-		CartInfo->romTypeName = " 16Mbit =   2MByte = 128 banks"; break;
-	case 0x52:
-		CartInfo->romTypeName = "  9Mbit = 1.1MByte = 72 banks"; break;
-	case 0x53:
-		CartInfo->romTypeName = " 10Mbit = 1.2MByte = 80 banks"; break;
-	case 0x54:
-		CartInfo->romTypeName = " 12Mbit = 1.5MByte = 96 banks"; break;
+		case 0:
+			CartInfo->romTypeName = "256Kbit =  32KByte = 2 banks"; break;
+		case 1:
+			CartInfo->romTypeName = "512Kbit =  64KByte = 4 banks"; break;
+		case 2:
+			CartInfo->romTypeName = "  1Mbit = 128KByte = 8 banks"; break;
+		case 3:
+			CartInfo->romTypeName = "  2Mbit = 256KByte = 16 banks"; break;
+		case 4:
+			CartInfo->romTypeName = "  4Mbit = 512KByte = 32 banks"; break;
+		case 5:
+			CartInfo->romTypeName = "  8Mbit =   1MByte = 64 banks"; break;
+		case 6:
+			CartInfo->romTypeName = " 16Mbit =   2MByte = 128 banks"; break;
+		case 0x52:
+			CartInfo->romTypeName = "  9Mbit = 1.1MByte = 72 banks"; break;
+		case 0x53:
+			CartInfo->romTypeName = " 10Mbit = 1.2MByte = 80 banks"; break;
+		case 0x54:
+			CartInfo->romTypeName = " 12Mbit = 1.5MByte = 96 banks"; break;
 	}
 
 	switch (CartInfo->ramType) {
@@ -231,4 +231,31 @@ void ROMInfo::SetCartridgeNames() {
 
 uint8_t ROMInfo::GetCardridgeVal(uint32_t address) {
 	return cartridge[address];
+}
+
+uint8_t ROMInfo::GetNumberOfRomBanks() {
+	uint8_t banks = 0;
+	switch (CartInfo->romType) {
+		case 0:
+			banks = 2; break;
+		case 1:
+			banks = 4; break;
+		case 2:
+			banks = 8; break;
+		case 3:
+			banks = 16; break;
+		case 4:
+			banks = 32; break;
+		case 5:
+			banks = 64; break;
+		case 6:
+			banks = 128; break;
+		case 0x52:
+			banks = 72; break;
+		case 0x53:
+			banks = 80; break;
+		case 0x54:
+			banks = 96; break;
+	}
+	return banks;
 }
