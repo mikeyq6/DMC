@@ -259,3 +259,20 @@ uint8_t ROMInfo::GetNumberOfRomBanks() {
 	}
 	return banks;
 }
+
+uint8_t ROMInfo::GetNumberOfRamBanks() {
+	uint8_t banks = 0;
+	switch (CartInfo->ramType) {
+		case 0:
+			banks = 0; break;
+		case 1:
+			banks = 1; break;
+		case 2:
+			banks = 1; break;
+		case 3:
+			banks = 4; break;
+		case 4:
+			banks = 16; break;
+	}
+	return banks;
+}

@@ -13,8 +13,16 @@ void Memory::init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState) 
 
 	RamEnabled = false;
 	RomBanking = true;
+	RamBank = 1;
+
+	this->CopyRamCartridgeData();
 }
 
+void Memory::CopyRamCartridgeData() {
+	for(uint16_t i=0; i<0x2000; i++) {
+		this->RamBankData[i] = rominfo->GetCardridgeVal(0xa000 + i);
+	}
+}
 
 uint8_t Memory::internal_get(uint16_t address) {
 	return memory[address];

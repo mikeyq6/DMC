@@ -56,8 +56,6 @@ void CPU::initCPU() {
 	memory->init(rominfo, &registers->AF.f, joypadState);
 
 	memory->Startup = false;
-	memory->RomBank = 0;
-	memory->RamBank = 0;
 	param1 = 0;
 	param2 = 0;
 	isPaused = false;

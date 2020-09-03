@@ -19,9 +19,8 @@ private:
 	const uint8_t MODE_4_32 = 1;
 	bool has_RAM = false, has_Battery = false;
 	uint8_t MODE = 0;
-	bool RAMG = false;
+	uint8_t RAMG = 0;
 	uint8_t BANK1 = 1;
 	uint8_t BANK2 = 0;
-
 };
 

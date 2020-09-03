@@ -51,6 +51,7 @@ private:
 	void internal_setFlag(uint8_t flag);
 	void internal_resetFlag(uint8_t flag);
 	void internal_increment(uint16_t address);
+	void CopyRamCartridgeData();
 	//uint8_t internal_GetValueAt(uint16_t address);
 
 protected:
