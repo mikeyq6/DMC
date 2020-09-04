@@ -48,16 +48,16 @@ void Draw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_
 		tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 256, 192);
 	}
 
-	TTF_Init();
-	if (showCommandOutput) {
-		debugWindow = SDL_CreateWindow("Output", 1400, 400, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		debugRenderer = SDL_CreateRenderer(debugWindow, -1, 0);
-		font = TTF_OpenFont("./VeraMono.ttf", 16);
-		if (!font) {
-			cout << "TTF_OpenFont: " << TTF_GetError() << endl;
-			// handle error
-		}
-	}
+	// TTF_Init();
+	// if (showCommandOutput) {
+	// 	debugWindow = SDL_CreateWindow("Output", 1400, 400, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	// 	debugRenderer = SDL_CreateRenderer(debugWindow, -1, 0);
+	// 	font = TTF_OpenFont("./VeraMono.ttf", 16);
+	// 	if (!font) {
+	// 		cout << "TTF_OpenFont: " << TTF_GetError() << endl;
+	// 		// handle error
+	// 	}
+	// }
 
 	if (showBackgroundMap) {
 		fullBackgroundWindow = SDL_CreateWindow("Full Background", 350, 40, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
@@ -87,19 +87,19 @@ void Draw::render(bool CPUIsStopped) {
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
 	SDL_RenderPresent(renderer);
 
-	if (showCommandOutput) {
-		registerInfo = GetRegisterInfo();
-		textSurface = TTF_RenderText_Blended_Wrapped(font, registerInfo.c_str(), textColor, 300);
-		debugTexture = SDL_CreateTextureFromSurface(debugRenderer, textSurface);
-		if (textSurface) {
-			text_width = textSurface->w;
-			text_height = textSurface->h;
-		}
-		renderQuad = { 20, 10, text_width, text_height };
-		SDL_RenderClear(debugRenderer);
-		SDL_RenderCopy(debugRenderer, debugTexture, NULL, &renderQuad);
-		SDL_RenderPresent(debugRenderer);
-	}
+	// if (showCommandOutput) {
+	// 	registerInfo = GetRegisterInfo();
+	// 	textSurface = TTF_RenderText_Blended_Wrapped(font, registerInfo.c_str(), textColor, 300);
+	// 	debugTexture = SDL_CreateTextureFromSurface(debugRenderer, textSurface);
+	// 	if (textSurface) {
+	// 		text_width = textSurface->w;
+	// 		text_height = textSurface->h;
+	// 	}
+	// 	renderQuad = { 20, 10, text_width, text_height };
+	// 	SDL_RenderClear(debugRenderer);
+	// 	SDL_RenderCopy(debugRenderer, debugTexture, NULL, &renderQuad);
+	// 	SDL_RenderPresent(debugRenderer);
+	// }
 
 	if (showTileMap) {
 		SDL_UpdateTexture(tileTexture, NULL, tilePixels, 256 * sizeof(uint32_t));

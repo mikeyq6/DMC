@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <cstdio>
 #include <iomanip>
 #include <sstream>
@@ -53,7 +52,6 @@ private:
 	SDL_Renderer* debugRenderer;
 	SDL_Surface* textSurface;
 	SDL_Rect renderQuad;
-	TTF_Font* font;
 	SDL_Color textColor = { 255, 255, 255, 0 };
 
 	SDL_Window* tileWindow;
