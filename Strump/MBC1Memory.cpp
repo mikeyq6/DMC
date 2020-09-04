@@ -126,7 +126,7 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 		Startup = false;
 	}
 	else if (location >= 0 && location < 0x2000) {
-		RAMG = value;
+		RAMG = value & 0xf;
 		printf("value: %x, location: %x, Ram %s\n", value, location, RAMG ? "Enabled" : "Disabled");
 	}
 	else if (location >= 0x2000 && location < 0x4000) { // ROM Switching
