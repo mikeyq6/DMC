@@ -42,10 +42,6 @@ uint8_t MBC1Memory::internalReadMem(uint16_t location) {
 	uint32_t nAddress = location;
 	uint8_t bank = 0;
 
-	if (location == 0xffff) {
-		int x = 1;
-	}
-
 	if (location < 0x100 && Startup) {
 		return InternalRom[(uint8_t)location];
 	}
@@ -116,9 +112,6 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location == P1) {
 		internal_set(location, value);
 	}
-	//else if (location == IE) {
-	//	internal_set(location, value);
-	//}
 	else if (location == DIV) {
 		internal_set(location, 0); // Always set DIV to 0 on write
 	}
@@ -152,9 +145,7 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 		else
 			MODE = MODE_4_32;
 	}
-	else if (location >= 0x9000 && location <= 0x98ff) {
-		if (value == 0x30)
-			int c = 1;
+	else if (location >= 0x8000 && location <= 0x9fff) {
 		internal_set(location, value);
 	}
 	else if (location >= 0xa000 && location < 0xc000) { // Writing to RAM
@@ -172,15 +163,6 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 			// internal_set(location, value);
 		}
 	}
-	// else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
-	// 	if (location + 0x2000 < 0xfe00)
-	// 		internal_set(location + 0x2000, value);
-	// 	internal_set(location, value);
-	// }
-	// else if (location >= 0xe000 && location < 0xfe00) { // Allow for the mirrored internal RAM
-	// 	internal_set(location - 0x2000, value);
-	// 	internal_set(location, value);
-	// }
 	else if (location == LY) {
 		internal_set(LY, 0);
 	}

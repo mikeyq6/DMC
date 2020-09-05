@@ -16,14 +16,6 @@ uint8_t MBC3Memory::ReadMem(uint16_t location) {
 }
 uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 
-	//printf("\nReadMem(%04x)\n", location);
-// #ifdef STEPTHROUGH
-	// if(location == LY && tempShow) { return 0x90; tempShow = 0; } // debug
-// #else
-	// 
-// #endif
-	//if(location == LY) { return (Startup ? 0x90 : 0x91); }
-
 	uint32_t nAddress = location;
 
 	if (location == 0xffff) {
@@ -75,21 +67,12 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 	std::lock_guard<mutex> locker(mem_mutex);
 
-	//if (value == 0xca) {
-	//	int x = 1;
-	//}
-	//if (location == IE) {
-	//	int x = 1;
-	//}
 	if (location == DMA) {
 		doDMATransfer(value);
 	}
 	else if (location == P1) {
 		internal_set(location, value);
 	}
-	//else if (location == IE) {
-	//	internal_set(location, value);
-	//}
 	else if (location == DIV) {
 		internal_set(location, 0); // Always set DIV to 0 on write
 	}
