@@ -13,6 +13,10 @@ protected:
 	uint8_t internalReadMem(uint16_t location) override;
 
 private:
+	uint8_t RAMG = 0;
+	uint8_t ROMB0 = 0;
+	uint8_t ROMB1 = 0;
+	uint8_t RAMB = 0;
 	bool hasRAM = false, hasBattery = false, hasRumble = false, hasSRAM = false;
 };
 
