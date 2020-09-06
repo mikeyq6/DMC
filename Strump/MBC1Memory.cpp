@@ -29,16 +29,6 @@ uint8_t MBC1Memory::GetRomBank() {
 
 uint8_t MBC1Memory::internalReadMem(uint16_t location) {
 
-	//printf("\nReadMem(%04x)\n", location);
-// #ifdef STEPTHROUGH
-	// if(location == LY && tempShow) { return 0x90; tempShow = 0; } // debug
-// #else
-	// 
-// #endif
-	//if(location == LY) { return (Startup ? 0x90 : 0x91); }
-
-
-
 	uint32_t nAddress = location;
 	uint8_t bank = 0;
 
@@ -71,7 +61,6 @@ uint8_t MBC1Memory::internalReadMem(uint16_t location) {
 	}
 	else if (location >= 0xa000 && location < 0xc000) {
 		if (RAMG == 0xa) {
-			//location -= 0xa000;
 			uint16_t nlocation = location & 0x1fff;
 
 			uint8_t data = 0;

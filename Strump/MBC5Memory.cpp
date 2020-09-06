@@ -141,3 +141,30 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		internal_set(location, value);
 	}
 }
+
+void MBC5Memory::GetState(uint8_t* state, uint32_t index) {
+	for(int i=0; i<RAM_SIZE; i++) {
+		*(state+index+i) = memory[i];
+	}
+	for(int i=0; i<RAM_BANK_SIZE; i++) {
+		*(state+index+i+RAM_SIZE) = RamBankData[i];
+	}
+	index = RAM_SIZE + RAM_BANK_SIZE;
+	*(state+index) = (uint8_t)RAMB;
+	*(state+index+1) = (uint8_t)RAMG;
+	*(state+index+2) = (uint8_t)ROMB0;
+	*(state+index+3) = (uint8_t)ROMB1;
+}
+void MBC5Memory::SetState(uint8_t* state, uint32_t index) {
+	for(int i=0; i<RAM_SIZE; i++) {
+		memory[i] = *(state+index+i);
+	}
+	for(int i=RAM_SIZE; i<RAM_BANK_SIZE+RAM_SIZE; i++) {
+		RamBankData[i] = *(state+index+i);
+	}
+	index = RAM_SIZE + RAM_BANK_SIZE;
+	RAMB = *(state+index);
+	RAMG = *(state+index+1);
+	ROMB0 = *(state+index+2);
+	ROMB1 = *(state+index+3);
+}
