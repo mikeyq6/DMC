@@ -1,5 +1,6 @@
 #pragma once
 #include "CPU.h"
+#include "DrawFactory.h"
 #include <thread>
 
 constexpr auto S_WIDTH = 160;

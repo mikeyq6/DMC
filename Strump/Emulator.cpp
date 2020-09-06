@@ -41,7 +41,11 @@ void Emulator::Start() {
 	std::thread cpu_thread(run, cpu);
 	cpu_thread.detach();
 
-	draw = new Draw(cpu->GetMemory(), cpu->GetRegisters());
+	DrawFactory *drawFactory = new DrawFactory();
+
+	draw = drawFactory->GetDrawByType(cpu->GetMemory(), cpu->GetRegisters(), cpu->GetRomInfo()->CartInfo);
+	delete drawFactory;
+
 	draw->drawInit(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, S_WIDTH, S_HEIGHT, false, false, true, true);
 
 	while (running()) {
