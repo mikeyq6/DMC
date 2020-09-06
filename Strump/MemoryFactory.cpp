@@ -28,6 +28,12 @@ Memory* MemoryFactory::GetMemoryByType(CartridgeInfo *cartInfo) {
 		case 9:
 			return new RamNoRomMemory(true);
 			break;
+		case 0xf:
+			return new MBC3Memory(false, true, true); break;
+		case 0x10:
+			return new MBC3Memory(true, true, true); break;
+		case 0x11:
+			return new MBC3Memory(false, false); break;
 		case 0x12:
 			return new MBC3Memory(true, false);
 			break;

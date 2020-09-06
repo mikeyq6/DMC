@@ -8,6 +8,13 @@ MBC3Memory::MBC3Memory(bool _hasRam, bool _hasBattery) {
 	memoryMode = MODE_16_8; // default
 }
 
+MBC3Memory::MBC3Memory(bool _hasRam, bool _hasBattery, bool _hasTimer) {
+	this->hasRAM = _hasRam;
+	this->hasBattery = _hasBattery;
+	this->hasTimer = _hasTimer;
+	memoryMode = MODE_16_8; // default
+}
+
 // Memory
 uint8_t MBC3Memory::ReadMem(uint16_t location) {
 	std::lock_guard<mutex> locker(mem_mutex);
