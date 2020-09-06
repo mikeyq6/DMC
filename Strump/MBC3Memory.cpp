@@ -36,24 +36,25 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 		return rominfo->GetCardridgeVal(location);
 	}
 	else if (location >= 0x4000 && location < 0x8000) {
-		if (location == 0x4000) {
-			int x = 1;
+		uint8_t bank = ROMB;
+		if(bank > rominfo->GetNumberOfRomBanks()) {
+			bank &= (rominfo->GetNumberOfRomBanks() - 1);
 		}
-		if (RomBank <= 1) {
-			return rominfo->GetCardridgeVal(location);
-		}
-		else {
-			nAddress = location + ((RomBank - 1) * 0x4000);
-			return rominfo->GetCardridgeVal(nAddress);
-		}
+		nAddress = location + ((bank - 1) * 0x4000);
+		return rominfo->GetCardridgeVal(nAddress);
 	}
 	else if (location >= 0x8000 && location < 0xa000) {
 		return internal_get(location);
 	}
 	else if (location >= 0xa000 && location < 0xc000) {
-		if (RamEnabled && this->hasRAM) {
-			location -= 0xa000;
-			return RamBankData[location + ((RamBank - 1) * 0x2000)];
+		if (RAMG == 0xa) {
+			uint16_t nlocation = location & 0x1fff;
+			uint8_t data = 0;
+			nlocation |= (RAMB << 13);
+			
+			data = RamBankData[nlocation];
+			printf("RAMG: %x, RAMB: %x, location: %x, address: %x, RamBank: %x, data: %x\n", RAMG, RAMB, location, nlocation, RamBank, data);
+			return data;
 		}
 	}
 	else if (location == P1) { // Joypad register
@@ -87,18 +88,15 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 		Startup = false;
 	}
 	else if (location >= 0 && location < 0x2000) {
-		//printf("Enabling RAM/ROM: %02x\n", value);
-		if ((value & 0xf) == 0xa) {
-			RamEnabled = true;
-		}
-		else {
-			RamEnabled = false;
-		}
+		RAMG = value & 0xf;
 	}
 	else if (location >= 0x2000 && location < 0x4000) { // ROM Switching
-		RomBank = value & 0x7f;
-		if (RomBank == 0)
-			RomBank = 1;
+		ROMB = value & 0x7f;
+		if (ROMB == 0)
+			ROMB = 1;
+	}
+	else if (location >= 0x4000 && location < 0x6000) { // ROM Switching
+		RAMB = value & 0x7;
 	}
 	else if (location >= 0x6000 && location < 0x8000) { // Set Memory mode
 		if ((value & 1) == 1)
@@ -112,10 +110,12 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 		internal_set(location, value);
 	}
 	else if (location >= 0xa000 && location < 0xc000) { // Writing to RAM
-		if (RamEnabled && this->hasRAM) {
-			location -= 0xa000;
-			RamBankData[location + ((RamBank - 1) * 0x2000)] = value;
-			//_getch();
+		if (RAMG == 0xa) {
+			uint16_t nlocation = location & 0x1fff;
+			nlocation |= (RAMB << 13);
+			
+			RamBankData[nlocation] = value;
+			printf("RAMG: %x, RAMB: %x, location: %x, address: %x, RamBank: %x, value: %x\n", RAMG, RAMB, location, nlocation, RamBank, value);
 		}
 		else {
 			cout << "Trying to write to RAM but it is not enabled" << endl;

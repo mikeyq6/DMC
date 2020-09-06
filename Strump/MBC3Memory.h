@@ -15,6 +15,9 @@ protected:
 
 private:
 	bool hasRAM = false, hasBattery = false, hasTimer = false;
+	uint8_t ROMB = 0;
+	uint8_t RAMB = 0;
+	uint8_t RAMG = 0;
 	const uint8_t MODE_16_8 = 0;
 	const uint8_t MODE_4_32 = 1;
 	uint8_t memoryMode = 0;

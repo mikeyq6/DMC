@@ -28,12 +28,10 @@ bool Emulator::Init() {
 	setWindowTitle();
 
 	isRunning = true;
-
-	return true;
+	return isRunning;
 }
 void Emulator::Start() {
-
-	uint16_t size = (uint16_t)fread(cpu->GetRomInfo()->cartridge, sizeof(uint8_t), CARTRIDGE_SIZE, fp);
+	uint32_t size = (uint32_t)fread(cpu->GetRomInfo()->cartridge, sizeof(uint8_t), (size_t)CARTRIDGE_SIZE, fp);
 	cpu->initCPU();
 	cpu->DisplayCartridgeInfo();
 
