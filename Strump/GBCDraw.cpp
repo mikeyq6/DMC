@@ -1,20 +1,20 @@
-#include "GBDraw.h"
+#include "GBCDraw.h"
 
 #include <stdlib.h>
 #include "alias.h"
 
 
-GBDraw::GBDraw(Memory* _memory, Registers* _registers) {
+GBCDraw::GBCDraw(Memory* _memory, Registers* _registers) {
 	memory = _memory;
 	registers = _registers;
 
 	Width = Height = 0;
 }
-GBDraw::~GBDraw() {
+GBCDraw::~GBCDraw() {
 	;
 }
 
-void GBDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap) {
+void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap) {
 	showCommandOutput = _showCommandOutput;
 	showBackgroundMap = _showBackgroundMap;
 	showTileMap = _showTileMap;
@@ -66,7 +66,7 @@ void GBDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint
 	}
 }
 
-void GBDraw::render(bool CPUIsStopped) {
+void GBCDraw::render(bool CPUIsStopped) {
 
 	loadBackground();
 	loadWindow();
@@ -102,49 +102,12 @@ void GBDraw::render(bool CPUIsStopped) {
 	}
 }
 
-[[deprecated]]
-string GBDraw::GetRegisterInfo() {
-	std::stringstream st;
-	st.exceptions(ifstream::badbit);
-
-	st << "AF: " << ToHexString(registers->AF.af) << "  DE: " << ToHexString(registers->DE.de) << endl;
-	st << "BC: " << ToHexString(registers->BC.bc) << "  HL: " << ToHexString(registers->HL.hl) << endl;
-	st << "SP: " << ToHexString(registers->SP) << "  PC: " << ToHexString(registers->PC) << endl;
-	st << "ZNHC: " << (memory->getFlag(Z) == 0 ? '0' : '1') << (memory->getFlag(N) == 0 ? '0' : '1') << (memory->getFlag(H) == 0 ? '0' : '1') << (memory->getFlag(C) == 0 ? '0' : '1') << endl;
-	st << "TMA:  " << ToHexString(memory->get(TMA)) << "  TIMA: " << ToHexString(memory->get(TIMA)) << endl;
-	st << "LCDC: " << ToHexString(memory->get(LCDC)) << "  STAT: " << ToHexString(memory->get(STAT)) << endl;
-	st << "IE:   " << ToHexString(memory->get(IE)) << "  IF:   " << ToHexString(memory->get(IF)) << endl;
-	st << "ROMB: " << ToHexString(memory->RomBank) << endl;
-
-	return st.str();
-}
-
-[[deprecated]]
-string GBDraw::ToHexString(uint8_t val) {
-	std::stringstream st;
-	if (val == 0)
-		st << hex << setw(2) << "00";
-	else
-		st << hex << setw(2) << setfill('0') << (uint16_t)val;
-	return st.str();
-
-}
-[[deprecated]]
-string GBDraw::ToHexString(uint16_t val) {
-	stringstream st;
-	if (val == 0)
-		st << hex << setw(4) << "0000";
-	else
-		st << hex << setw(4) << setfill('0') << val;
-	return st.str();
-}
-
-void GBDraw::displayMe(void)
+void GBCDraw::displayMe(void)
 {
 	loadBackground();
 }
 
-void GBDraw::loadBackground() {
+void GBCDraw::loadBackground() {
 	// Get wchich tile set to use
 	uint16_t tileDataTableAddress = GetBackgroundTileMapLocation();
 	uint16_t address = BGWindowTileLocation();
@@ -163,7 +126,7 @@ void GBDraw::loadBackground() {
 		}
 	}
 }
-void GBDraw::loadWindow() {
+void GBCDraw::loadWindow() {
 	// Get wchich tile set to use
 	uint16_t tileDataTableAddress = GetWindowTileMapLocation();
 	uint16_t address = BGWindowTileLocation();
@@ -182,7 +145,7 @@ void GBDraw::loadWindow() {
 	}
 }
 
-void GBDraw::printTileData(int tileNum) {
+void GBCDraw::printTileData(int tileNum) {
 
 	//printf("address=%04x\n", (offset * tileNum) + address);
 	printf("Tile data: ");
@@ -192,7 +155,7 @@ void GBDraw::printTileData(int tileNum) {
 	printf("\n");
 }
 
-void GBDraw::setBackgroundPixels() {
+void GBCDraw::setBackgroundPixels() {
 	uint8_t sX = memory->get(SCX);
 	uint8_t sY = memory->get(SCY);
 	tile* cur;
@@ -271,7 +234,7 @@ void GBDraw::setBackgroundPixels() {
 	}
 }
 
-void GBDraw::setFullBackgroundPixels() {
+void GBCDraw::setFullBackgroundPixels() {
 	tile* cur;
 	uint8_t pixel;
 	int sPixelsIndex = 0;
@@ -311,7 +274,7 @@ void GBDraw::setFullBackgroundPixels() {
 
 #pragma region Sprite Methods
 
-void GBDraw::setSpritePixels() {
+void GBCDraw::setSpritePixels() {
 	Sprite* sprite = new Sprite();
 	tile cur;
 	uint16_t base = 0x8000;
@@ -373,7 +336,7 @@ void GBDraw::setSpritePixels() {
 		}
 	}
 }
-void GBDraw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
+void GBCDraw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
 	uint16_t address = 0xfe00 + (spriteNum * 4); // Start address of sprite data
 	if (address == 0xfe04) {
 		int x = 1;
@@ -401,7 +364,7 @@ void GBDraw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
 		int x = 1;
 	}
 }
-uint32_t GBDraw::GetSpriteColourFor(uint8_t number, uint8_t paletteSwitch) {
+uint32_t GBCDraw::GetSpriteColourFor(uint8_t number, uint8_t paletteSwitch) {
 	uint8_t palette = paletteSwitch == 1 ? memory->ReadMem(OBP1) : memory->ReadMem(OBP0);
 	switch (number) {
 		case 0:
@@ -418,7 +381,7 @@ uint32_t GBDraw::GetSpriteColourFor(uint8_t number, uint8_t paletteSwitch) {
 
 #pragma endregion
 
-void GBDraw::setTilePixels() {
+void GBCDraw::setTilePixels() {
 	tile tile;
 	uint8_t pX = 0;
 	uint8_t pY = 0;
@@ -448,13 +411,13 @@ void GBDraw::setTilePixels() {
 	}
 }
 
-void GBDraw::getTileAt(uint16_t address, tile* t) {
+void GBCDraw::getTileAt(uint16_t address, tile* t) {
 	for (int i = 0; i < 16; i++) {
 		t->data[i] = memory->ReadMem(address + i);
 	}
 }
 
-uint32_t GBDraw::GetColourFor(uint8_t number) {
+uint32_t GBCDraw::GetColourFor(uint8_t number) {
 	uint8_t palette = memory->get(BGP);
 
 	switch (number) {
@@ -469,7 +432,7 @@ uint32_t GBDraw::GetColourFor(uint8_t number) {
 	}
 	return WHITE;
 }
-uint32_t GBDraw::GetColourForPaletteNumber(uint8_t pNumber) {
+uint32_t GBCDraw::GetColourForPaletteNumber(uint8_t pNumber) {
 	switch (pNumber) {
 	case 0:
 		if (colourMode == MODE_CLEAR)
@@ -500,15 +463,15 @@ uint32_t GBDraw::GetColourForPaletteNumber(uint8_t pNumber) {
 	}
 }
 
-void GBDraw::SetColourMode(uint8_t mode) {
+void GBCDraw::SetColourMode(uint8_t mode) {
 	colourMode = mode;
 }
-void GBDraw::ToggleColourMode() {
+void GBCDraw::ToggleColourMode() {
 	colourMode = colourMode == MODE_CLASSIC ? MODE_CLEAR : MODE_CLASSIC;
 }
 
 
-void GBDraw::clean() {
+void GBCDraw::clean() {
 	SDL_DestroyWindow(window);
 	SDL_DestroyWindow(debugWindow);
 	SDL_DestroyWindow(fullBackgroundWindow);

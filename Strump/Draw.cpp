@@ -47,3 +47,8 @@ bool Draw::tileIsNotEmpty(tile* t) {
 bool Draw::SpritesEnabled() {
 	return (memory->ReadMem(LCDC) & 0x2) == 0x2;
 }
+
+bool Draw::compareSpriteX(Sprite* s1, Sprite* s2)
+{
+	return (s1->X > s2->X);
+}

@@ -47,6 +47,7 @@ class Draw {
 	Memory *memory;
 	Registers* registers;
 
+    bool compareSpriteX(Sprite* s1, Sprite* s2);
 	void getPixel(tile* t, uint8_t col, uint8_t row, uint8_t* val);
 	void getPixel(tile* t, uint8_t col, uint8_t row, uint8_t* val, bool xFlip, bool yFlip);
     uint16_t GetBackgroundTileMapLocation();

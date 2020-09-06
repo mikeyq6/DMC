@@ -12,12 +12,12 @@
 #include "registers.h"
 #include "Sprite.h"
 
-class GBDraw :
+class GBCDraw :
 	public Draw
 {
 public:
-	GBDraw(Memory* _memory, Registers* _registers);
-	~GBDraw() override;
+	GBCDraw(Memory* _memory, Registers* _registers);
+	~GBCDraw() override;
 
 	tile* background[BACKGROUNDTILES];
 	tile* windowX[BACKGROUNDTILES];
@@ -68,9 +68,6 @@ private:
 	void setFullBackgroundPixels();
 	void setTilePixels();
 	void setSpritePixels();
-	string ToHexString(uint8_t val);
-	string ToHexString(uint16_t val);
-	string GetRegisterInfo();
 	void GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite);
 	string registerInfo;
 	uint32_t GetSpriteColourFor(uint8_t number, uint8_t palette);
