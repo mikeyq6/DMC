@@ -6,9 +6,11 @@ using namespace std;
 
 ROMInfo::ROMInfo() {
 	CartInfo = new CartridgeInfo();
+	cartridge = (uint8_t*)malloc(sizeof(uint8_t) * CARTRIDGE_SIZE);
 }
 ROMInfo::~ROMInfo() {
 	delete CartInfo;
+	free(cartridge);
 }
 
 void ROMInfo::DisplayCartridgeInfo() {

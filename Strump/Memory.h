@@ -42,8 +42,8 @@ public:
 
 	uint8_t* GetPointerTo(uint16_t location);
 
-	void GetState(uint8_t* state, uint32_t index);
-	void SetState(uint8_t* state, uint32_t index);
+	virtual void GetState(uint8_t* state, uint32_t index);
+	virtual void SetState(uint8_t* state, uint32_t index);
 
 private:
 

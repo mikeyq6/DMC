@@ -20,7 +20,7 @@ constexpr auto RAM_1_8 = 2;
 constexpr auto RAM_4_32 = 3;
 constexpr auto RAM_16_128 = 4;
 
-constexpr auto CARTRIDGE_SIZE = 0x200000;
+const long long CARTRIDGE_SIZE = 0x200000;
 
 typedef struct _cartridgeInfo {
 	string title;
@@ -49,7 +49,7 @@ public:
 	ROMInfo();
 	~ROMInfo();
 
-	uint8_t cartridge[CARTRIDGE_SIZE];
+	uint8_t *cartridge;
 	CartridgeInfo* CartInfo;
 
 

@@ -8,7 +8,11 @@
 		"files.associations": {
 			"*.tcc": "cpp",
 			"iosfwd": "cpp",
-			"thread": "cpp"
+			"thread": "cpp",
+			"new": "cpp",
+			"atomic": "cpp",
+			"cstdint": "cpp",
+			"sstream": "cpp"
 		}
 	}
 }

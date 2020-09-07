@@ -28,12 +28,10 @@ bool Emulator::Init() {
 	setWindowTitle();
 
 	isRunning = true;
-
-	return true;
+	return isRunning;
 }
 void Emulator::Start() {
-
-	uint16_t size = (uint16_t)fread(cpu->GetRomInfo()->cartridge, sizeof(uint8_t), CARTRIDGE_SIZE, fp);
+	uint32_t size = (uint32_t)fread(cpu->GetRomInfo()->cartridge, sizeof(uint8_t), (size_t)CARTRIDGE_SIZE, fp);
 	cpu->initCPU();
 	cpu->DisplayCartridgeInfo();
 
@@ -43,7 +41,11 @@ void Emulator::Start() {
 	std::thread cpu_thread(run, cpu);
 	cpu_thread.detach();
 
-	draw = new Draw(cpu->GetMemory(), cpu->GetRegisters());
+	DrawFactory *drawFactory = new DrawFactory();
+
+	draw = drawFactory->GetDrawByType(cpu->GetMemory(), cpu->GetRegisters(), cpu->GetRomInfo()->CartInfo);
+	delete drawFactory;
+
 	draw->drawInit(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, S_WIDTH, S_HEIGHT, false, false, true, true);
 
 	while (running()) {

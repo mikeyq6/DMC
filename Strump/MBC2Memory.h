@@ -13,6 +13,8 @@ protected:
 	uint8_t internalReadMem(uint16_t location) override;
 
 private:
+	uint8_t RAMG = 0;
+	uint8_t ROMG = 0;
 	bool has_Battery = false;
 };
 
