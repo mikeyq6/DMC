@@ -1,0 +1,40 @@
+{
+    "env": {
+        "myDefaultIncludePath": [
+            "${workspaceFolder}/Strump"
+        ]
+    },
+    "configurations": [
+        {
+            "name": "debug",
+            "intelliSenseMode": "clang-x86",
+            "includePath": [
+                "${myDefaultIncludePath}",
+                "/usr/local/Cellar/sdl2/2.0.12_1/include",
+                "/usr/local/Cellar/sdl2_image/2.0.5/include"
+            ],
+            "macFrameworkPath": [
+                "/System/Library/Frameworks"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/Strump"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
+            "defines": [
+                "RUNTESTS=1"
+            ],
+            "compilerPath": "/usr/bin/g++",
+            "compilerArgs": [
+                "-Wall",
+                "-Wno-unused-variable ",
+                "-Wno-unused-private-field"
+            ]
+        }
+    ],
+    "version": 4
+}
