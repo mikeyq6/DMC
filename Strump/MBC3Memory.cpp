@@ -174,10 +174,11 @@ void MBC3Memory::GetState(uint8_t* state, uint32_t index) {
 	for(int i=0; i<RAM_SIZE; i++) {
 		*(state+index+i) = memory[i];
 	}
+	index += RAM_SIZE;
 	for(int i=0; i<RAM_BANK_SIZE; i++) {
-		*(state+index+i+RAM_SIZE) = RamBankData[i];
+		*(state+index+i) = RamBankData[i];
 	}
-	index = RAM_SIZE + RAM_BANK_SIZE;
+	index += RAM_BANK_SIZE;
 	*(state+index) = (uint8_t)ROMB;
 	*(state+index+1) = (uint8_t)RAMB;
 	*(state+index+2) = (uint8_t)RAMG;
@@ -191,10 +192,11 @@ void MBC3Memory::SetState(uint8_t* state, uint32_t index) {
 	for(int i=0; i<RAM_SIZE; i++) {
 		memory[i] = *(state+index+i);
 	}
-	for(int i=RAM_SIZE; i<RAM_BANK_SIZE+RAM_SIZE; i++) {
+	index += RAM_SIZE;
+	for(int i=0; i<RAM_BANK_SIZE; i++) {
 		RamBankData[i] = *(state+index+i);
 	}
-	index = RAM_SIZE + RAM_BANK_SIZE;
+	index += RAM_BANK_SIZE;
 	ROMB = *(state+index);
 	RAMB = *(state+index+1);
 	RAMG = *(state+index+2);
