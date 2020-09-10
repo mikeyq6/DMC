@@ -9,6 +9,8 @@ const int SPRITE_MODE_8x16 = 1;
 
 typedef struct _tile {
 	uint8_t data[16];
+	uint16_t address;
+	uint8_t attributes;
 } tile;
 
 class Sprite
@@ -17,6 +19,7 @@ class Sprite
 		uint8_t X, Y, TileNumber, Attributes, CGBPalette, Number, SpritePriority;
 		bool YFlip, XFlip, CGBVbank;
 
+		uint8_t GetSpriteTileVramBank();
 		void GetSpriteTile(Memory* memory, tile* t);
 };
 

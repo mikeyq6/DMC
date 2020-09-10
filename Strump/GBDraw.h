@@ -31,7 +31,7 @@ public:
 	void clean() override;
 	void printTileData(int tileNum);
 
-	uint32_t GetColourFor(uint8_t number) override;
+	uint32_t GetColourFor(uint8_t number, tile *t) override;
 	uint32_t GetColourForPaletteNumber(uint8_t pNumber) override;
 
 	void SetColourMode(uint8_t mode);

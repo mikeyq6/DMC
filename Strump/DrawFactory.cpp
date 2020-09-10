@@ -5,6 +5,7 @@ Draw* DrawFactory::GetDrawByType(Memory* memory, Registers* registers, Cartridge
 
 	switch (cartInfo->gbc) {
 		case 0x80:
+		case 0xc0:
 			draw = new GBCDraw(memory, registers);
 			break;
 		default:

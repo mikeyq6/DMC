@@ -39,7 +39,7 @@ class Draw {
 	virtual void clean() = 0;
 	virtual void ToggleColourMode() = 0;
 
-	virtual uint32_t GetColourFor(uint8_t number) = 0;
+	virtual uint32_t GetColourFor(uint8_t number, tile *t) = 0;
 	virtual uint32_t GetColourForPaletteNumber(uint8_t pNumber) = 0;
 
     protected:

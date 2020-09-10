@@ -38,7 +38,8 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 		return rominfo->GetCardridgeVal(nAddress);
 	}
 	else if (location >= 0x8000 && location < 0xa000) {
-		return internal_get(location);
+		// return internal_get(location);
+		return GetVramForAddress(location);
 	}
 	else if (location >= 0xa000 && location < 0xc000) {
 		if (RAMG == 0xa) {
@@ -99,6 +100,40 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location == ENDSTART) {
 		Startup = false;
 	}
+	else if(location == BCPS && rominfo->UseColour()) {
+		setPaletteWrite(false, value);
+	}
+	else if(location == BCPD && rominfo->UseColour()) {
+		setPaletteData(value);
+	}
+	else if(location == OCPS && rominfo->UseColour()) {
+		setPaletteWrite(true, value);
+	}
+	else if(location == OCPD && rominfo->UseColour()) {
+		setPaletteData(value);
+	}
+	else if(location == HDMA1) {
+		printf("HDMA1 value: %x\n", value);
+		setHDMASourceHigh(value);
+	}
+	else if(location == HDMA2) {
+		setHDMASourceLow(value);
+	}
+	else if(location == HDMA3) {
+		setHDMADestinationHigh(value);
+	}
+	else if(location == HDMA4) {
+		setHDMADestinationLow(value);
+	}
+	else if(location == HDMA5) {
+		printf("HDMA5 value: %x\n", value);
+		doHDMATransfer(value);
+	}
+	else if(location == VBK) {
+		if(value > 0)
+			printf("VBK: %x\n", value);
+		SetVramBank(value);
+	}
 	else if (location >= 0 && location < 0x2000) {
 		RAMG = value & 0xf;
 		if(value > 0)
@@ -114,10 +149,9 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 		if(RAMB > 0) 
 		printf("Setting ram bank: %x, location: %x\n", RAMB, location);
 	}
-	else if (location >= 0x9000 && location <= 0x98ff) {
-		if (value == 0x30)
-			int c = 1;
-		internal_set(location, value);
+	else if (location >= 0x8000 && location <= 0x98ff) {
+		// internal_set(location, value);
+		SetVramForAddress(location, value);
 	}
 	else if (location >= 0xa000 && location < 0xc000) { // Writing to RAM
 		// printf("RAMG: %x\n", RAMG);
@@ -179,6 +213,16 @@ void MBC3Memory::GetState(uint8_t* state, uint32_t index) {
 		*(state+index+i) = RamBankData[i];
 	}
 	index += RAM_BANK_SIZE;
+	for(int i=0; i<2; i++) {
+		for(int j=0; j<VRAM_BANK_SIZE; j++) {
+			*(state+index+j) = VRamBankData[i][j];
+		}
+		index += VRAM_BANK_SIZE;
+	}
+	for(int i=0; i<PALETTE_SIZE; i++) {
+		*(state+index+i) = PaletteData[i];
+	}
+	index += PALETTE_SIZE;
 	*(state+index) = (uint8_t)ROMB;
 	*(state+index+1) = (uint8_t)RAMB;
 	*(state+index+2) = (uint8_t)RAMG;
@@ -197,6 +241,16 @@ void MBC3Memory::SetState(uint8_t* state, uint32_t index) {
 		RamBankData[i] = *(state+index+i);
 	}
 	index += RAM_BANK_SIZE;
+	for(int i=0; i<2; i++) {
+		for(int j=0; j<VRAM_BANK_SIZE; j++) {
+			VRamBankData[i][j] = *(state+index+j);
+		}
+		index += VRAM_BANK_SIZE;
+	}
+	for(int i=0; i<PALETTE_SIZE; i++) {
+		PaletteData[i] = *(state+index+i);
+	}
+	index += PALETTE_SIZE;
 	ROMB = *(state+index);
 	RAMB = *(state+index+1);
 	RAMG = *(state+index+2);

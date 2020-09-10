@@ -51,6 +51,10 @@ void ROMInfo::SetCartridgeInfo() {
 
 	free(nm);
 }
+bool ROMInfo::UseColour() {
+	printf("gbc: %x\n", CartInfo->gbc);
+	return CartInfo->gbc == 0x80 || CartInfo->gbc == 0xc0;
+}
 void ROMInfo::SetCartridgeNames() {
 	switch (CartInfo->type) {
 	case 0:

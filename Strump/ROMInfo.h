@@ -59,6 +59,7 @@ public:
 	void DisplayCartridgeInfo();
 	uint8_t GetNumberOfRomBanks();
 	uint8_t GetNumberOfRamBanks();
+	bool UseColour();
 
 private:
 	mutex rom_mutex;

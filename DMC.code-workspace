@@ -12,7 +12,13 @@
 			"new": "cpp",
 			"atomic": "cpp",
 			"cstdint": "cpp",
-			"sstream": "cpp"
+			"sstream": "cpp",
+			"algorithm": "cpp",
+			"vector": "cpp",
+			"fstream": "cpp",
+			"iomanip": "cpp",
+			"locale": "cpp",
+			"string": "cpp"
 		}
 	}
 }

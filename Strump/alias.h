@@ -55,4 +55,15 @@ constexpr auto OBP1 = 0xff49;
 constexpr auto WY = 0xff4a;
 constexpr auto WX = 0xff4b;
 constexpr auto ENDSTART = 0xff50;
+constexpr auto HDMA1 = 0xff50;
+constexpr auto HDMA2 = 0xff51;
+constexpr auto HDMA3 = 0xff52;
+constexpr auto HDMA4 = 0xff53;
+constexpr auto HDMA5 = 0xff54;
+constexpr auto BCPS = 0xff68;
+constexpr auto BCPD = 0xff69;
+constexpr auto OCPS = 0xff6a;
+constexpr auto OCPD = 0xff6b;
+constexpr auto VBK = 0xFF4F;
+
 constexpr auto IE = 0xffff;

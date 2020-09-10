@@ -223,7 +223,7 @@ void GBDraw::setBackgroundPixels() {
 			getPixel(cur, pX, pY, &pixel);
 
 			//printf("windowPixels[%04x] = %08x\n", sPixelsIndex, sPixel);
-			screenPixels[sPixelsIndex] = GetColourFor(pixel);
+			screenPixels[sPixelsIndex] = GetColourFor(pixel, cur);
 			switch (pixel) {
 			case 0:
 				pixel = 32; break;
@@ -264,7 +264,7 @@ void GBDraw::setBackgroundPixels() {
 					sPixelsIndex = (sX + offsetX) + ((sY + offsetY) * Width);
 
 					getPixel(cur, pX, pY, &pixel);
-					screenPixels[sPixelsIndex] = GetColourFor(pixel);
+					screenPixels[sPixelsIndex] = GetColourFor(pixel, cur);
 				}
 			}
 		}
@@ -293,7 +293,7 @@ void GBDraw::setFullBackgroundPixels() {
 
 			getPixel(cur, pX, pY, &pixel);
 
-			fullBackgroundPixels[sPixelsIndex] = GetColourFor(pixel);
+			fullBackgroundPixels[sPixelsIndex] = GetColourFor(pixel, cur);
 			switch (pixel) {
 			case 0:
 				pixel = 32; break;
@@ -391,7 +391,7 @@ void GBDraw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
 	else
 		sprite->TileNumber = memory->ReadMem(address + 2) & 0xfe;
 	sprite->Attributes = attributes;
-	sprite->CGBPalette = (attributes & 0x10) == 0x10 ? 1 : 0;
+	sprite->CGBPalette = (attributes & 0x3) == 0x3 ? 1 : 0;
 	sprite->SpritePriority = ((attributes & 0x80) == 0x80) ? 1 : 0;
 	sprite->YFlip = (attributes & 0x40) == 0x40;
 	sprite->XFlip = (attributes & 0x20) == 0x20;
@@ -442,7 +442,7 @@ void GBDraw::setTilePixels() {
 				getPixel(&tile, pX, pY, &pixel);
 				int index = tile_x + tile_y + (pY * rwidth) + pX;
 
-				tilePixels[index] = GetColourFor(pixel);
+				tilePixels[index] = GetColourFor(pixel, &tile);
 			}
 		}
 	}
@@ -454,7 +454,7 @@ void GBDraw::getTileAt(uint16_t address, tile* t) {
 	}
 }
 
-uint32_t GBDraw::GetColourFor(uint8_t number) {
+uint32_t GBDraw::GetColourFor(uint8_t number, tile *t) {
 	uint8_t palette = memory->get(BGP);
 
 	switch (number) {

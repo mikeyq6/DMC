@@ -31,6 +31,12 @@ uint8_t MBC5Memory::internalReadMem(uint16_t location) {
 	if (location < 0x100 && Startup) {
 		return InternalRom[(uint8_t)location];
 	}
+	else if(location == BCPD && rominfo->UseColour()) {
+		return getPaletteData();
+	}
+	else if(location == OCPD && rominfo->UseColour()) {
+		return getPaletteData();
+	}
 	else if (location >= 0 && location < 0x4000) {
 		return rominfo->GetCardridgeVal(location);
 	}
@@ -45,7 +51,8 @@ uint8_t MBC5Memory::internalReadMem(uint16_t location) {
 		return data;
 	}
 	else if (location >= 0x8000 && location < 0xa000) {
-		return internal_get(location);
+		// printf("VramBank: %x, location:%x\n", VramBank, location);
+		return GetVramForAddress(location);
 	}
 	else if (location >= 0xa000 && location < 0xc000) {
 		// switchable Ram bank
@@ -87,6 +94,40 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location == ENDSTART) {
 		Startup = false;
 	}
+	else if(location == BCPS && rominfo->UseColour()) {
+		setPaletteWrite(false, value);
+	}
+	else if(location == BCPD && rominfo->UseColour()) {
+		setPaletteData(value);
+	}
+	else if(location == OCPS && rominfo->UseColour()) {
+		setPaletteWrite(true, value);
+	}
+	else if(location == OCPD && rominfo->UseColour()) {
+		setPaletteData(value);
+	}
+	else if(location == HDMA1) {
+		printf("HDMA1 value: %x\n", value);
+		setHDMASourceHigh(value);
+	}
+	else if(location == HDMA2) {
+		setHDMASourceLow(value);
+	}
+	else if(location == HDMA3) {
+		setHDMADestinationHigh(value);
+	}
+	else if(location == HDMA4) {
+		setHDMADestinationLow(value);
+	}
+	else if(location == HDMA5) {
+		printf("HDMA5 value: %x\n", value);
+		doHDMATransfer(value);
+	}
+	else if(location == VBK) {
+		if(value > 0)
+			printf("VBK: %x\n", value);
+		SetVramBank(value);
+	}
 	else if (location >= 0 && location < 0x2000) {
 		printf("location: %x, setting RAMG: %x\n", location, RAMG);
 		RAMG = value;
@@ -107,14 +148,8 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 			RomBank = 0;
 		}
 	}
-	else if (location >= 0xe000 && location < 0xfe00) { // Allow for the mirrored internal RAM
-		internal_set(location - 0x2000, value);
-		internal_set(location, value);
-	}
-	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
-		if (location + 0x2000 < 0xfe00)
-			internal_set(location + 0x2000, value);
-		internal_set(location, value);
+	else if (location >= 0x8000 && location < 0xa000) {
+		SetVramForAddress(location, value);
 	}
 	else if (location >= 0xa000 && location < 0xc000) { // Writing to RAM
 		if (RAMG == 0xa) {
@@ -127,6 +162,15 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 			// cout << "Trying to write to RAM but it is not enabled" << endl;
 			//_getch();
 		}
+	}
+	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
+		if (location + 0x2000 < 0xfe00)
+			internal_set(location + 0x2000, value);
+		internal_set(location, value);
+	}
+	else if (location >= 0xe000 && location < 0xfe00) { // Allow for the mirrored internal RAM
+		internal_set(location - 0x2000, value);
+		internal_set(location, value);
 	}
 	else if (location == LY) {
 		internal_set(LY, 0);
@@ -146,10 +190,21 @@ void MBC5Memory::GetState(uint8_t* state, uint32_t index) {
 	for(int i=0; i<RAM_SIZE; i++) {
 		*(state+index+i) = memory[i];
 	}
+	index += RAM_SIZE;
 	for(int i=0; i<RAM_BANK_SIZE; i++) {
-		*(state+index+i+RAM_SIZE) = RamBankData[i];
+		*(state+index+i) = RamBankData[i];
 	}
-	index = RAM_SIZE + RAM_BANK_SIZE;
+	index += RAM_BANK_SIZE;
+	for(int i=0; i<2; i++) {
+		for(int j=0; j<VRAM_BANK_SIZE; j++) {
+			*(state+index+i) = VRamBankData[i][j];
+		}
+		index += VRAM_BANK_SIZE;
+	}
+	for(int i=0; i<PALETTE_SIZE; i++) {
+		*(state+index+i) = PaletteData[i];
+	}
+	index += PALETTE_SIZE;
 	*(state+index) = (uint8_t)RAMB;
 	*(state+index+1) = (uint8_t)RAMG;
 	*(state+index+2) = (uint8_t)ROMB0;
@@ -159,10 +214,21 @@ void MBC5Memory::SetState(uint8_t* state, uint32_t index) {
 	for(int i=0; i<RAM_SIZE; i++) {
 		memory[i] = *(state+index+i);
 	}
-	for(int i=RAM_SIZE; i<RAM_BANK_SIZE+RAM_SIZE; i++) {
+	index += RAM_SIZE;
+	for(int i=0; i<RAM_BANK_SIZE; i++) {
 		RamBankData[i] = *(state+index+i);
 	}
-	index = RAM_SIZE + RAM_BANK_SIZE;
+	index += RAM_BANK_SIZE;
+	for(int i=0; i<2; i++) {
+		for(int j=0; j<VRAM_BANK_SIZE; j++) {
+			VRamBankData[i][j] = *(state+index+i);
+		}
+		index += VRAM_BANK_SIZE;
+	}
+	for(int i=0; i<PALETTE_SIZE; i++) {
+		PaletteData[i] = *(state+index+i);
+	}
+	index += PALETTE_SIZE;
 	RAMB = *(state+index);
 	RAMG = *(state+index+1);
 	ROMB0 = *(state+index+2);

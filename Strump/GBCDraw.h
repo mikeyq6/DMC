@@ -31,7 +31,7 @@ public:
 	void clean() override;
 	void printTileData(int tileNum);
 
-	uint32_t GetColourFor(uint8_t number) override;
+	uint32_t GetColourFor(uint8_t number, tile *t) override;
 	uint32_t GetColourForPaletteNumber(uint8_t pNumber) override;
 
 	void SetColourMode(uint8_t mode);
@@ -63,14 +63,14 @@ private:
 	uint8_t Width, Height;
 
 	void displayMe(void);
-	void getTileAt(uint16_t address, tile* t);
+	void getTileAt(uint16_t address, tile* t, uint8_t vramBank);
 	void setBackgroundPixels();
 	void setFullBackgroundPixels();
 	void setTilePixels();
 	void setSpritePixels();
 	void GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite);
 	string registerInfo;
-	uint32_t GetSpriteColourFor(uint8_t number, uint8_t palette);
+	uint32_t GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t);
 
 	int text_width, text_height;
 	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];

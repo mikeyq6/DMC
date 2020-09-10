@@ -119,10 +119,10 @@ void GBCDraw::loadBackground() {
 		tileNum = memory->get(tileDataTableAddress + i);
 		//printf("tileNum=%02x\n", Memory[bMap + i]);
 		if (address == 0x9000) { // allow for negative numbers
-			getTileAt((offset * (int8_t)tileNum) + address, background[i]);
+			getTileAt((offset * (int8_t)tileNum) + address, background[i], 0);
 		}
 		else {
-			getTileAt((offset * tileNum) + address, background[i]);
+			getTileAt((offset * tileNum) + address, background[i], 0);
 		}
 	}
 }
@@ -137,10 +137,10 @@ void GBCDraw::loadWindow() {
 		tileNum = memory->get(tileDataTableAddress + i);
 		//printf("tileNum=%02x\n", Memory[bMap + i]);
 		if (address == 0x9000) { // allow for negative numbers
-			getTileAt((offset * (int8_t)tileNum) + address, windowX[i]);
+			getTileAt((offset * (int8_t)tileNum) + address, windowX[i], 0);
 		}
 		else {
-			getTileAt((offset * tileNum) + address, windowX[i]);
+			getTileAt((offset * tileNum) + address, windowX[i], 0);
 		}
 	}
 }
@@ -186,7 +186,7 @@ void GBCDraw::setBackgroundPixels() {
 			getPixel(cur, pX, pY, &pixel);
 
 			//printf("windowPixels[%04x] = %08x\n", sPixelsIndex, sPixel);
-			screenPixels[sPixelsIndex] = GetColourFor(pixel);
+			screenPixels[sPixelsIndex] = GetColourFor(pixel, cur);
 			switch (pixel) {
 			case 0:
 				pixel = 32; break;
@@ -227,7 +227,7 @@ void GBCDraw::setBackgroundPixels() {
 					sPixelsIndex = (sX + offsetX) + ((sY + offsetY) * Width);
 
 					getPixel(cur, pX, pY, &pixel);
-					screenPixels[sPixelsIndex] = GetColourFor(pixel);
+					screenPixels[sPixelsIndex] = GetColourFor(pixel, cur);
 				}
 			}
 		}
@@ -256,16 +256,16 @@ void GBCDraw::setFullBackgroundPixels() {
 
 			getPixel(cur, pX, pY, &pixel);
 
-			fullBackgroundPixels[sPixelsIndex] = GetColourFor(pixel);
+			fullBackgroundPixels[sPixelsIndex] = GetColourFor(pixel, cur);
 			switch (pixel) {
-			case 0:
-				pixel = 32; break;
-			case 1:
-				pixel = 46; break;
-			case 2:
-				pixel = 56; break;
-			case 3:
-				pixel = 35; break;
+				case 0:
+					pixel = 32; break;
+				case 1:
+					pixel = 46; break;
+				case 2:
+					pixel = 56; break;
+				case 3:
+					pixel = 35; break;
 			}
 		}
 		pixel = (uint8_t)10;
@@ -299,14 +299,14 @@ void GBCDraw::setSpritePixels() {
 			if (spriteMode == SPRITE_MODE_8x8) {
 				scX = sprite->X - 8;
 				scY = sprite->Y - 16;
-				getTileAt(base + (sprite->TileNumber * 16), &cur);
+				getTileAt(base + (sprite->TileNumber * 16), &cur, sprite->GetSpriteTileVramBank());
 
 				for (int y = 0; y < 8; y++) {
 					for (int x = 0; x < 8; x++) {
 						getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
 						uint32_t curPixel = screenPixels[(scY + y) * 160 + (scX + x)];
 						if (sprite->SpritePriority == 0 || (sprite->SpritePriority == 1 && (curPixel == WHITE || curPixel == CLASSIC_WHITE))) {
-							uint32_t colour = GetSpriteColourFor(pixel, sprite->CGBPalette);
+							uint32_t colour = GetSpriteColourFor(pixel, sprite, &cur);
 							if(colour != TRANSPARENT)
 								screenPixels[(scY + y) * 160 + (scX + x)] = colour;
 						}
@@ -319,13 +319,13 @@ void GBCDraw::setSpritePixels() {
 					scX = sprite->X - 8;
 					scY = sprite->Y - 16 + (i * 8);
 
-					getTileAt(base + ((sprite->TileNumber + i) * 16), &cur);
+					getTileAt(base + ((sprite->TileNumber + i) * 16), &cur, sprite->GetSpriteTileVramBank());
 					for (int y = 0; y < 8; y++) {
 						for (int x = 0; x < 8; x++) {
 							getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
 							uint32_t curPixel = screenPixels[(scY + y) * 160 + (scX + x)];
 							if (sprite->SpritePriority == 0 || (sprite->SpritePriority == 1 && (curPixel == WHITE || curPixel == CLASSIC_WHITE))) {
-								uint32_t colour = GetSpriteColourFor(pixel, sprite->CGBPalette);
+								uint32_t colour = GetSpriteColourFor(pixel, sprite, &cur);
 								if (colour != TRANSPARENT)
 									screenPixels[(scY + y) * 160 + (scX + x)] = colour;
 							}
@@ -338,45 +338,46 @@ void GBCDraw::setSpritePixels() {
 }
 void GBCDraw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
 	uint16_t address = 0xfe00 + (spriteNum * 4); // Start address of sprite data
-	if (address == 0xfe04) {
-		int x = 1;
-	}
-	if (spriteNum == 0 && memory->ReadMem(address) == 0x10) {
-		int y = 1;
-	}
 	uint8_t attributes = memory->ReadMem(address + 3);
 	uint8_t spriteMode = (memory->ReadMem(LCDC) & 0x4) > 0 ? SPRITE_MODE_8x16 : SPRITE_MODE_8x8;
-
+	sprite->Attributes = attributes;
+	printf("attributes: %x\n", attributes);
 	sprite->Y = memory->ReadMem(address);
 	sprite->X = memory->ReadMem(address + 1);
 	if (spriteMode == SPRITE_MODE_8x8)
 		sprite->TileNumber = memory->ReadMem(address + 2);
 	else
 		sprite->TileNumber = memory->ReadMem(address + 2) & 0xfe;
-	sprite->Attributes = attributes;
 	sprite->CGBPalette = (attributes & 0x10) == 0x10 ? 1 : 0;
 	sprite->SpritePriority = ((attributes & 0x80) == 0x80) ? 1 : 0;
 	sprite->YFlip = (attributes & 0x40) == 0x40;
 	sprite->XFlip = (attributes & 0x20) == 0x20;
 	sprite->CGBVbank = (attributes & 0x08) == 0x08;
 	sprite->Number = spriteNum + 1;
-	if (address == 0xfe04 && sprite->TileNumber != 0x02) {
-		int x = 1;
-	}
 }
-uint32_t GBCDraw::GetSpriteColourFor(uint8_t number, uint8_t paletteSwitch) {
-	uint8_t palette = paletteSwitch == 1 ? memory->ReadMem(OBP1) : memory->ReadMem(OBP0);
-	switch (number) {
-		case 0:
-			return TRANSPARENT; break;
-		case 1:
-			return GetColourForPaletteNumber((palette & 0x0c) >> 2); break;
-		case 2:
-			return GetColourForPaletteNumber((palette & 0x30) >> 4); break;
-		case 3:
-			return GetColourForPaletteNumber((palette & 0xc0) >> 6); break;
-	}
-	return WHITE;
+uint32_t GBCDraw::GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t) {
+	uint8_t attributes = memory->GetVramForAddress(t->address);
+	uint8_t palette = sprite->Attributes & 0x3;
+
+	uint16_t colourData = memory->GetPaletteColourInfo((palette << 3) + (number << 1));
+
+	// printf("address: %x, attributes: %x, palette: %x, colourData: %x\n", t->address, attributes, palette, colourData);
+
+	uint8_t red = colourData & 0x1f;
+	uint8_t green = colourData & (0x1f << 5);
+	uint8_t blue = colourData & (0x1f << 10);
+
+	float redP = red / 0x1f;
+	float greenP = green / 0x1f;
+	float blueP = blue / 0x1f;
+
+	uint32_t colour = static_cast<uint32_t>(redP * 0xff) +
+		(static_cast<uint32_t>(greenP * 0xff) << 8) + 
+		(static_cast<uint32_t>(blueP * 0xff) << 16);
+
+	// printf("red: %x, green: %x, blue: %x, redP: %f, greenP: %f, blueP: %f, colour: %x\n",
+	// 	red, green, blue, redP, greenP, blueP, colour);
+	return colour;
 }
 
 #pragma endregion
@@ -393,7 +394,7 @@ void GBCDraw::setTilePixels() {
 
 	for (i = 0x8000; i <= 0x9fff; i += 0x10, tile_index++) {
 
-		getTileAt(i, &tile);
+		getTileAt(i, &tile, 0);
 
 		for (y = 0; y < 8; y++) {
 			for (x = 0; x < 8; x++, sPixelsIndex++) {
@@ -405,19 +406,48 @@ void GBCDraw::setTilePixels() {
 				getPixel(&tile, pX, pY, &pixel);
 				int index = tile_x + tile_y + (pY * rwidth) + pX;
 
-				tilePixels[index] = GetColourFor(pixel);
+				tilePixels[index] = GetColourFor(pixel, &tile);
 			}
 		}
 	}
 }
 
-void GBCDraw::getTileAt(uint16_t address, tile* t) {
+void GBCDraw::getTileAt(uint16_t address, tile* t, uint8_t vramBank) {
 	for (int i = 0; i < 16; i++) {
-		t->data[i] = memory->ReadMem(address + i);
+		if(vramBank == 0) {
+			t->data[i] = memory->ReadMem(address + i);
+		} else {
+			t->data[i] = memory->GetVramForAddress(address + i);
+		}
+		t->address = address + i;
+		t->attributes = memory->GetVramForAddress(address + i);
 	}
 }
 
-uint32_t GBCDraw::GetColourFor(uint8_t number) {
+uint32_t GBCDraw::GetColourFor(uint8_t number, tile *t) {
+	// uint8_t attributes = memory->GetVramForAddress(t->address);
+	// uint8_t palette = t->attributes & 0x3;
+
+	// uint16_t colourData = memory->GetPaletteColourInfo((palette << 3) + (number << 1));
+
+	// // printf("address: %x, attributes: %x, palette: %x, colourData: %x\n", t->address, attributes, palette, colourData);
+
+	// uint8_t red = colourData & 0x1f;
+	// uint8_t green = colourData & (0x1f << 5);
+	// uint8_t blue = colourData & (0x1f << 10);
+
+	// float redP = red / 0x1f;
+	// float greenP = green / 0x1f;
+	// float blueP = blue / 0x1f;
+
+	// uint32_t colour = static_cast<uint32_t>(redP * 0xff) +
+	// 	(static_cast<uint32_t>(greenP * 0xff) << 8) + 
+	// 	(static_cast<uint32_t>(blueP * 0xff) << 16);
+
+	// // printf("red: %x, green: %x, blue: %x, redP: %f, greenP: %f, blueP: %f, colour: %x\n",
+	// // 	red, green, blue, redP, greenP, blueP, colour);
+	// return colour;
+
 	uint8_t palette = memory->get(BGP);
 
 	switch (number) {
