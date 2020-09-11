@@ -35,7 +35,8 @@ uint8_t MBC2Memory::internalReadMem(uint16_t location) {
 		return data;
 	}
 	else if (location >= 0x8000 && location < 0xa000) {
-		return internal_get(location);
+		// return internal_get(location);
+		return GetVramForAddress(location);
 	}
 	else if (location >= 0xa000 && location < 0xc000) {
 
@@ -95,11 +96,9 @@ void MBC2Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if(location >= 0x4000 && location < 0x8000) {
 		return;
 	}
-	else if(location >= 0x8000 && location < 0x9000) {
-		internal_set(location, value);
-	}
-	else if (location >= 0x9000 && location <= 0x98ff) {
-		internal_set(location, value);
+	else if (location >= 0x8000 && location < 0xa000) {
+		// internal_set(location, value);
+		SetVramForAddress(location, value);
 	}
 	else if (location >= 0xe000 && location < 0xfe00) { // Allow for the mirrored internal RAM
 		internal_set(location - 0x2000, value);

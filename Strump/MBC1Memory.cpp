@@ -48,7 +48,7 @@ uint8_t MBC1Memory::internalReadMem(uint16_t location) {
 			nAddress = location + ((bank - 1) * 0x4000);
 			data = rominfo->GetCardridgeVal(nAddress);
 		}
-		printf("ROM MODE: %x, location: %x, data: %x\n", MODE, location, data);
+		// printf("ROM MODE: %x, location: %x, data: %x\n", MODE, location, data);
 		return data;
 	}
 	else if (location >= 0x4000 && location < 0x8000) {
@@ -57,7 +57,8 @@ uint8_t MBC1Memory::internalReadMem(uint16_t location) {
 		return rominfo->GetCardridgeVal(nAddress);
 	}
 	else if (location >= 0x8000 && location < 0xa000) {
-		return internal_get(location);
+		// return internal_get(location);
+		return GetVramForAddress(location);
 	}
 	else if (location >= 0xa000 && location < 0xc000) {
 		if (RAMG == 0xa) {
@@ -68,10 +69,10 @@ uint8_t MBC1Memory::internalReadMem(uint16_t location) {
 				nlocation |= (RamBank << 13);
 			}
 			data = RamBankData[nlocation];
-			printf("RAMG: %x, MODE: %x, location: %x, address: %x, RamBank: %x, data: %x\n", RAMG, MODE, location, nlocation, RamBank, data);
+			// printf("RAMG: %x, MODE: %x, location: %x, address: %x, RamBank: %x, data: %x\n", RAMG, MODE, location, nlocation, RamBank, data);
 			return data;
 		} else {
-			printf("RAMG: %x, MODE: %x, data: %x\n", RAMG, MODE, rominfo->GetCardridgeVal(location));
+			// printf("RAMG: %x, MODE: %x, data: %x\n", RAMG, MODE, rominfo->GetCardridgeVal(location));
 			return rominfo->GetCardridgeVal(location);
 		}
 	}
@@ -109,7 +110,7 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 	}
 	else if (location >= 0 && location < 0x2000) {
 		RAMG = value & 0xf;
-		printf("value: %x, location: %x, Ram %s\n", value, location, RAMG ? "Enabled" : "Disabled");
+		// printf("value: %x, location: %x, Ram %s\n", value, location, RAMG ? "Enabled" : "Disabled");
 	}
 	else if (location >= 0x2000 && location < 0x4000) { // ROM Switching
 		BANK1 = value & 0x1f;
@@ -126,7 +127,7 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 				RamBank &= (rominfo->GetNumberOfRamBanks());
 			}
 		}
-		printf("MODE: %x, value: %x, BANK2: %x, RamBank:%x, AVB: %x\n", MODE, value, BANK2, RamBank, rominfo->GetNumberOfRamBanks());
+		// printf("MODE: %x, value: %x, BANK2: %x, RamBank:%x, AVB: %x\n", MODE, value, BANK2, RamBank, rominfo->GetNumberOfRamBanks());
 	}
 	else if (location >= 0x6000 && location < 0x8000) { // Set Memory mode
 		if ((value & 1) == 0)
@@ -134,8 +135,9 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 		else
 			MODE = MODE_4_32;
 	}
-	else if (location >= 0x8000 && location <= 0x9fff) {
-		internal_set(location, value);
+	else if (location >= 0x8000 && location < 0xa000) {
+		// internal_set(location, value);
+		SetVramForAddress(location, value);
 	}
 	else if (location >= 0xa000 && location < 0xc000) { // Writing to RAM
 		if (RAMG == 0xa) {
@@ -144,7 +146,7 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 				nlocation |= (RamBank << 13);
 			}
 			RamBankData[nlocation] = value;
-			printf("RAMG: %i, MODE: %x, location: %x, address: %x, RamBank: %x, value: %x\n", RAMG, MODE, location, nlocation, RamBank, value);
+			// printf("RAMG: %i, MODE: %x, location: %x, address: %x, RamBank: %x, value: %x\n", RAMG, MODE, location, nlocation, RamBank, value);
 			// printf("Writing (%02x) to RAM at address(%04x) (Rambank: %02x)\n", value, (location + ((RamBank - 1) * 0x2000)), RamBank);
 			//_getch();
 		} else {
