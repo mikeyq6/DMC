@@ -9,6 +9,7 @@ void Memory::init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState) 
 	std::memset(RamBankData, 0, sizeof(RamBankData));
 	std::memset(VRamBankData, 0, sizeof(VRamBankData));
 	std::memset(PaletteData, 0, sizeof(PaletteData));
+	std::memset(WRamBankData, 0, sizeof(WRamBankData));
 
 	rominfo = _rominfo;
 	zreg = _zreg;
@@ -134,6 +135,14 @@ void Memory::ResetBit(uint8_t* val, uint8_t bit) {
 uint8_t* Memory::GetPointerTo(uint16_t location) {
 	return memory + location;
 }
+uint32_t Memory::GetMemorySize() {
+	uint32_t size = RAM_SIZE;
+	size += RAM_BANK_SIZE;
+	size += (VRAM_BANK_SIZE * 2);
+	size += (WRAM_BANK_SIZE * 8);
+	size += PALETTE_SIZE;
+	return size;
+}
 void Memory::GetState(uint8_t* state, uint32_t *index) {
 	uint32_t val = *index;
 	for(int i=0; i<RAM_SIZE; i++) {
@@ -150,6 +159,12 @@ void Memory::GetState(uint8_t* state, uint32_t *index) {
 		}
 		val += VRAM_BANK_SIZE;
 	}
+	for(int i=0; i<8; i++) {
+		for(int j=0; j<WRAM_BANK_SIZE; j++) {
+			*(state+val+j) = WRamBankData[i][j];
+		}
+		val += WRAM_BANK_SIZE;
+	}
 	for(int i=0; i<PALETTE_SIZE; i++) {
 		*(state+val+i) = PaletteData[i];
 	}
@@ -159,6 +174,7 @@ void Memory::GetState(uint8_t* state, uint32_t *index) {
 	*(state+val++) = (uint8_t)RomBank;
 	*(state+val++) = (uint8_t)RamBank;
 	*(state+val++) = VramBank;
+	*(state+val++) = WRamBank;
 	*index = val;
 }
 void Memory::SetState(uint8_t* state, uint32_t *index) {
@@ -177,6 +193,12 @@ void Memory::SetState(uint8_t* state, uint32_t *index) {
 		}
 		val += VRAM_BANK_SIZE;
 	}
+	for(int i=0; i<8; i++) {
+		for(int j=0; j<WRAM_BANK_SIZE; j++) {
+			WRamBankData[i][j] = *(state+val+j);
+		}
+		val += WRAM_BANK_SIZE;
+	}
 	for(int i=0; i<PALETTE_SIZE; i++) {
 		PaletteData[i] = *(state+val+i);
 	}
@@ -186,6 +208,7 @@ void Memory::SetState(uint8_t* state, uint32_t *index) {
 	RomBank = *(state+val++);
 	RamBank = *(state+val++);
 	VramBank = *(state+val++);
+	WRamBank = *(state+val++);
 	*index = val;
 }
 void Memory::setHDMASourceLow(uint8_t value) {

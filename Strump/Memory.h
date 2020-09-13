@@ -10,6 +10,7 @@ constexpr auto INTERNAL_ROM_SIZE = 256;
 constexpr auto RAM_SIZE = 0x10000;
 constexpr auto RAM_BANK_SIZE = 0x8000;
 constexpr auto VRAM_BANK_SIZE = 0x2000;
+constexpr auto WRAM_BANK_SIZE = 0x1000;
 constexpr auto PALETTE_SIZE = 0x80;
 
 class Memory
@@ -47,6 +48,7 @@ public:
 	void SetVramBank(uint8_t value);
 
 	uint8_t* GetPointerTo(uint16_t location);
+	uint32_t GetMemorySize();
 
 	virtual void GetState(uint8_t* state, uint32_t *index);
 	virtual void SetState(uint8_t* state, uint32_t *index);
@@ -64,7 +66,7 @@ private:
 protected:
 	std::mutex mem_mutex;
 
-	uint8_t VramBank = 0;
+	uint8_t VramBank = 0, WRamBank = 0;;
 	uint8_t internal_get(uint16_t address);
 	void internal_set(uint16_t address, uint8_t value);
 	void doDMATransfer(uint8_t startAddress);
@@ -88,6 +90,7 @@ protected:
 	uint8_t RamBankData[RAM_BANK_SIZE];
 	uint8_t VRamBankData[2][VRAM_BANK_SIZE];
 	uint8_t PaletteData[PALETTE_SIZE];
+	uint8_t WRamBankData[8][WRAM_BANK_SIZE];
 
 	ROMInfo* rominfo;
 
