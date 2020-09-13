@@ -177,7 +177,7 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 				nlocation |= (RAMB << 13);
 				
 				RamBankData[nlocation] = value;
-				printf("write: RAMG: %x, RAMB: %x, location: %x, nlocation: %x, value: %x\n", RAMG, RAMB, location, nlocation, value);
+				// printf("write: RAMG: %x, RAMB: %x, location: %x, nlocation: %x, value: %x\n", RAMG, RAMB, location, nlocation, value);
 				
 			}
 		}
@@ -204,59 +204,31 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 	}
 }
 
-void MBC3Memory::GetState(uint8_t* state, uint32_t index) {
-	for(int i=0; i<RAM_SIZE; i++) {
-		*(state+index+i) = memory[i];
-	}
-	index += RAM_SIZE;
-	for(int i=0; i<RAM_BANK_SIZE; i++) {
-		*(state+index+i) = RamBankData[i];
-	}
-	index += RAM_BANK_SIZE;
-	for(int i=0; i<2; i++) {
-		for(int j=0; j<VRAM_BANK_SIZE; j++) {
-			*(state+index+j) = VRamBankData[i][j];
-		}
-		index += VRAM_BANK_SIZE;
-	}
-	for(int i=0; i<PALETTE_SIZE; i++) {
-		*(state+index+i) = PaletteData[i];
-	}
-	index += PALETTE_SIZE;
-	*(state+index) = (uint8_t)ROMB;
-	*(state+index+1) = (uint8_t)RAMB;
-	*(state+index+2) = (uint8_t)RAMG;
-	*(state+index+3) = (uint8_t)RTC_S;
-	*(state+index+4) = (uint8_t)RTC_M;
-	*(state+index+5) = (uint8_t)RTC_H;
-	*(state+index+6) = (uint8_t)RTC_DL;
-	*(state+index+7) = (uint8_t)RTC_DH;
+void MBC3Memory::GetState(uint8_t* state, uint32_t *index) {
+	Memory::GetState(state, index);
+	uint32_t val = *index;
+	*(state+val++) = (uint8_t)ROMB;
+	*(state+val++) = (uint8_t)RAMB;
+	*(state+val++) = (uint8_t)RAMG;
+	*(state+val++) = (uint8_t)RTC_S;
+	*(state+val++) = (uint8_t)RTC_M;
+	*(state+val++) = (uint8_t)RTC_H;
+	*(state+val++) = (uint8_t)RTC_DL;
+	*(state+val++) = (uint8_t)RTC_DH;
+	*(state+val++) = hasRAM ? 0x1 : 0;
+	*index = val;
 }
-void MBC3Memory::SetState(uint8_t* state, uint32_t index) {
-	for(int i=0; i<RAM_SIZE; i++) {
-		memory[i] = *(state+index+i);
-	}
-	index += RAM_SIZE;
-	for(int i=0; i<RAM_BANK_SIZE; i++) {
-		RamBankData[i] = *(state+index+i);
-	}
-	index += RAM_BANK_SIZE;
-	for(int i=0; i<2; i++) {
-		for(int j=0; j<VRAM_BANK_SIZE; j++) {
-			VRamBankData[i][j] = *(state+index+j);
-		}
-		index += VRAM_BANK_SIZE;
-	}
-	for(int i=0; i<PALETTE_SIZE; i++) {
-		PaletteData[i] = *(state+index+i);
-	}
-	index += PALETTE_SIZE;
-	ROMB = *(state+index);
-	RAMB = *(state+index+1);
-	RAMG = *(state+index+2);
-	RTC_S = *(state+index+3);
-	RTC_M = *(state+index+4);
-	RTC_H = *(state+index+5);
-	RTC_DL = *(state+index+6);
-	RTC_DH = *(state+index+7);
+void MBC3Memory::SetState(uint8_t* state, uint32_t *index) {
+	Memory::SetState(state, index);
+	uint32_t val = *index;
+	ROMB = *(state+val++);
+	RAMB = *(state+val++);
+	RAMG = *(state+val++);
+	RTC_S = *(state+val++);
+	RTC_M = *(state+val++);
+	RTC_H = *(state+val++);
+	RTC_DL = *(state+val++);
+	RTC_DH = *(state+val++);
+	hasRAM = *(state+val++) == 0x1;
+	*index = val;
 }

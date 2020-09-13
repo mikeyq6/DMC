@@ -186,51 +186,71 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 	}
 }
 
-void MBC5Memory::GetState(uint8_t* state, uint32_t index) {
-	for(int i=0; i<RAM_SIZE; i++) {
-		*(state+index+i) = memory[i];
-	}
-	index += RAM_SIZE;
-	for(int i=0; i<RAM_BANK_SIZE; i++) {
-		*(state+index+i) = RamBankData[i];
-	}
-	index += RAM_BANK_SIZE;
-	for(int i=0; i<2; i++) {
-		for(int j=0; j<VRAM_BANK_SIZE; j++) {
-			*(state+index+i) = VRamBankData[i][j];
-		}
-		index += VRAM_BANK_SIZE;
-	}
-	for(int i=0; i<PALETTE_SIZE; i++) {
-		*(state+index+i) = PaletteData[i];
-	}
-	index += PALETTE_SIZE;
-	*(state+index) = (uint8_t)RAMB;
-	*(state+index+1) = (uint8_t)RAMG;
-	*(state+index+2) = (uint8_t)ROMB0;
-	*(state+index+3) = (uint8_t)ROMB1;
+// void MBC5Memory::GetState(uint8_t* state, uint32_t *index) {
+// 	for(int i=0; i<RAM_SIZE; i++) {
+// 		*(state+index+i) = memory[i];
+// 	}
+// 	index += RAM_SIZE;
+// 	for(int i=0; i<RAM_BANK_SIZE; i++) {
+// 		*(state+index+i) = RamBankData[i];
+// 	}
+// 	index += RAM_BANK_SIZE;
+// 	for(int i=0; i<2; i++) {
+// 		for(int j=0; j<VRAM_BANK_SIZE; j++) {
+// 			*(state+index+i) = VRamBankData[i][j];
+// 		}
+// 		index += VRAM_BANK_SIZE;
+// 	}
+// 	for(int i=0; i<PALETTE_SIZE; i++) {
+// 		*(state+index+i) = PaletteData[i];
+// 	}
+// 	index += PALETTE_SIZE;
+// 	*(state+index) = (uint8_t)RAMB;
+// 	*(state+index+1) = (uint8_t)RAMG;
+// 	*(state+index+2) = (uint8_t)ROMB0;
+// 	*(state+index+3) = (uint8_t)ROMB1;
+// }
+// void MBC5Memory::SetState(uint8_t* state, uint32_t *index) {
+// 	for(int i=0; i<RAM_SIZE; i++) {
+// 		memory[i] = *(state+index+i);
+// 	}
+// 	index += RAM_SIZE;
+// 	for(int i=0; i<RAM_BANK_SIZE; i++) {
+// 		RamBankData[i] = *(state+index+i);
+// 	}
+// 	index += RAM_BANK_SIZE;
+// 	for(int i=0; i<2; i++) {
+// 		for(int j=0; j<VRAM_BANK_SIZE; j++) {
+// 			VRamBankData[i][j] = *(state+index+i);
+// 		}
+// 		index += VRAM_BANK_SIZE;
+// 	}
+// 	for(int i=0; i<PALETTE_SIZE; i++) {
+// 		PaletteData[i] = *(state+index+i);
+// 	}
+// 	index += PALETTE_SIZE;
+// 	RAMB = *(state+index);
+// 	RAMG = *(state+index+1);
+// 	ROMB0 = *(state+index+2);
+// 	ROMB1 = *(state+index+3);
+// }
+void MBC5Memory::GetState(uint8_t* state, uint32_t *index) {
+	Memory::GetState(state, index);
+	uint32_t val = *index;
+	*(state+val++) = (uint8_t)RAMB;
+	*(state+val++) = (uint8_t)RAMG;
+	*(state+val++) = (uint8_t)ROMB0;
+	*(state+val++) = (uint8_t)ROMB1;
+	*(state+val++) = hasRAM ? 0x1 : 0;
+	*index = val;
 }
-void MBC5Memory::SetState(uint8_t* state, uint32_t index) {
-	for(int i=0; i<RAM_SIZE; i++) {
-		memory[i] = *(state+index+i);
-	}
-	index += RAM_SIZE;
-	for(int i=0; i<RAM_BANK_SIZE; i++) {
-		RamBankData[i] = *(state+index+i);
-	}
-	index += RAM_BANK_SIZE;
-	for(int i=0; i<2; i++) {
-		for(int j=0; j<VRAM_BANK_SIZE; j++) {
-			VRamBankData[i][j] = *(state+index+i);
-		}
-		index += VRAM_BANK_SIZE;
-	}
-	for(int i=0; i<PALETTE_SIZE; i++) {
-		PaletteData[i] = *(state+index+i);
-	}
-	index += PALETTE_SIZE;
-	RAMB = *(state+index);
-	RAMG = *(state+index+1);
-	ROMB0 = *(state+index+2);
-	ROMB1 = *(state+index+3);
+void MBC5Memory::SetState(uint8_t* state, uint32_t *index) {
+	Memory::SetState(state, index);
+	uint32_t val = *index;
+	RAMB = *(state+val++);
+	RAMG = *(state+val++);
+	ROMB0 = *(state+val++);
+	ROMB1 = *(state+val++);
+	hasRAM = *(state+val++) == 0x1;
+	*index = val;
 }

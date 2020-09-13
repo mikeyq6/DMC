@@ -48,8 +48,8 @@ public:
 
 	uint8_t* GetPointerTo(uint16_t location);
 
-	virtual void GetState(uint8_t* state, uint32_t index);
-	virtual void SetState(uint8_t* state, uint32_t index);
+	virtual void GetState(uint8_t* state, uint32_t *index);
+	virtual void SetState(uint8_t* state, uint32_t *index);
 
 private:
 	uint8_t lastWriteAddress = 0;

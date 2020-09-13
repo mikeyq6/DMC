@@ -1390,6 +1390,7 @@ void CPU::InputProcess(uint8_t type) {
 }
 void CPU::GetState(uint8_t *state) {
 	uint32_t index = 0;
+	uint32_t index2 = REGISTERS_STATE_SIZE + TIMER_STATE_SIZE;
 	*(state+index++) = registers->AF.a; 
 	*(state+index++) = registers->AF.f;
 	*(state+index++) = registers->BC.b;
@@ -1410,11 +1411,12 @@ void CPU::GetState(uint8_t *state) {
 	*(state+index++) = (registers->sCounter >> 24) & 0xff;
 
 	timer->GetState(state, REGISTERS_STATE_SIZE);
-	memory->GetState(state, REGISTERS_STATE_SIZE + TIMER_STATE_SIZE);
+	memory->GetState(state, &index2);
 }
 
 void CPU::SetState(uint8_t *state) {
 	uint32_t index = 0;
+	uint32_t index2 = REGISTERS_STATE_SIZE + TIMER_STATE_SIZE;
 	registers->AF.a = *(state+index++);
 	registers->AF.f = *(state+index++);
 	registers->BC.b = *(state+index++);
@@ -1429,7 +1431,7 @@ void CPU::SetState(uint8_t *state) {
 	registers->sCounter = *(state+index) + (*(state+index+1) << 8) + (*(state+index+2) << 16) + (*(state+index+3) << 24);
 
 	timer->SetState(state, REGISTERS_STATE_SIZE);
-	memory->SetState(state, REGISTERS_STATE_SIZE + TIMER_STATE_SIZE);
+	memory->SetState(state, &index2);
 }
 
 #ifdef LOG_COMMANDS

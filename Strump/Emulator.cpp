@@ -201,7 +201,7 @@ void Emulator::update() {
 void Emulator::saveGameState() {
 	cpu->Pause();
 
-	uint32_t size = RAM_SIZE + RAM_BANK_SIZE + (VRAM_BANK_SIZE * 2) + TIMER_STATE_SIZE + REGISTERS_STATE_SIZE + RAM_STATE_SIZE;
+	uint32_t size = RAM_SIZE + RAM_BANK_SIZE + (VRAM_BANK_SIZE * 2) + PALETTE_SIZE + TIMER_STATE_SIZE + REGISTERS_STATE_SIZE + RAM_STATE_SIZE;
 	uint32_t index = 0;
 	uint32_t *pIndex = &index;
 
