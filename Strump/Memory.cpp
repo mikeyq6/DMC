@@ -66,12 +66,12 @@ void Memory::increment(uint16_t address) {
 
 void Memory::setPaletteWrite(bool isObj, uint8_t value) {
 	lastWriteAddress = (value & 0x3f) + (isObj ? 0x40 : 0);
-	printf("lastWriteAddress: %x, value: %x\n", lastWriteAddress, value);
+	// printf("lastWriteAddress: %x, value: %x\n", lastWriteAddress, value);
 	incrementAddress = ((value & 0x80) == 0x80);
 }
 void Memory::setPaletteData(uint8_t value) {
 	PaletteData[lastWriteAddress] = value;
-	printf("paletteData at: %x, value: %x\n", lastWriteAddress, value);
+	// printf("paletteData at: %x, value: %x\n", lastWriteAddress, value);
 	if(incrementAddress) lastWriteAddress++;
 }
 uint8_t Memory::getPaletteData() {
@@ -85,10 +85,16 @@ uint16_t Memory::GetPaletteColourInfo(uint8_t baseAddress) {
 	return data;
 }
 uint8_t Memory::GetVramForAddress(uint16_t address) {
-	return VRamBankData[VramBank][address -0x8000];
+	return GetVramForAddress(address, VramBank);
+}
+uint8_t Memory::GetVramForAddress(uint16_t address, uint8_t bank) {
+	return VRamBankData[bank][address -0x8000];
 }
 void Memory::SetVramForAddress(uint16_t address, uint8_t value) {
-	VRamBankData[VramBank][address - 0x8000] = value;
+	SetVramForAddress(address, value, VramBank);
+}
+void Memory::SetVramForAddress(uint16_t address, uint8_t value, uint8_t bank) {
+	VRamBankData[bank][address - 0x8000] = value;
 }
 
 void Memory::doDMATransfer(uint8_t startAddress) {
@@ -212,21 +218,21 @@ void Memory::SetState(uint8_t* state, uint32_t *index) {
 	*index = val;
 }
 void Memory::setHDMASourceLow(uint8_t value) {
-	dmaSource = (dmaSource & 0xff00) | value;
-	dmaSource &= 0xfff0;
-}
-void Memory::setHDMASourceHigh(uint8_t value) {
 	uint16_t nval = value << 8;
 	dmaSource = (dmaSource & 0x00ff) | nval;
 }
-void Memory::setHDMADestinationLow(uint8_t value) {
-	dmaDestination = (dmaDestination & 0xff00) | value;
-	dmaDestination &= 0x1ff0;
+void Memory::setHDMASourceHigh(uint8_t value) {
+	dmaSource = (dmaSource & 0xff00) | value;
+	dmaSource &= 0xfff0;
 }
-void Memory::setHDMADestinationHigh(uint8_t value) {
+void Memory::setHDMADestinationLow(uint8_t value) {
 	uint16_t nval = value << 8;
 	dmaDestination = (dmaDestination & 0x00ff) | nval;
-	dmaDestination &= 0x1ff0;
+	// dmaDestination &= 0x1ff0;
+}
+void Memory::setHDMADestinationHigh(uint8_t value) {
+	dmaDestination = (dmaDestination & 0xff00) | value;
+	// dmaDestination &= 0x1ff0;
 }
 void Memory::doHDMATransfer(uint8_t value) {
 	uint8_t numBytes = 0x10 + (value & 0x7f) * 0x10;

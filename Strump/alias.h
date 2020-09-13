@@ -64,6 +64,7 @@ constexpr auto BCPS = 0xff68;
 constexpr auto BCPD = 0xff69;
 constexpr auto OCPS = 0xff6a;
 constexpr auto OCPD = 0xff6b;
-constexpr auto VBK = 0xFF4F;
+constexpr auto VBK = 0xff4f;
+constexpr auto SVBK = 0xff70;
 
 constexpr auto IE = 0xffff;

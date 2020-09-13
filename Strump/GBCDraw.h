@@ -69,6 +69,7 @@ private:
 	void setTilePixels();
 	void setSpritePixels();
 	void GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite);
+	Palette* GetPaletteNumber(bool isSprite, uint8_t number);
 	string registerInfo;
 	uint32_t GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t);
 

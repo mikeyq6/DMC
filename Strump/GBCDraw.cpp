@@ -299,7 +299,7 @@ void GBCDraw::setSpritePixels() {
 			if (spriteMode == SPRITE_MODE_8x8) {
 				scX = sprite->X - 8;
 				scY = sprite->Y - 16;
-				getTileAt(base + (sprite->TileNumber * 16), &cur, sprite->GetSpriteTileVramBank());
+				getTileAt(base + (sprite->TileNumber * 16), &cur, sprite->CGBVbank);
 
 				for (int y = 0; y < 8; y++) {
 					for (int x = 0; x < 8; x++) {
@@ -319,7 +319,7 @@ void GBCDraw::setSpritePixels() {
 					scX = sprite->X - 8;
 					scY = sprite->Y - 16 + (i * 8);
 
-					getTileAt(base + ((sprite->TileNumber + i) * 16), &cur, sprite->GetSpriteTileVramBank());
+					getTileAt(base + ((sprite->TileNumber + i) * 16), &cur, sprite->CGBVbank);
 					for (int y = 0; y < 8; y++) {
 						for (int x = 0; x < 8; x++) {
 							getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
@@ -341,27 +341,33 @@ void GBCDraw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
 	uint8_t attributes = memory->ReadMem(address + 3);
 	uint8_t spriteMode = (memory->ReadMem(LCDC) & 0x4) > 0 ? SPRITE_MODE_8x16 : SPRITE_MODE_8x8;
 	sprite->Attributes = attributes;
-	printf("attributes: %x\n", attributes);
+	// printf("attributes: %x\n", attributes);
 	sprite->Y = memory->ReadMem(address);
 	sprite->X = memory->ReadMem(address + 1);
 	if (spriteMode == SPRITE_MODE_8x8)
 		sprite->TileNumber = memory->ReadMem(address + 2);
 	else
 		sprite->TileNumber = memory->ReadMem(address + 2) & 0xfe;
-	sprite->CGBPalette = (attributes & 0x10) == 0x10 ? 1 : 0;
+	sprite->CGBPalette = attributes & 0x7;
 	sprite->SpritePriority = ((attributes & 0x80) == 0x80) ? 1 : 0;
 	sprite->YFlip = (attributes & 0x40) == 0x40;
 	sprite->XFlip = (attributes & 0x20) == 0x20;
-	sprite->CGBVbank = (attributes & 0x08) == 0x08;
+	sprite->CGBVbank = (attributes & 0x8) >> 3;
 	sprite->Number = spriteNum + 1;
+	if(sprite->CGBPalette > 1) {
+		// sprite->Draw();
+		// printf("attributes: %x\n", attributes);
+
+	}
 }
 uint32_t GBCDraw::GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t) {
-	uint8_t attributes = memory->GetVramForAddress(t->address);
-	uint8_t palette = sprite->Attributes & 0x3;
+	// uint8_t attributes = sprite->Attributes;
+	// printf("palette: %x\n", palette);
+	if(number == 0) return TRANSPARENT;
+	Palette *palette = GetPaletteNumber(true, sprite->CGBPalette);
+	uint16_t colourData = palette->Colours[number];
 
-	uint16_t colourData = memory->GetPaletteColourInfo((palette << 3) + (number << 1));
-
-	// printf("address: %x, attributes: %x, palette: %x, colourData: %x\n", t->address, attributes, palette, colourData);
+	// printf("address: %x, colourData: %x\n", t->address, colourData);
 
 	uint8_t red = colourData & 0x1f;
 	uint8_t green = colourData & (0x1f << 5);
@@ -377,7 +383,26 @@ uint32_t GBCDraw::GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t) {
 
 	// printf("red: %x, green: %x, blue: %x, redP: %f, greenP: %f, blueP: %f, colour: %x\n",
 	// 	red, green, blue, redP, greenP, blueP, colour);
+	
+	free(palette);
+
 	return colour;
+}
+
+Palette* GBCDraw::GetPaletteNumber(bool isSprite, uint8_t number) {
+	Palette *palette = (Palette*)malloc(sizeof(Palette));
+
+	uint16_t colour = 0;
+	uint8_t index = (number * 4) + (isSprite ? 0x40 : 0);
+	uint8_t paletteDataH,  paletteDataL;
+
+	for(int i=0; i<4; i++) {
+		paletteDataH = memory->PaletteData[index++];
+		paletteDataL = memory->PaletteData[index++];
+		palette->Colours[i] = paletteDataL + (((uint16_t)paletteDataH) << 8);
+	}
+
+	return palette;
 }
 
 #pragma endregion

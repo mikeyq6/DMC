@@ -375,12 +375,6 @@ void GBDraw::setSpritePixels() {
 }
 void GBDraw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
 	uint16_t address = 0xfe00 + (spriteNum * 4); // Start address of sprite data
-	if (address == 0xfe04) {
-		int x = 1;
-	}
-	if (spriteNum == 0 && memory->ReadMem(address) == 0x10) {
-		int y = 1;
-	}
 	uint8_t attributes = memory->ReadMem(address + 3);
 	uint8_t spriteMode = (memory->ReadMem(LCDC) & 0x4) > 0 ? SPRITE_MODE_8x16 : SPRITE_MODE_8x8;
 
@@ -397,9 +391,6 @@ void GBDraw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
 	sprite->XFlip = (attributes & 0x20) == 0x20;
 	sprite->CGBVbank = (attributes & 0x08) == 0x08;
 	sprite->Number = spriteNum + 1;
-	if (address == 0xfe04 && sprite->TileNumber != 0x02) {
-		int x = 1;
-	}
 }
 uint32_t GBDraw::GetSpriteColourFor(uint8_t number, uint8_t paletteSwitch) {
 	uint8_t palette = paletteSwitch == 1 ? memory->ReadMem(OBP1) : memory->ReadMem(OBP0);

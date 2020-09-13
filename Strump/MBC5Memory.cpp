@@ -64,6 +64,17 @@ uint8_t MBC5Memory::internalReadMem(uint16_t location) {
 			return internal_get(location);
 		}
 	}
+	else if (location >= 0xc000 && location <= 0xe000 && rominfo->UseColour()) {
+		if(location < 0xd000) {
+			return internal_get(location);
+		} else {
+			if(WRamBank == 0) {
+				return internal_get(location);
+			} else {
+				return WRamBankData[WRamBank][location - 0xd000];
+			}
+		}
+	}
 	else if (location == P1) { // Joypad register
 		uint8_t state = internal_get(P1);
 		if ((state & 0x10) == 0) // Bit 4 P14 low
@@ -111,22 +122,29 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		setHDMASourceHigh(value);
 	}
 	else if(location == HDMA2) {
+		printf("HDMA2 value: %x\n", value);
 		setHDMASourceLow(value);
 	}
 	else if(location == HDMA3) {
+		printf("HDMA3 value: %x\n", value);
 		setHDMADestinationHigh(value);
 	}
 	else if(location == HDMA4) {
+		printf("HDMA4 value: %x\n", value);
 		setHDMADestinationLow(value);
 	}
 	else if(location == HDMA5) {
 		printf("HDMA5 value: %x\n", value);
+		printf("source: %x, dest: %x\n", dmaSource, dmaDestination);
 		doHDMATransfer(value);
 	}
 	else if(location == VBK) {
-		if(value > 0)
-			printf("VBK: %x\n", value);
 		SetVramBank(value);
+	}
+	else if(location == SVBK) {
+		printf("SVBK: %x\n", value);
+		WRamBank = value & 0x7;
+		if(WRamBank == 0) WRamBank = 1;
 	}
 	else if (location >= 0 && location < 0x2000) {
 		printf("location: %x, setting RAMG: %x\n", location, RAMG);
@@ -155,7 +173,7 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		if (RAMG == 0xa) {
 			location -= 0xa000;
 			RamBankData[location + (RAMB * 0x2000)] = value;
-			printf("Writing (%02x) to RAM at address(%04x)\n", value, (location + (RamBank * 0x2000)));
+			// printf("Writing (%02x) to RAM at address(%04x)\n", value, (location + (RamBank * 0x2000)));
 			//_getch();
 		}
 		else {
@@ -164,9 +182,25 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		}
 	}
 	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
-		if (location + 0x2000 < 0xfe00)
-			internal_set(location + 0x2000, value);
-		internal_set(location, value);
+		if(rominfo->UseColour()) {
+			if(location < 0xd000) {
+				if (location + 0x2000 < 0xfe00)
+					internal_set(location + 0x2000, value);
+				internal_set(location, value);
+			} else {
+				if(WRamBank == 0) {
+					if (location + 0x2000 < 0xfe00)
+						internal_set(location + 0x2000, value);
+					internal_set(location, value);
+				} else {
+					WRamBankData[WRamBank][location - 0xd000] = value;
+				}
+			}
+		} else {
+			if (location + 0x2000 < 0xfe00)
+				internal_set(location + 0x2000, value);
+			internal_set(location, value);
+		}
 	}
 	else if (location >= 0xe000 && location < 0xfe00) { // Allow for the mirrored internal RAM
 		internal_set(location - 0x2000, value);
@@ -186,54 +220,6 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 	}
 }
 
-// void MBC5Memory::GetState(uint8_t* state, uint32_t *index) {
-// 	for(int i=0; i<RAM_SIZE; i++) {
-// 		*(state+index+i) = memory[i];
-// 	}
-// 	index += RAM_SIZE;
-// 	for(int i=0; i<RAM_BANK_SIZE; i++) {
-// 		*(state+index+i) = RamBankData[i];
-// 	}
-// 	index += RAM_BANK_SIZE;
-// 	for(int i=0; i<2; i++) {
-// 		for(int j=0; j<VRAM_BANK_SIZE; j++) {
-// 			*(state+index+i) = VRamBankData[i][j];
-// 		}
-// 		index += VRAM_BANK_SIZE;
-// 	}
-// 	for(int i=0; i<PALETTE_SIZE; i++) {
-// 		*(state+index+i) = PaletteData[i];
-// 	}
-// 	index += PALETTE_SIZE;
-// 	*(state+index) = (uint8_t)RAMB;
-// 	*(state+index+1) = (uint8_t)RAMG;
-// 	*(state+index+2) = (uint8_t)ROMB0;
-// 	*(state+index+3) = (uint8_t)ROMB1;
-// }
-// void MBC5Memory::SetState(uint8_t* state, uint32_t *index) {
-// 	for(int i=0; i<RAM_SIZE; i++) {
-// 		memory[i] = *(state+index+i);
-// 	}
-// 	index += RAM_SIZE;
-// 	for(int i=0; i<RAM_BANK_SIZE; i++) {
-// 		RamBankData[i] = *(state+index+i);
-// 	}
-// 	index += RAM_BANK_SIZE;
-// 	for(int i=0; i<2; i++) {
-// 		for(int j=0; j<VRAM_BANK_SIZE; j++) {
-// 			VRamBankData[i][j] = *(state+index+i);
-// 		}
-// 		index += VRAM_BANK_SIZE;
-// 	}
-// 	for(int i=0; i<PALETTE_SIZE; i++) {
-// 		PaletteData[i] = *(state+index+i);
-// 	}
-// 	index += PALETTE_SIZE;
-// 	RAMB = *(state+index);
-// 	RAMG = *(state+index+1);
-// 	ROMB0 = *(state+index+2);
-// 	ROMB1 = *(state+index+3);
-// }
 void MBC5Memory::GetState(uint8_t* state, uint32_t *index) {
 	Memory::GetState(state, index);
 	uint32_t val = *index;

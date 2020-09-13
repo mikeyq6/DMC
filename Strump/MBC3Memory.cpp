@@ -134,6 +134,9 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 			printf("VBK: %x\n", value);
 		SetVramBank(value);
 	}
+	else if(location == SVBK) {
+		WRamBank = value & 0x7;
+	}
 	else if (location >= 0 && location < 0x2000) {
 		RAMG = value & 0xf;
 		if(value > 0)

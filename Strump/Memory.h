@@ -43,7 +43,9 @@ public:
 	void SetBit(uint8_t* val, uint8_t bit);
 	void ResetBit(uint8_t* val, uint8_t bit);
 	uint8_t GetVramForAddress(uint16_t address);
+	uint8_t GetVramForAddress(uint16_t address, uint8_t bank);
 	void SetVramForAddress(uint16_t address, uint8_t value);
+	void SetVramForAddress(uint16_t address, uint8_t value, uint8_t bank);
 	uint16_t GetPaletteColourInfo(uint8_t baseAddress);
 	void SetVramBank(uint8_t value);
 
@@ -52,6 +54,8 @@ public:
 
 	virtual void GetState(uint8_t* state, uint32_t *index);
 	virtual void SetState(uint8_t* state, uint32_t *index);
+	
+	uint8_t PaletteData[PALETTE_SIZE];
 
 private:
 	uint8_t lastWriteAddress = 0;
@@ -89,7 +93,6 @@ protected:
 	uint8_t memory[RAM_SIZE];
 	uint8_t RamBankData[RAM_BANK_SIZE];
 	uint8_t VRamBankData[2][VRAM_BANK_SIZE];
-	uint8_t PaletteData[PALETTE_SIZE];
 	uint8_t WRamBankData[8][WRAM_BANK_SIZE];
 
 	ROMInfo* rominfo;

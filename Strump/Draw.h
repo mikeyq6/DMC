@@ -29,6 +29,10 @@ constexpr auto FULL_BACKGROUND_WIDTH = 256;
 constexpr auto FULL_BACKGROUND_HEIGHT = 256;
 constexpr auto FULL_BACKGROUND_PIXELS = 65536;
 
+typedef struct _palette {
+	uint16_t Colours[4];
+} Palette;
+
 class Draw {
     public:
 

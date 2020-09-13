@@ -16,10 +16,12 @@ typedef struct _tile {
 class Sprite
 {
 	public:
-		uint8_t X, Y, TileNumber, Attributes, CGBPalette, Number, SpritePriority;
-		bool YFlip, XFlip, CGBVbank;
 
-		uint8_t GetSpriteTileVramBank();
+		uint8_t X, Y, TileNumber, Attributes, CGBPalette, Number, SpritePriority, CGBVbank;
+		bool YFlip, XFlip;
+
 		void GetSpriteTile(Memory* memory, tile* t);
+
+		void Draw();
 };
 
