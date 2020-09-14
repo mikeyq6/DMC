@@ -6,6 +6,9 @@ SUPPRESS=-Wno-unused-variable -Wno-unused-private-field
 debug:
 	${CC} -Wall ${SUPPRESS} -DRUNTESTS=1 ${LFLAGS} -o strump ${OBJS}
 
+debug-notests:
+	${CC} -Wall ${SUPPRESS} ${LFLAGS} -o strump ${OBJS}
+
 log:
 	${CC} -Wall ${SUPPRESS} -DLOG_COMMANDS=1 -DRUNTESTS=1 ${LFLAGS} -o strump ${OBJS}
 
