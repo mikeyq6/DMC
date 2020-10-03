@@ -69,7 +69,8 @@ void CPU::initCPU() {
 	test->TestInstructions();	
 	delete test;
 
-	MBC5Memory* mem5 = new MBC5Memory(false, false, true, true);
+	Memory* mem5 = new MBC5Memory(false, false, true, true);
+	mem5->init(rominfo, &registers->AF.f, joypadState);
 	testMBC5 = new TestMBC5(commands, mem5, registers);
 	testMBC5->RunTests();
 

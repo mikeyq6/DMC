@@ -363,7 +363,7 @@ void GBCDraw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
 		// printf("attributes: %x\n", attributes);
 
 	}
-	sprite->Draw();
+	// sprite->Draw();
 }
 uint32_t GBCDraw::GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t) {
 	// uint8_t attributes = sprite->Attributes;

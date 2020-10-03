@@ -5,7 +5,6 @@
 #include "registers.h"
 #include "Sprite.h"
 #include "GBCDraw.h"
-#include <assert.h>
 
 class TestMBC5
 {

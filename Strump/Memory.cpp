@@ -221,19 +221,23 @@ void Memory::SetState(uint8_t* state, uint32_t *index) {
 void Memory::setHDMASourceHigh(uint8_t value) {
 	uint16_t nval = (value & 0x7f) << 8;
 	dmaSource = (dmaSource & 0x00ff) | nval;
+	printf("dmaSource (H): %x\n", dmaSource);
 }
 void Memory::setHDMASourceLow(uint8_t value) {
 	dmaSource = (dmaSource & 0xff00) | value;
 	dmaSource &= 0xfff0;
+	printf("dmaSource (L): %x\n", dmaSource);
 }
 void Memory::setHDMADestinationHigh(uint8_t value) {
 	uint16_t nval = value << 8;
 	dmaDestination = (dmaDestination & 0x00ff) | nval;
 	dmaDestination &= 0x1ff0;
+	printf("dmaDestination (H): %x\n", dmaDestination);
 }
 void Memory::setHDMADestinationLow(uint8_t value) {
 	dmaDestination = (dmaDestination & 0xff00) | value;
 	dmaDestination &= 0x1ff0;
+	printf("dmaDestination (L): %x\n", dmaDestination);
 }
 void Memory::doHDMATransfer(uint8_t value) {
 	uint8_t numBytes = 0x10 + ((value & 0x7f) * 0x10);
