@@ -13,7 +13,6 @@ void Sprite::GetSpriteTile(Memory *memory, tile* t) {
 }
 
 void Sprite::Draw() {
-	printf("Sprite data: { X:%x, Y:%x, Tile:%x, Attributes:%x, CGBPalette:%x, Number:%x, CGBVbank:%x }\n",
-		X, Y, TileNumber, Attributes, CGBPalette, Number, CGBVbank);
-
+	printf("Sprite data: { X:%x, Y:%x, Tile:%x, Attributes:%x, CGBPalette:%x, Number:%x, CGBVbank:%x, PaletteBank:%x }\n",
+		X, Y, TileNumber, Attributes, CGBPalette, Number, CGBVbank, PaletteBank);
 }

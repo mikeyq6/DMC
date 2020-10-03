@@ -1019,6 +1019,31 @@ void Test::TestInstructions() {
 
 
 	registers->PC = 0x000;
+
+	// Test sprite data
+	clearFlags();
+	uint8_t spriteNum = 2;
+	uint8_t spriteData = 0xae; // 10101110
+	uint8_t _x = 0x90;
+	uint8_t _y = 0xf1;
+	uint8_t tileNum = 0x45;
+	uint16_t address = 0xfe08;
+	memory->set(address, _y);
+	memory->set(address+1, _x);
+	memory->set(address+2, tileNum);
+	memory->set(address+3, spriteData);
+	Sprite *sprite = new Sprite();
+	GBCDraw *draw = new GBCDraw(memory, registers);
+	draw->GetSpriteByNumber(spriteNum, sprite);
+	assert(sprite->X == _x);
+	assert(sprite->Y == _y);
+	assert(sprite->TileNumber == tileNum);
+	assert(sprite->PaletteBank == 0);
+	assert(sprite->CGBPalette == 0x6);
+	assert(sprite->XFlip == 1);
+	assert(sprite->YFlip == 0);
+	assert(sprite->SpritePriority == 1);
+
 }
 
 void Test::clearFlags() {

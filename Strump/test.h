@@ -4,6 +4,8 @@
 #include "opcodes.h"
 #include "Memory.h"
 #include "registers.h"
+#include "Sprite.h"
+#include "GBCDraw.h"
 
 class Test
 {

@@ -299,7 +299,8 @@ void GBCDraw::setSpritePixels() {
 			if (spriteMode == SPRITE_MODE_8x8) {
 				scX = sprite->X - 8;
 				scY = sprite->Y - 16;
-				getTileAt(base + (sprite->TileNumber * 16), &cur, sprite->CGBVbank);
+				// getTileAt(base + ((sprite->TileNumber + i) * 16), &cur, sprite->GetSpriteTileVramBank());
+				getTileAt(base + ((sprite->TileNumber + i) * 16), &cur, sprite->CGBVbank);
 
 				for (int y = 0; y < 8; y++) {
 					for (int x = 0; x < 8; x++) {
@@ -318,7 +319,8 @@ void GBCDraw::setSpritePixels() {
 				for (int i = 0; i < 2; i++) {
 					scX = sprite->X - 8;
 					scY = sprite->Y - 16 + (i * 8);
-
+// getTileAt(base + ((sprite->TileNumber + i) * 16), &cur, sprite->GetSpriteTileVramBank());
+				
 					getTileAt(base + ((sprite->TileNumber + i) * 16), &cur, sprite->CGBVbank);
 					for (int y = 0; y < 8; y++) {
 						for (int x = 0; x < 8; x++) {
@@ -352,6 +354,8 @@ void GBCDraw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
 	sprite->SpritePriority = ((attributes & 0x80) == 0x80) ? 1 : 0;
 	sprite->YFlip = (attributes & 0x40) == 0x40;
 	sprite->XFlip = (attributes & 0x20) == 0x20;
+	sprite->PaletteBank = (attributes & 0x10) == 0x10;
+	// sprite->CGBVbank = (attributes & 0x8) == 0x8;
 	sprite->CGBVbank = (attributes & 0x8) >> 3;
 	sprite->Number = spriteNum + 1;
 	if(sprite->CGBPalette > 1) {
@@ -359,6 +363,7 @@ void GBCDraw::GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite) {
 		// printf("attributes: %x\n", attributes);
 
 	}
+	sprite->Draw();
 }
 uint32_t GBCDraw::GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t) {
 	// uint8_t attributes = sprite->Attributes;

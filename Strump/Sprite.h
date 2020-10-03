@@ -17,7 +17,7 @@ class Sprite
 {
 	public:
 
-		uint8_t X, Y, TileNumber, Attributes, CGBPalette, Number, SpritePriority, CGBVbank;
+		uint8_t X, Y, TileNumber, PaletteBank, Attributes, CGBPalette, Number, SpritePriority, CGBVbank;
 		bool YFlip, XFlip;
 
 		void GetSpriteTile(Memory* memory, tile* t);
