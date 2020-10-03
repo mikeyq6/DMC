@@ -39,7 +39,6 @@ CPU::~CPU() {
 	delete commands;
 	delete memory;
 	delete registers;
-	delete test;
 	delete factory;
 	delete joypadState;
 }
@@ -64,10 +63,18 @@ void CPU::initCPU() {
 
 	timer = new Timer(memory->GetPointerTo(TAC), memory->GetPointerTo(TIMA), memory->GetPointerTo(TMA), memory->GetPointerTo(DIV));
 	commands = new Commands(memory, registers);
-	test = new Test(commands, memory, registers);
 
 #ifdef RUNTESTS
-	test->TestInstructions();
+	test = new Test(commands, memory, registers);
+	test->TestInstructions();	
+	delete test;
+
+	MBC5Memory* mem5 = new MBC5Memory(false, false, true, true);
+	testMBC5 = new TestMBC5(commands, mem5, registers);
+	testMBC5->RunTests();
+
+	delete mem5;
+	delete testMBC5;
 #endif
 
 	setDefaults();

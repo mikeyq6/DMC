@@ -9,6 +9,7 @@
 #include "Draw.h"
 #include "Memory.h"
 #include "test.h"
+#include "testMBC5.h"
 #include <thread>
 #include "MemoryFactory.h"
 #include "JoypadState.h"
@@ -138,11 +139,13 @@ private:
 	Commands* commands;
 	Memory* memory;
 	Registers* registers;
-	Test* test;
 	MemoryFactory* factory;
 	JoypadState* joypadState;
 	Timer* timer;
-
+#ifdef RUNTESTS
+	Test* test;
+	TestMBC5* testMBC5;
+#endif
 	void setDefaults();
 	short GetParameters(uint8_t opcode, uint8_t* param1, uint8_t* param2);
 	uint8_t GetCycles(uint8_t opcode);
