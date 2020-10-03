@@ -117,7 +117,7 @@ void RamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location >= 0 && location < 0x2000) {
 		printf("Enabling RAM/ROM: %02x\n", value);
 		//_getch();
-		if ((value & 0x15) == 0x0a) {
+		if ((value & 0x0a) == 0x0a) {
 			RamEnabled = true;
 		}
 		else {

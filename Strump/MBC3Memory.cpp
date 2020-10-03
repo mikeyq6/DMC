@@ -29,6 +29,9 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 	else if (location >= 0 && location < 0x4000) {
 		return rominfo->GetCardridgeVal(location);
 	}
+	else if(location == HDMA5) {
+		return 0x00ff;
+	}
 	else if (location >= 0x4000 && location < 0x8000) {
 		uint8_t bank = ROMB;
 		if(bank > rominfo->GetNumberOfRomBanks()) {
@@ -65,7 +68,7 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 				nlocation |= (RAMB << 13);
 				
 				data = RamBankData[nlocation];
-				printf("read: RAMG: %x, RAMB: %x, location: %x, address: %x, data: %x\n", RAMG, RAMB, location, nlocation, data);
+				// printf("read: RAMG: %x, RAMB: %x, location: %x, address: %x, data: %x\n", RAMG, RAMB, location, nlocation, data);
 				return data;
 			}
 		}
@@ -117,30 +120,35 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 		setHDMASourceHigh(value);
 	}
 	else if(location == HDMA2) {
+		printf("HDMA2 value: %x\n", value);
 		setHDMASourceLow(value);
 	}
 	else if(location == HDMA3) {
+		printf("HDMA3 value: %x\n", value);
 		setHDMADestinationHigh(value);
 	}
 	else if(location == HDMA4) {
+		printf("HDMA4 value: %x\n", value);
 		setHDMADestinationLow(value);
 	}
 	else if(location == HDMA5) {
 		printf("HDMA5 value: %x\n", value);
+		printf("source: %x, dest: %x\n", dmaSource, dmaDestination);
 		doHDMATransfer(value);
+		// if((value & 0x80) == 0x80) {
+		// 	doDMATransfer(value);
+		// }
 	}
 	else if(location == VBK) {
-		if(value > 0)
-			printf("VBK: %x\n", value);
-		SetVramBank(value);
+		VramBank = value & 1;
 	}
 	else if(location == SVBK) {
 		WRamBank = value & 0x7;
 	}
 	else if (location >= 0 && location < 0x2000) {
 		RAMG = value & 0xf;
-		if(value > 0)
-		printf("location: %x, value: %x, RAMG: %x\n", location, value, RAMG);
+		// if(value > 0)
+		// printf("location: %x, value: %x, RAMG: %x\n", location, value, RAMG);
 	}
 	else if (location >= 0x2000 && location < 0x4000) { // ROM Switching
 		ROMB = value & 0x7f;
@@ -149,8 +157,8 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 	}
 	else if (location >= 0x4000 && location < 0x6000) { // RAM Switching
 		RAMB = value & 0xf;
-		if(RAMB > 0) 
-		printf("Setting ram bank: %x, location: %x\n", RAMB, location);
+		// if(RAMB > 0) 
+		// printf("Setting ram bank: %x, location: %x\n", RAMB, location);
 	}
 	else if (location >= 0x8000 && location <= 0x98ff) {
 		// internal_set(location, value);

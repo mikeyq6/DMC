@@ -139,7 +139,8 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		doHDMATransfer(value);
 	}
 	else if(location == VBK) {
-		SetVramBank(value);
+		VramBank = value & 1;
+		// SetVramBank(value);
 	}
 	else if(location == SVBK) {
 		printf("SVBK: %x\n", value);
