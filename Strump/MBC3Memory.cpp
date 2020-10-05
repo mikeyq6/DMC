@@ -5,12 +5,14 @@ MBC3Memory::~MBC3Memory() {}
 MBC3Memory::MBC3Memory(bool _hasRam, bool _hasBattery) {
 	this->hasRAM = _hasRam;
 	this->hasBattery = _hasBattery;
+	WRamBank = 1;
 }
 
 MBC3Memory::MBC3Memory(bool _hasRam, bool _hasBattery, bool _hasTimer) {
 	this->hasRAM = _hasRam;
 	this->hasBattery = _hasBattery;
 	this->hasTimer = _hasTimer;
+	WRamBank = 1;
 }
 
 // Memory
@@ -82,6 +84,17 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 
 		return 0xff; // default return everything off
 	}
+	else if (location >= 0xc000 && location <= 0xe000 && rominfo->UseColour()) {
+		if(location < 0xd000) {
+			return internal_get(location);
+		} else {
+			if(WRamBank == 1) {
+				return internal_get(location);
+			} else {
+				return WRamBankData[WRamBank][location - 0xd000];
+			}
+		}
+	}
 	else if (location >= 0xc000 && location <= 0xffff) {
 		// Internal Work RAM
 		return internal_get(location);
@@ -144,6 +157,7 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 	}
 	else if(location == SVBK) {
 		WRamBank = value & 0x7;
+		if(WRamBank == 0) WRamBank = 1;
 	}
 	else if (location >= 0 && location < 0x2000) {
 		RAMG = value & 0xf;
@@ -198,9 +212,26 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 		}
 	}
 	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
-		if (location + 0x2000 < 0xfe00)
-			internal_set(location + 0x2000, value);
-		internal_set(location, value);
+		printf("location: %x, setting value: %x\n", location, value);
+		if(rominfo->UseColour()) {
+			if(location < 0xd000) {
+				if (location + 0x2000 < 0xfe00)
+					internal_set(location + 0x2000, value);
+				internal_set(location, value);
+			} else {
+				if(WRamBank == 1) {
+					if (location + 0x2000 < 0xfe00)
+						internal_set(location + 0x2000, value);
+					internal_set(location, value);
+				} else {
+					WRamBankData[WRamBank][location - 0xd000] = value;
+				}
+			}
+		} else {
+			if (location + 0x2000 < 0xfe00)
+				internal_set(location + 0x2000, value);
+			internal_set(location, value);
+		}
 	}
 	else if (location >= 0xe000 && location < 0xfe00) { // Allow for the mirrored internal RAM
 		internal_set(location - 0x2000, value);

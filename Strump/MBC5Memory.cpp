@@ -12,6 +12,7 @@ MBC5Memory::MBC5Memory(bool _hasRam, bool _hasBattery, bool _hasRumble, bool _ha
 	RAMG = 0;
 	ROMB0 = 0;
 	ROMB1 = 0;
+	WRamBank = 1;
 }
 
 // Memory
@@ -68,7 +69,7 @@ uint8_t MBC5Memory::internalReadMem(uint16_t location) {
 		if(location < 0xd000) {
 			return internal_get(location);
 		} else {
-			if(WRamBank == 0) {
+			if(WRamBank == 1) {
 				return internal_get(location);
 			} else {
 				return WRamBankData[WRamBank][location - 0xd000];
@@ -143,9 +144,9 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		// SetVramBank(value);
 	}
 	else if(location == SVBK) {
-		printf("SVBK: %x\n", value);
 		WRamBank = value & 0x7;
 		if(WRamBank == 0) WRamBank = 1;
+		printf("SVBK: %x, WRamBank:%x\n", value, WRamBank);
 	}
 	else if (location >= 0 && location < 0x2000) {
 		printf("location: %x, setting RAMG: %x\n", location, RAMG);
@@ -183,13 +184,14 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		}
 	}
 	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
+		printf("location: %x, setting value: %x\n", location, value);
 		if(rominfo->UseColour()) {
 			if(location < 0xd000) {
 				if (location + 0x2000 < 0xfe00)
 					internal_set(location + 0x2000, value);
 				internal_set(location, value);
 			} else {
-				if(WRamBank == 0) {
+				if(WRamBank == 1) {
 					if (location + 0x2000 < 0xfe00)
 						internal_set(location + 0x2000, value);
 					internal_set(location, value);

@@ -9,6 +9,7 @@
 #include "Draw.h"
 #include "Memory.h"
 #include "test.h"
+#include "testMemory.h"
 #include "testMBC5.h"
 #include <thread>
 #include "MemoryFactory.h"
@@ -144,6 +145,7 @@ private:
 	Timer* timer;
 #ifdef RUNTESTS
 	Test* test;
+	TestMemory* testMemory;
 	TestMBC5* testMBC5;
 #endif
 	void setDefaults();
