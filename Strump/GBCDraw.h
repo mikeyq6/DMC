@@ -77,6 +77,7 @@ private:
 	Palette* GetPaletteNumber(bool isSprite, uint8_t number);
 	string registerInfo;
 	uint32_t GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t);
+	void DrawPalette(SDL_Renderer* r, uint8_t pType, uint8_t pNum);
 
 	int text_width, text_height;
 	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];

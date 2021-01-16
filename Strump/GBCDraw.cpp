@@ -44,14 +44,20 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 		SDL_TEXTUREACCESS_STREAMING,
 		Width, Height);
 
+	if (showBackgroundMap) {
+		fullBackgroundWindow = SDL_CreateWindow("Full Background", 50, 0, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		fullBackgroundRenderer = SDL_CreateRenderer(fullBackgroundWindow, -1, 0);
+		fullBackgroundTexture = SDL_CreateTexture(fullBackgroundRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT);
+	}
+
 	if (showTileMap) {
-		tileWindow = SDL_CreateWindow("Tile info", 50, 260, 256, 192, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		tileWindow = SDL_CreateWindow("Tile info", 50, 326, 256, 192, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		tileRenderer = SDL_CreateRenderer(tileWindow, -1, 0);
 		tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 256, 192);
 	}
 
 	if (showPaletteMap) {
-		paletteWindow = SDL_CreateWindow("Palette Info", 50, 550, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		paletteWindow = SDL_CreateWindow("Palette Info", 50, 544, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		paletteRenderer = SDL_CreateRenderer(paletteWindow, -1, 0);
 		paletteTexture = SDL_CreateTexture(paletteRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
 	}
@@ -66,12 +72,6 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 	// 		// handle error
 	// 	}
 	// }
-
-	if (showBackgroundMap) {
-		fullBackgroundWindow = SDL_CreateWindow("Full Background", 350, 40, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		fullBackgroundRenderer = SDL_CreateRenderer(fullBackgroundWindow, -1, 0);
-		fullBackgroundTexture = SDL_CreateTexture(fullBackgroundRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT);
-	}
 }
 
 void GBCDraw::render(bool CPUIsStopped) {
@@ -107,6 +107,41 @@ void GBCDraw::render(bool CPUIsStopped) {
 		SDL_RenderClear(fullBackgroundRenderer);
 		SDL_RenderCopy(fullBackgroundRenderer, fullBackgroundTexture, NULL, NULL);
 		SDL_RenderPresent(fullBackgroundRenderer);
+	}
+
+	if(showPaletteMap) {
+		// SDL_Surface *pSurface = SDL_GetWindowSurface(paletteWindow);
+		// SDL_FillRect(pSurface, &rect, SDL_MapRGB(pSurface->format, 0x30, 0x40, 0x00));
+		// paletteTexture = SDL_CreateTextureFromSurface(paletteRenderer, pSurface);
+		SDL_SetRenderDrawColor(paletteRenderer, 0xff, 0xff, 0xff, 0xff);
+		SDL_RenderClear(paletteRenderer);
+		// Draw palette colours
+		for(uint8_t i=0; i<2; i++) {
+			for(uint8_t j=0; j<8; j++) {
+				DrawPalette(paletteRenderer, i, j);
+			}
+		}
+		
+		// SDL_UpdateTexture(paletteTexture, NULL, fullBackgroundPixels, FULL_BACKGROUND_WIDTH * sizeof(uint32_t));
+		// SDL_RenderCopy(paletteRenderer, paletteTexture, NULL, NULL);
+		SDL_RenderPresent(paletteRenderer);
+	}
+}
+
+void GBCDraw::DrawPalette(SDL_Renderer* r, uint8_t pType, uint8_t pNum) {
+	SDL_Rect rect;
+	uint8_t width = 20;
+	uint8_t height = 20;
+	uint8_t left_gutter = 10;
+	uint8_t x_offset = 120;
+	uint8_t x_gap = 5;
+	uint8_t y_offset = 30;
+	for(uint8_t i=0; i<4; i++) {
+		rect.x = left_gutter + (pType * x_offset) + (i * (x_gap + width));
+		rect.y = left_gutter + (pNum * y_offset);
+		rect.w = width, rect.h = height;
+		SDL_SetRenderDrawColor(r, 0xe0, 0xe0, 0x0, 0xff);
+		SDL_RenderFillRect(r, &rect);
 	}
 }
 
