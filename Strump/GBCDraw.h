@@ -61,6 +61,10 @@ private:
 	SDL_Window* fullBackgroundWindow;
 	SDL_Texture* fullBackgroundTexture;
 	SDL_Renderer* fullBackgroundRenderer;
+
+	SDL_Window* paletteWindow;
+	SDL_Texture* paletteTexture;
+	SDL_Renderer* paletteRenderer;
 	
 	uint8_t Width, Height;
 

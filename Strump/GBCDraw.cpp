@@ -50,6 +50,12 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 		tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 256, 192);
 	}
 
+	if (showPaletteMap) {
+		paletteWindow = SDL_CreateWindow("Palette Info", 50, 550, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		paletteRenderer = SDL_CreateRenderer(paletteWindow, -1, 0);
+		paletteTexture = SDL_CreateTexture(paletteRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
+	}
+
 	// TTF_Init();
 	// if (showCommandOutput) {
 	// 	debugWindow = SDL_CreateWindow("Output", 1400, 400, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
