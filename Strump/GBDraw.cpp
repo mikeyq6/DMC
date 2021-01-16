@@ -14,11 +14,13 @@ GBDraw::~GBDraw() {
 	;
 }
 
-void GBDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap) {
+void GBDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, 
+	bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap) {
 	showCommandOutput = _showCommandOutput;
 	showBackgroundMap = _showBackgroundMap;
 	showTileMap = _showTileMap;
-
+	showPaletteMap = _showPaletteMap;
+	
 	int flags = 0;
 	if (fullscreen) {
 		flags = SDL_WINDOW_FULLSCREEN;

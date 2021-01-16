@@ -24,7 +24,8 @@ public:
 	uint32_t screenPixels[NUMPIXELS];
 	uint32_t tilePixels[NUM_TILE_PIXELS];
 
-	void drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMa) override;
+	void drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, 
+		bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap) override;
 	void loadBackground();
 	void loadWindow();
 	void render(bool CPUIsStopped) override;
@@ -39,7 +40,6 @@ public:
 
 	FILE* out;
 private:
-	bool showCommandOutput, showBackgroundMap, showTileMap;
 	SDL_Event event;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
