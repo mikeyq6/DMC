@@ -75,6 +75,7 @@ void Memory::setPaletteData(uint8_t value) {
 	if(incrementAddress) lastWriteAddress++;
 }
 uint8_t Memory::getPaletteData() {
+	// printf("paletteData at: %x, value: %x\n", lastWriteAddress, PaletteData[lastWriteAddress]);
 	return PaletteData[lastWriteAddress];
 }
 uint16_t Memory::GetPaletteColourInfo(uint8_t baseAddress) {

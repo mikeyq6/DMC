@@ -65,8 +65,8 @@ RGB Draw::PaletteColourToRGB(uint16_t colour) {
 	rgb.g = (uint8_t)(gp * 0xff);
 	rgb.b = (uint8_t)(bp * 0xff);
 
-	printf("red=%x, green=%x, blue=%x\n", red, green, blue);
-	printf("colour: %x = r:%x, g:%x, b:%x\n", colour, rgb.r, rgb.g, rgb.b);
+	// printf("red=%x, green=%x, blue=%x\n", red, green, blue);
+	// printf("colour: %x = r:%x, g:%x, b:%x\n", colour, rgb.r, rgb.g, rgb.b);
 
 	return rgb;
 }

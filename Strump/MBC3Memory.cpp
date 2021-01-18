@@ -212,7 +212,7 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 		}
 	}
 	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
-		printf("location: %x, setting value: %x\n", location, value);
+		//printf("location: %x, setting value: %x\n", location, value);
 		if(rominfo->UseColour()) {
 			if(location < 0xd000) {
 				if (location + 0x2000 < 0xfe00)

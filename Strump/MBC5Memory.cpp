@@ -106,16 +106,20 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location == ENDSTART) {
 		Startup = false;
 	}
-	else if(location == BCPS && rominfo->UseColour()) {
+	else if(location == BCPS) {
+		// printf("BCPS: %x\n", value);
 		setPaletteWrite(false, value);
 	}
 	else if(location == BCPD && rominfo->UseColour()) {
+		// printf("BCPD: %x\n", value);
 		setPaletteData(value);
 	}
 	else if(location == OCPS && rominfo->UseColour()) {
+		// printf("OCPS: %x\n", value);
 		setPaletteWrite(true, value);
 	}
 	else if(location == OCPD && rominfo->UseColour()) {
+		// printf("OCPD: %x\n", value);
 		setPaletteData(value);
 	}
 	else if(location == HDMA1) {
@@ -149,7 +153,7 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		printf("SVBK: %x, WRamBank:%x\n", value, WRamBank);
 	}
 	else if (location >= 0 && location < 0x2000) {
-		printf("location: %x, setting RAMG: %x\n", location, RAMG);
+		//printf("location: %x, setting RAMG: %x\n", location, RAMG);
 		RAMG = value;
 	}
 	else if (location >= 0x2000 && location < 0x4000) { // ROM Switching
@@ -184,7 +188,7 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		}
 	}
 	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
-		printf("location: %x, setting value: %x\n", location, value);
+		//printf("location: %x, setting value: %x\n", location, value);
 		if(rominfo->UseColour()) {
 			if(location < 0xd000) {
 				if (location + 0x2000 < 0xfe00)
