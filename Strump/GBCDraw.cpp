@@ -136,11 +136,13 @@ void GBCDraw::DrawPalette(SDL_Renderer* r, uint8_t pType, uint8_t pNum) {
 	uint8_t x_offset = 120;
 	uint8_t x_gap = 5;
 	uint8_t y_offset = 30;
+	Palette* p = GetPaletteNumber(pType == 1, pNum);
 	for(uint8_t i=0; i<4; i++) {
+		RGB rgb = PaletteColourToRGB(p->Colours[i]);
 		rect.x = left_gutter + (pType * x_offset) + (i * (x_gap + width));
 		rect.y = left_gutter + (pNum * y_offset);
 		rect.w = width, rect.h = height;
-		SDL_SetRenderDrawColor(r, 0xe0, 0xe0, 0x0, 0xff);
+		SDL_SetRenderDrawColor(r, rgb.r, rgb.g, rgb.b, 0xff);
 		SDL_RenderFillRect(r, &rect);
 	}
 }
@@ -413,21 +415,15 @@ uint32_t GBCDraw::GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t) {
 	// printf("palette: %x\n", palette);
 	if(number == 0) return TRANSPARENT;
 	Palette *palette = GetPaletteNumber(true, sprite->CGBPalette);
+
 	uint16_t colourData = palette->Colours[number];
 
 	// printf("address: %x, colourData: %x\n", t->address, colourData);
 
-	uint8_t red = colourData & 0x1f;
-	uint8_t green = colourData & (0x1f << 5);
-	uint8_t blue = colourData & (0x1f << 10);
-
-	float redP = red / 0x1f;
-	float greenP = green / 0x1f;
-	float blueP = blue / 0x1f;
-
-	uint32_t colour = static_cast<uint32_t>(redP * 0xff) +
-		(static_cast<uint32_t>(greenP * 0xff) << 8) + 
-		(static_cast<uint32_t>(blueP * 0xff) << 16);
+	RGB rgb = PaletteColourToRGB(colourData);
+	uint32_t colour = static_cast<uint32_t>(rgb.r) +
+		(static_cast<uint32_t>(rgb.g) << 8) + 
+		(static_cast<uint32_t>(rgb.b) << 16);
 
 	// printf("red: %x, green: %x, blue: %x, redP: %f, greenP: %f, blueP: %f, colour: %x\n",
 	// 	red, green, blue, redP, greenP, blueP, colour);
@@ -445,8 +441,8 @@ Palette* GBCDraw::GetPaletteNumber(bool isSprite, uint8_t number) {
 	uint8_t paletteDataH,  paletteDataL;
 
 	for(int i=0; i<4; i++) {
-		paletteDataH = memory->PaletteData[index++];
 		paletteDataL = memory->PaletteData[index++];
+		paletteDataH = memory->PaletteData[index++];
 		palette->Colours[i] = paletteDataL + (((uint16_t)paletteDataH) << 8);
 	}
 

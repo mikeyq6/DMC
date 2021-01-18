@@ -52,3 +52,21 @@ bool Draw::compareSpriteX(Sprite* s1, Sprite* s2)
 {
 	return (s1->X > s2->X);
 }
+RGB Draw::PaletteColourToRGB(uint16_t colour) {
+	RGB rgb;
+	uint8_t red = colour & 0x1f;
+	uint8_t green = (colour & (0x1f << 5)) >> 5;
+	uint8_t blue = (colour & (0x1f << 10)) >> 10;
+
+	float rp = red / 31.0f;
+	float gp = green / 31.0f;
+	float bp = blue / 31.0f;
+	rgb.r = (uint8_t)(rp * 0xff);
+	rgb.g = (uint8_t)(gp * 0xff);
+	rgb.b = (uint8_t)(bp * 0xff);
+
+	printf("red=%x, green=%x, blue=%x\n", red, green, blue);
+	printf("colour: %x = r:%x, g:%x, b:%x\n", colour, rgb.r, rgb.g, rgb.b);
+
+	return rgb;
+}

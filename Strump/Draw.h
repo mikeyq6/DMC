@@ -32,6 +32,9 @@ constexpr auto FULL_BACKGROUND_PIXELS = 65536;
 typedef struct _palette {
 	uint16_t Colours[4];
 } Palette;
+typedef struct _rgb {
+	uint8_t r, g, b;
+} RGB;
 
 class Draw {
     public:
@@ -62,4 +65,5 @@ class Draw {
 	bool GetWindowEnabled();
 	bool tileIsNotEmpty(tile* t);
 	bool SpritesEnabled();
+	RGB PaletteColourToRGB(uint16_t colour);
 };
