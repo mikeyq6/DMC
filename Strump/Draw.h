@@ -42,7 +42,8 @@ class Draw {
     virtual ~Draw() = 0;
 
     virtual void drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, 
-		bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap) = 0;
+		bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap,
+		bool _showOAMMap) = 0;
 	virtual void render(bool CPUIsStopped) = 0;
 	virtual void clean() = 0;
 	virtual void ToggleColourMode() = 0;
@@ -51,7 +52,7 @@ class Draw {
 	virtual uint32_t GetColourForPaletteNumber(uint8_t pNumber) = 0;
 
     protected:
-	bool showCommandOutput, showBackgroundMap, showTileMap, showPaletteMap;
+	bool showCommandOutput, showBackgroundMap, showTileMap, showPaletteMap, showOAMMap;
 
 	Memory *memory;
 	Registers* registers;

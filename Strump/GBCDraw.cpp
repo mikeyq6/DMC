@@ -15,11 +15,13 @@ GBCDraw::~GBCDraw() {
 }
 
 void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, 
-		bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap) {
+		bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap, 
+		bool _showOAMMap) {
 	showCommandOutput = _showCommandOutput;
 	showBackgroundMap = _showBackgroundMap;
 	showTileMap = _showTileMap;
 	showPaletteMap = _showPaletteMap;
+	showOAMMap = _showOAMMap;
 
 	int flags = 0;
 	if (fullscreen) {
@@ -57,6 +59,12 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 	}
 
 	if (showPaletteMap) {
+		paletteWindow = SDL_CreateWindow("Palette Info", 50, 544, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		paletteRenderer = SDL_CreateRenderer(paletteWindow, -1, 0);
+		paletteTexture = SDL_CreateTexture(paletteRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
+	}
+
+	if (showOAMMap) {
 		paletteWindow = SDL_CreateWindow("Palette Info", 50, 544, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		paletteRenderer = SDL_CreateRenderer(paletteWindow, -1, 0);
 		paletteTexture = SDL_CreateTexture(paletteRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);

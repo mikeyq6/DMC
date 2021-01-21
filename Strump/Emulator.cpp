@@ -47,7 +47,7 @@ void Emulator::Start() {
 	delete drawFactory;
 
 	draw->drawInit(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, S_WIDTH, S_HEIGHT, 
-		false, false, true, true, true);
+		false, false, true, true, true, true);
 
 	while (running()) {
 		handleEvents();

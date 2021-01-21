@@ -25,7 +25,8 @@ public:
 	uint32_t tilePixels[NUM_TILE_PIXELS];
 
 	void drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, 
-		bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap) override;
+		bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap,
+		bool _showOAMMap) override;
 	void loadBackground();
 	void loadWindow();
 	void render(bool CPUIsStopped) override;

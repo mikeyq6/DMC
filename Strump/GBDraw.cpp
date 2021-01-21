@@ -15,7 +15,8 @@ GBDraw::~GBDraw() {
 }
 
 void GBDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, 
-	bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap) {
+	bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap,
+	bool _showOAMMap) {
 	showCommandOutput = _showCommandOutput;
 	showBackgroundMap = _showBackgroundMap;
 	showTileMap = _showTileMap;
