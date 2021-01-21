@@ -437,7 +437,7 @@ Palette* GBCDraw::GetPaletteNumber(bool isSprite, uint8_t number) {
 	Palette *palette = (Palette*)malloc(sizeof(Palette));
 
 	uint16_t colour = 0;
-	uint8_t index = (number * 4) + (isSprite ? 0x40 : 0);
+	uint8_t index = (number * 8) + (isSprite ? 0x40 : 0);
 	uint8_t paletteDataH,  paletteDataL;
 
 	for(int i=0; i<4; i++) {
