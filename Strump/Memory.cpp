@@ -225,6 +225,7 @@ void Memory::setHDMASourceHigh(uint8_t value) {
 	printf("dmaSource (H): %x\n", dmaSource);
 }
 void Memory::setHDMASourceLow(uint8_t value) {
+	uint16_t nval = value;
 	dmaSource = (dmaSource & 0xff00) | value;
 	dmaSource &= 0xfff0;
 	printf("dmaSource (L): %x\n", dmaSource);
@@ -236,7 +237,8 @@ void Memory::setHDMADestinationHigh(uint8_t value) {
 	printf("dmaDestination (H): %x\n", dmaDestination);
 }
 void Memory::setHDMADestinationLow(uint8_t value) {
-	dmaDestination = (dmaDestination & 0xff00) | value;
+	uint16_t nval = value;
+	dmaDestination = (dmaDestination & 0xff00) | nval;
 	dmaDestination &= 0x1ff0;
 	printf("dmaDestination (L): %x\n", dmaDestination);
 }
@@ -248,7 +250,7 @@ void Memory::doHDMATransfer(uint8_t value) {
 	uint16_t offsetDest = dmaDestination + 0x8000;
 
 	printf("value: %x, numBytes: %x, offsetDest: %x\n", value, numBytes, offsetDest);
-	for(int i=0; i<numBytes; i++) {
+	for(uint8_t i=0; i<numBytes; i++) {
 		printf("Setting (%x)=%x from $(%x)\n", 
 			offsetDest + i, internalReadMem(dmaSource + i), dmaSource + i);
 		internal_set(offsetDest + i, internalReadMem(dmaSource + i));
