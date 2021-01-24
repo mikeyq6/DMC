@@ -472,12 +472,10 @@ uint32_t GBCDraw::GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t) {
 
 	uint16_t colourData = palette->Colours[number];
 
-	// printf("address: %x, colourData: %x\n", t->address, colourData);
-
 	RGB rgb = PaletteColourToRGB(colourData);
-	uint32_t colour = static_cast<uint32_t>(rgb.r) +
+	uint32_t colour = static_cast<uint32_t>(rgb.b) +
 		(static_cast<uint32_t>(rgb.g) << 8) + 
-		(static_cast<uint32_t>(rgb.b) << 16);
+		(static_cast<uint32_t>(rgb.r) << 16);
 
 	// printf("red: %x, green: %x, blue: %x, redP: %f, greenP: %f, blueP: %f, colour: %x\n",
 	// 	red, green, blue, redP, greenP, blueP, colour);

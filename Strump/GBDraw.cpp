@@ -465,32 +465,32 @@ uint32_t GBDraw::GetColourFor(uint8_t number, tile *t) {
 }
 uint32_t GBDraw::GetColourForPaletteNumber(uint8_t pNumber) {
 	switch (pNumber) {
-	case 0:
-		if (colourMode == MODE_CLEAR)
-			return WHITE;
-		else
-			return CLASSIC_WHITE;
-		break;
-	case 1:
-		if (colourMode == MODE_CLEAR)
-			return DK_GRAY;
-		else
-			return CLASSIC_LT_GRAY;
-		break;
-	case 2:
-		if (colourMode == MODE_CLEAR)
-			return LT_GRAY;
-		else
-			return CLASSIC_DK_GRAY;
-		break;
-	case 3:
-		if (colourMode == MODE_CLEAR)
-			return BLACK;
-		else
-			return CLASSIC_BLACK;
-		break;
-	default:
-		return WHITE; break;
+		case 0:
+			if (colourMode == MODE_CLEAR)
+				return WHITE;
+			else
+				return CLASSIC_WHITE;
+			break;
+		case 1:
+			if (colourMode == MODE_CLEAR)
+				return DK_GRAY;
+			else
+				return CLASSIC_LT_GRAY;
+			break;
+		case 2:
+			if (colourMode == MODE_CLEAR)
+				return LT_GRAY;
+			else
+				return CLASSIC_DK_GRAY;
+			break;
+		case 3:
+			if (colourMode == MODE_CLEAR)
+				return BLACK;
+			else
+				return CLASSIC_BLACK;
+			break;
+		default:
+			return WHITE; break;
 	}
 }
 
