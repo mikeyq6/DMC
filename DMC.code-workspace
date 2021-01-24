@@ -18,7 +18,8 @@
 			"fstream": "cpp",
 			"iomanip": "cpp",
 			"locale": "cpp",
-			"string": "cpp"
+			"string": "cpp",
+			"iostream": "cpp"
 		}
 	}
 }

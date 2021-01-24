@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <cstdio>
 #include <iomanip>
 #include <sstream>
@@ -25,7 +26,8 @@ public:
 	uint32_t tilePixels[NUM_TILE_PIXELS];
 
 	void drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, 
-		bool fullscreen, bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap) override;
+		bool fullscreen, bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap,
+		bool _showOAMMap) override;
 	void loadBackground();
 	void loadWindow();
 	void render(bool CPUIsStopped) override;
@@ -65,6 +67,12 @@ private:
 	SDL_Window* paletteWindow;
 	SDL_Texture* paletteTexture;
 	SDL_Renderer* paletteRenderer;
+
+	SDL_Window* oamWindow;
+	SDL_Texture* oamTexture;
+	SDL_Renderer* oamRenderer;
+
+	TTF_Font *font;
 	
 	uint8_t Width, Height;
 

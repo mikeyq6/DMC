@@ -1,6 +1,6 @@
 CC=g++ -std=c++17
 OBJS=Commands.cpp CPU.cpp JoypadState.cpp Draw.cpp GBDraw.cpp GBCDraw.cpp DrawFactory.cpp Emulator.cpp Log.cpp Memory.cpp MBC1Memory.cpp MBC2Memory.cpp MBC3Memory.cpp MBC5Memory.cpp NoRamNoRomMemory.cpp RamNoRomMemory.cpp MemoryFactory.cpp ROMInfo.cpp Sprite.cpp test.cpp testMemory.cpp testMBC5.cpp Timer.cpp Main.cpp
-LFLAGS=-lSDL2 -lSDL2_image
+LFLAGS=-lSDL2 -lSDL2_image -lSDL2_ttf
 SUPPRESS=-Wno-unused-variable -Wno-unused-private-field
 
 debug:
