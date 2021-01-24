@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "alias.h"
 
+int oamWidth = 330;
+int oamHeight = 260;
 
 GBCDraw::GBCDraw(Memory* _memory, Registers* _registers) {
 	memory = _memory;
@@ -65,20 +67,23 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 	}
 
 	if (showOAMMap) {
-		paletteWindow = SDL_CreateWindow("Palette Info", 50, 544, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		paletteRenderer = SDL_CreateRenderer(paletteWindow, -1, 0);
-		paletteTexture = SDL_CreateTexture(paletteRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
+		TTF_Init();
+		font = TTF_OpenFont("./arial.ttf", 9);
+		if (!font) {
+			cout << "TTF_OpenFont: " << TTF_GetError() << endl;
+			// handle error
+		}
+		oamWindow = SDL_CreateWindow("OAM Sprite Info", 1050, 0, oamWidth, oamHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		oamRenderer = SDL_CreateRenderer(oamWindow, -1, 0);
+		oamTexture = SDL_CreateTexture(oamRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
 	}
 
-	// TTF_Init();
+	// 
 	// if (showCommandOutput) {
 	// 	debugWindow = SDL_CreateWindow("Output", 1400, 400, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	// 	debugRenderer = SDL_CreateRenderer(debugWindow, -1, 0);
-	// 	font = TTF_OpenFont("./VeraMono.ttf", 16);
-	// 	if (!font) {
-	// 		cout << "TTF_OpenFont: " << TTF_GetError() << endl;
-	// 		// handle error
-	// 	}
+	// 	
+	// 	
 	// }
 }
 
@@ -133,6 +138,48 @@ void GBCDraw::render(bool CPUIsStopped) {
 		// SDL_UpdateTexture(paletteTexture, NULL, fullBackgroundPixels, FULL_BACKGROUND_WIDTH * sizeof(uint32_t));
 		// SDL_RenderCopy(paletteRenderer, paletteTexture, NULL, NULL);
 		SDL_RenderPresent(paletteRenderer);
+	}
+
+	if (showOAMMap) {
+		SDL_SetRenderDrawColor(oamRenderer, 0xff, 0xff, 0xff, 0xff);
+		SDL_RenderClear(oamRenderer);
+
+		SDL_Color colour = { 0, 0, 0 };
+
+		SDL_Surface *surface;
+		SDL_Texture *texture;
+		int texW = 0;
+		int texH = 0;
+		int spacer = 9;
+		int gspacer = 40;
+		int vgspacer = 0;
+		Sprite *sprite = new Sprite();
+		char *hexString = (char*)malloc(sizeof(char) * 4);
+		uint8_t val;
+		
+		for(int i=0; i<40; i++) {
+			if(i > 0 && i % 8 == 0) {
+				vgspacer += 50;
+			}
+			uint16_t address = 0xfe00 + (i * 4); // Start address of sprite data
+			for(int j=0; j<4; j++) {
+				val = memory->ReadMem(address + j);
+				sprintf(hexString, "%X", val); //convert number to hex
+
+				surface = TTF_RenderText_Solid(font, hexString, colour);
+				texture = SDL_CreateTextureFromSurface(oamRenderer, surface);
+				
+				SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
+				SDL_Rect dstrect = { 20 + ((i % 8) * gspacer), 10 + vgspacer + (j*spacer), texW, texH };
+				SDL_RenderCopy(oamRenderer, texture, NULL, &dstrect);
+
+				SDL_DestroyTexture(texture);
+				SDL_FreeSurface(surface);
+			}
+		}
+
+		free(hexString);
+		SDL_RenderPresent(oamRenderer);
 	}
 }
 
@@ -445,7 +492,7 @@ Palette* GBCDraw::GetPaletteNumber(bool isSprite, uint8_t number) {
 	Palette *palette = (Palette*)malloc(sizeof(Palette));
 
 	uint16_t colour = 0;
-	uint8_t index = (number * 4) + (isSprite ? 0x40 : 0);
+	uint8_t index = (number * 8) + (isSprite ? 0x40 : 0);
 	uint8_t paletteDataH,  paletteDataL;
 
 	for(int i=0; i<4; i++) {

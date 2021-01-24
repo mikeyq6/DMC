@@ -40,6 +40,7 @@ public:
 	void ToggleColourMode() override;
 
 	FILE* out;
+
 private:
 	SDL_Event event;
 	SDL_Window* window;

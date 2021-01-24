@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <cstdio>
 #include <iomanip>
 #include <sstream>
@@ -70,6 +71,8 @@ private:
 	SDL_Window* oamWindow;
 	SDL_Texture* oamTexture;
 	SDL_Renderer* oamRenderer;
+
+	TTF_Font *font;
 	
 	uint8_t Width, Height;
 
