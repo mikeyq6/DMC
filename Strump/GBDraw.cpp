@@ -228,14 +228,14 @@ void GBDraw::setBackgroundPixels() {
 			//printf("windowPixels[%04x] = %08x\n", sPixelsIndex, sPixel);
 			screenPixels[sPixelsIndex] = GetColourFor(pixel, cur);
 			switch (pixel) {
-			case 0:
-				pixel = 32; break;
-			case 1:
-				pixel = 46; break;
-			case 2:
-				pixel = 56; break;
-			case 3:
-				pixel = 35; break;
+				case 0:
+					pixel = 32; break;
+				case 1:
+					pixel = 46; break;
+				case 2:
+					pixel = 56; break;
+				case 3:
+					pixel = 35; break;
 			}
 		}
 		pixel = (uint8_t)10;

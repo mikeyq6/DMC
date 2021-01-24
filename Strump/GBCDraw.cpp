@@ -140,6 +140,7 @@ void GBCDraw::render(bool CPUIsStopped) {
 		SDL_RenderPresent(paletteRenderer);
 	}
 
+	// TODO: Migrate this code to Draw.cpp
 	if (showOAMMap) {
 		SDL_SetRenderDrawColor(oamRenderer, 0xff, 0xff, 0xff, 0xff);
 		SDL_RenderClear(oamRenderer);
@@ -288,14 +289,14 @@ void GBCDraw::setBackgroundPixels() {
 			//printf("windowPixels[%04x] = %08x\n", sPixelsIndex, sPixel);
 			screenPixels[sPixelsIndex] = GetColourFor(pixel, cur);
 			switch (pixel) {
-			case 0:
-				pixel = 32; break;
-			case 1:
-				pixel = 46; break;
-			case 2:
-				pixel = 56; break;
-			case 3:
-				pixel = 35; break;
+				case 0:
+					pixel = 32; break;
+				case 1:
+					pixel = 46; break;
+				case 2:
+					pixel = 56; break;
+				case 3:
+					pixel = 35; break;
 			}
 		}
 		pixel = (uint8_t)10;
@@ -399,8 +400,7 @@ void GBCDraw::setSpritePixels() {
 			if (spriteMode == SPRITE_MODE_8x8) {
 				scX = sprite->X - 8;
 				scY = sprite->Y - 16;
-				// getTileAt(base + ((sprite->TileNumber + i) * 16), &cur, sprite->GetSpriteTileVramBank());
-				getTileAt(base + ((sprite->TileNumber + i) * 16), &cur, sprite->CGBVbank);
+				getTileAt(base + (sprite->TileNumber * 16), &cur, sprite->CGBVbank);
 
 				for (int y = 0; y < 8; y++) {
 					for (int x = 0; x < 8; x++) {
@@ -419,9 +419,8 @@ void GBCDraw::setSpritePixels() {
 				for (int i = 0; i < 2; i++) {
 					scX = sprite->X - 8;
 					scY = sprite->Y - 16 + (i * 8);
-// getTileAt(base + ((sprite->TileNumber + i) * 16), &cur, sprite->GetSpriteTileVramBank());
-				
-					getTileAt(base + ((sprite->TileNumber + i) * 16), &cur, sprite->CGBVbank);
+
+					getTileAt(base + (sprite->TileNumber * 16), &cur, sprite->CGBVbank);
 					for (int y = 0; y < 8; y++) {
 						for (int x = 0; x < 8; x++) {
 							getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
