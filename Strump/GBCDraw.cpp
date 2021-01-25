@@ -385,6 +385,10 @@ void GBCDraw::setSpritePixels() {
 
 	for (int i = 0; i < 40; i++) {
 		GetSpriteByNumber(i, sprite);
+		
+		// if(i == 25) {
+		// 	sprite->Draw();
+		// }
 		//	sprites.push_back(sprite);
 		//}
 		//// Sort sprites by X

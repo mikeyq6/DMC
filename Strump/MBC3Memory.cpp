@@ -35,10 +35,7 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 		return 0x00ff;
 	}
 	else if (location >= 0x4000 && location < 0x8000) {
-		uint8_t bank = ROMB;
-		if(bank > rominfo->GetNumberOfRomBanks()) {
-			bank &= (rominfo->GetNumberOfRomBanks() - 1);
-		}
+		uint8_t bank = GetRomBank();
 		nAddress = location + ((bank - 1) * 0x4000);
 		return rominfo->GetCardridgeVal(nAddress);
 	}
@@ -273,4 +270,12 @@ void MBC3Memory::SetState(uint8_t* state, uint32_t *index) {
 	RTC_DH = *(state+val++);
 	hasRAM = *(state+val++) == 0x1;
 	*index = val;
+}
+
+uint16_t MBC3Memory::GetRomBank() {
+	uint8_t bank = ROMB;
+	if(bank > rominfo->GetNumberOfRomBanks()) {
+		bank &= (rominfo->GetNumberOfRomBanks() - 1);
+	}
+	return (uint16_t)bank;
 }

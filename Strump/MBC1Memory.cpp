@@ -1,6 +1,5 @@
 #include "MBC1Memory.h"
 
-uint8_t getRomBank();
 
 MBC1Memory::MBC1Memory(bool hasRam, bool hasBattery) {
 	this->has_RAM = hasRam;
@@ -15,16 +14,6 @@ uint8_t MBC1Memory::ReadMem(uint16_t location) {
 	std::lock_guard<mutex> locker(mem_mutex);
 
 	return internalReadMem(location);
-}
-
-uint8_t MBC1Memory::GetRomBank() {
-	uint8_t bank = BANK1;
-	bank |= (BANK2 << 5);
-	if(bank % 0x20 == 0) bank++;
-	if(bank > rominfo->GetNumberOfRomBanks()) {
-		bank &= (rominfo->GetNumberOfRomBanks() - 1);
-	}
-	return bank;
 }
 
 uint8_t MBC1Memory::internalReadMem(uint16_t location) {
@@ -161,4 +150,14 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 	else {
 		internal_set(location, value);
 	}
+}
+
+uint16_t MBC1Memory::GetRomBank() {
+	uint8_t bank = BANK1;
+	bank |= (BANK2 << 5);
+	if(bank % 0x20 == 0) bank++;
+	if(bank > rominfo->GetNumberOfRomBanks()) {
+		bank &= (rominfo->GetNumberOfRomBanks() - 1);
+	}
+	return bank;
 }

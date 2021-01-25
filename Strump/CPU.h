@@ -131,6 +131,7 @@ public:
 	void GetState(uint8_t *state);
 	void SetState(uint8_t *state);
 
+	Memory* memory; // This should be private, leaving it here for testing
 private:
 	mutex cpu_mutex;
 
@@ -138,7 +139,6 @@ private:
 	uint8_t Halted, Stopped, WillDisableInterrupts, WillEnableInterrupts, IME;
 	ROMInfo* rominfo;
 	Commands* commands;
-	Memory* memory;
 	Registers* registers;
 	MemoryFactory* factory;
 	JoypadState* joypadState;

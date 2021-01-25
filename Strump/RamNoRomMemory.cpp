@@ -184,3 +184,7 @@ void RamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 		internal_set(location, value);
 	}
 }
+
+uint16_t RamNoRomMemory::GetRomBank() {
+	return 0;
+}

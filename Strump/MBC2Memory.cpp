@@ -24,10 +24,7 @@ uint8_t MBC2Memory::internalReadMem(uint16_t location) {
 		return rominfo->GetCardridgeVal(location);
 	}
 	else if (location >= 0x4000 && location < 0x8000) {
-		uint8_t bank = ROMG;
-		if(bank > rominfo->GetNumberOfRomBanks()) {
-			bank &= (rominfo->GetNumberOfRomBanks() - 1);
-		}
+		uint8_t bank = GetRomBank();
 		nAddress = location + ((bank - 1) * 0x4000);
 		data = rominfo->GetCardridgeVal(nAddress);
 		
@@ -121,4 +118,12 @@ void MBC2Memory::WriteMem(uint16_t location, uint8_t value) {
 	else {
 		internal_set(location, value);
 	}
+}
+
+uint16_t MBC2Memory::GetRomBank() {
+	uint8_t bank = ROMG;
+	if(bank > rominfo->GetNumberOfRomBanks()) {
+		bank &= (rominfo->GetNumberOfRomBanks() - 1);
+	}
+	return bank;
 }

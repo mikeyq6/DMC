@@ -9,6 +9,7 @@ public:
 
 	void WriteMem(uint16_t location, uint8_t value) override;
 	uint8_t ReadMem(uint16_t location) override;
+	uint16_t GetRomBank() override;
 	void GetState(uint8_t* state, uint32_t *index) override;
 	void SetState(uint8_t* state, uint32_t *index) override;
 protected:

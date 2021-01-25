@@ -12,6 +12,7 @@ public:
 	uint8_t ReadMem(uint16_t location) override;
 	void GetState(uint8_t* state, uint32_t *index) override;
 	void SetState(uint8_t* state, uint32_t *index) override;
+	uint16_t GetRomBank() override;
 protected:
 	uint8_t internalReadMem(uint16_t location) override;
 

@@ -42,11 +42,7 @@ uint8_t MBC5Memory::internalReadMem(uint16_t location) {
 		return rominfo->GetCardridgeVal(location);
 	}
 	else if (location >= 0x4000 && location < 0x8000) {
-		uint16_t bank = (ROMB1 << 8) + ROMB0;
-		// if(bank == 0) bank++;
-		if(bank > rominfo->GetNumberOfRomBanks()) {
-			bank &= (rominfo->GetNumberOfRomBanks() - 1);
-		}
+		uint16_t bank = GetRomBank();
 		nAddress = location + ((bank - 1) * 0x4000);
 		uint8_t data = rominfo->GetCardridgeVal(nAddress);
 		return data;
@@ -246,4 +242,13 @@ void MBC5Memory::SetState(uint8_t* state, uint32_t *index) {
 	ROMB1 = *(state+val++);
 	hasRAM = *(state+val++) == 0x1;
 	*index = val;
+}
+
+uint16_t MBC5Memory::GetRomBank() {
+	uint16_t bank = (ROMB1 << 8) + ROMB0;
+	// if(bank == 0) bank++;
+	if(bank > rominfo->GetNumberOfRomBanks()) {
+		bank &= (rominfo->GetNumberOfRomBanks() - 1);
+	}
+	return bank;
 }

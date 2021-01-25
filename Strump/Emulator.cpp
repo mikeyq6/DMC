@@ -160,10 +160,11 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 				cpu->InputProcess(START_BUTTON_DOWN);
 				break;
 			case SDLK_r:
-				SDL_Log("Restart");  // doesn't work
+				// SDL_Log("Restart");  // doesn't work
 				//cpu->Stop();
-				cpu->initCPU();
+				// cpu->initCPU();
 				//u->Start();
+				printf("Cartridge ROM bank: %x\n", cpu->memory->GetRomBank());
 				break;
 			case SDLK_q:
 				SDL_Log("Quit");

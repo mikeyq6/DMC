@@ -96,3 +96,7 @@ void NoRamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 		internal_set(location, value);
 	}
 }
+
+uint16_t NoRamNoRomMemory::GetRomBank() {
+	return 0;
+}
