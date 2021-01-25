@@ -19,7 +19,8 @@
 			"iomanip": "cpp",
 			"locale": "cpp",
 			"string": "cpp",
-			"iostream": "cpp"
+			"iostream": "cpp",
+			"memory": "cpp"
 		}
 	}
 }

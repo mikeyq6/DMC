@@ -512,24 +512,29 @@ void GBCDraw::setTilePixels() {
 	uint16_t i, x, y, tile_x, tile_y;
 	uint16_t tile_index = 0;
 	uint16_t rwidth = 256;
+	int index = 0;
+	int loffset = 0;
 
-	for (i = 0x8000; i <= 0x9fff; i += 0x10, tile_index++) {
+	for(int vram = 0; vram < 2; vram++) {
+		for (i = 0x8000; i < 0x9800; i += 0x10, tile_index++) {
+			
+			getTileAt(i, &tile, vram);
 
-		getTileAt(i, &tile, 0);
+			for (y = 0; y < 8; y++) {
+				for (x = 0; x < 8; x++, sPixelsIndex++) {
+					pX = x % 8;
+					pY = y % 8;
+					tile_x = ((tile_index % 16) * 8);
+					tile_y = (tile_index / 16) * rwidth * 8;
 
-		for (y = 0; y < 8; y++) {
-			for (x = 0; x < 8; x++, sPixelsIndex++) {
-				pX = x % 8;
-				pY = y % 8;
-				tile_x = (tile_index % 32) * 8;
-				tile_y = (tile_index / 32) * rwidth * 8;
+					getPixel(&tile, pX, pY, &pixel);
+					int index = loffset + tile_x + tile_y + (pY * rwidth) + pX;
 
-				getPixel(&tile, pX, pY, &pixel);
-				int index = tile_x + tile_y + (pY * rwidth) + pX;
-
-				tilePixels[index] = GetColourFor(pixel, &tile);
+					tilePixels[index] = GetColourFor(pixel, &tile);
+				}
 			}
 		}
+		loffset += 128;
 	}
 }
 
@@ -538,10 +543,10 @@ void GBCDraw::getTileAt(uint16_t address, tile* t, uint8_t vramBank) {
 		if(vramBank == 0) {
 			t->data[i] = memory->ReadMem(address + i);
 		} else {
-			t->data[i] = memory->GetVramForAddress(address + i);
+			t->data[i] = memory->GetVramForAddress(address + i, vramBank);
 		}
 		t->address = address + i;
-		t->attributes = memory->GetVramForAddress(address + i);
+		t->attributes = memory->GetVramForAddress(address + i, vramBank);
 	}
 }
 
