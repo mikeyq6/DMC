@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 	uint16_t regval = 0;
 
 	int c = 0, p1 = 0, p2 = 0, pc = 0, reg = 0, tmp = 0;
-	uint16_t af = 0, bc = 0, de = 0, hl = 0, sp = 0;
+	uint16_t af = 0, bc = 0, de = 0, hl = 0, sp = 0, romb = 0;
 	do {
 		c = (int)fgetc(f);
 		pc = c;
@@ -123,7 +123,14 @@ int main(int argc, char* argv[]) {
 			cout << ", IE:" << hex << setw(1) << setfill('0') << c;
 		c = (int)fgetc(f);
 		if (!silentMode)
-			cout << ", IF:" << hex << setw(1) << setfill('0') << c << endl;
+			cout << ", IF:" << hex << setw(1) << setfill('0') << c;
+		c = (int)fgetc(f);
+		romb = c;
+		c = (int)fgetc(f);
+		romb += c << 8;
+		if (!silentMode)
+			cout << ", BK:" << hex << setw(1) << setfill('0') << romb << endl;
+
 
 		if (skipUntil == 0) {
 			char v = getchar();

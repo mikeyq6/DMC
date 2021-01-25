@@ -1468,6 +1468,7 @@ void CPU::LogCommand(uint16_t* pc, uint8_t* inst, uint8_t* param1, uint8_t* para
 	}
 
 	// Write out state
+	uint16_t romBank = memory->GetRomBank();
 	fwrite(&registers->AF.af, sizeof(uint16_t), sizeof(uint8_t), clog);
 	fwrite(&registers->BC.bc, sizeof(uint16_t), sizeof(uint8_t), clog);
 	fwrite(&registers->DE.de, sizeof(uint16_t), sizeof(uint8_t), clog);
@@ -1476,6 +1477,7 @@ void CPU::LogCommand(uint16_t* pc, uint8_t* inst, uint8_t* param1, uint8_t* para
 	fwrite(ime, sizeof(uint8_t), sizeof(uint8_t), clog);
 	fwrite(ie, sizeof(uint8_t), sizeof(uint8_t), clog);
 	fwrite(_if, sizeof(uint8_t), sizeof(uint8_t), clog);
+	fwrite(&romBank, sizeof(uint16_t), sizeof(uint8_t), clog);
 
 	//fwrite(command, sizeof(char), sizeof(char) * strlen(command), clog);
 }
