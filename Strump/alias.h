@@ -64,8 +64,16 @@ constexpr auto BCPS = 0xff68;
 constexpr auto BCPD = 0xff69;
 constexpr auto OCPS = 0xff6a;
 constexpr auto OCPD = 0xff6b;
-constexpr auto FF6C = 0xff6c;
 constexpr auto VBK = 0xff4f;
 constexpr auto SVBK = 0xff70;
+
+// Undocumented CGB registers
+constexpr auto FF6C = 0xff6c;
+constexpr auto FF72 = 0xff72;
+constexpr auto FF73 = 0xff73;
+constexpr auto FF74 = 0xff74;
+constexpr auto FF75 = 0xff75;
+constexpr auto FF76 = 0xff76;
+constexpr auto FF77 = 0xff77;
 
 constexpr auto IE = 0xffff;

@@ -41,6 +41,16 @@ uint8_t MBC5Memory::internalReadMem(uint16_t location) {
 	else if (location >= 0 && location < 0x4000) {
 		return rominfo->GetCardridgeVal(location);
 	}
+	// Undocumented registers
+	else if (location == FF6C) {
+		return rominfo->UseColour() ? internal_get(location) : 0xff;
+	}
+	else if (location == FF74) {
+		return rominfo->UseColour() ? internal_get(location) : 0xff;
+	}
+	else if (location == FF75) {
+		return internal_get(location) & 0x70;
+	}
 	else if (location >= 0x4000 && location < 0x8000) {
 		uint16_t bank = GetRomBank();
 		nAddress = location + ((bank - 1) * 0x4000);
@@ -147,6 +157,18 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		WRamBank = value & 0x7;
 		if(WRamBank == 0) WRamBank = 1;
 		printf("SVBK: %x, WRamBank:%x\n", value, WRamBank);
+	}
+	// Undocumented registers
+	else if (location == FF6C) {
+		if(rominfo->UseColour())
+			internal_set(location, 0xfe + (value & 1));
+	}
+	else if (location == FF74) {
+		if(rominfo->UseColour())
+			internal_set(location, value);
+	}
+	else if (location == FF75) {
+		internal_set(location, value & 0x70);
 	}
 	else if (location >= 0 && location < 0x2000) {
 		//printf("location: %x, setting RAMG: %x\n", location, RAMG);

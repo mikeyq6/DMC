@@ -123,8 +123,12 @@ void CPU::setDefaults() {
 	memory->WriteMem(WY, 0x00); // WY
 	memory->WriteMem(WX, 0x00); // WX
 	memory->WriteMem(IE, 0x00); // IE
-	memory->WriteMem(IF, 0xe1); // IE
-	//memory->WriteMem(STAT, 0x85); // IE
+	memory->WriteMem(FF6C, 0xfe); // FF6C
+	memory->WriteMem(FF72, 0); 
+	memory->WriteMem(FF73, 0); 
+	memory->WriteMem(FF74, 0); 
+	memory->WriteMem(FF75, 0); 
+	
 }
 
 
