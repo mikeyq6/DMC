@@ -95,6 +95,7 @@ void Memory::SetVramForAddress(uint16_t address, uint8_t value) {
 	SetVramForAddress(address, value, VramBank);
 }
 void Memory::SetVramForAddress(uint16_t address, uint8_t value, uint8_t bank) {
+	//printf("setting [%x]=%x, bank:%x\n", address, value, bank);
 	VRamBankData[bank][address - 0x8000] = value;
 }
 
@@ -249,11 +250,11 @@ void Memory::doHDMATransfer(uint8_t value) {
 	dmaDestination &= 0x1ff0;
 	uint16_t offsetDest = dmaDestination + 0x8000;
 
-	printf("value: %x, numBytes: %x, offsetDest: %x\n", value, numBytes, offsetDest);
+	// printf("value: %x, numBytes: %x, offsetDest: %x\n", value, numBytes, offsetDest);
 	for(uint8_t i=0; i<numBytes; i++) {
-		printf("Setting (%x)=%x from $(%x)\n", 
-			offsetDest + i, internalReadMem(dmaSource + i), dmaSource + i);
-		internal_set(offsetDest + i, internalReadMem(dmaSource + i));
+		// printf("Setting (%x)=%x from $(%x)\n", 
+			// offsetDest + i, internalReadMem(dmaSource + i), dmaSource + i);
+		SetVramForAddress(offsetDest + i, internalReadMem(dmaSource + i));
 	}
 	internal_set(HDMA5, 0xff);
 }
