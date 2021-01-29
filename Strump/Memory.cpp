@@ -17,7 +17,6 @@ void Memory::init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState) 
 
 	RamEnabled = false;
 	RomBanking = true;
-	RamBank = 1;
 
 	this->CopyRamCartridgeData();
 }

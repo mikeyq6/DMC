@@ -5,7 +5,7 @@ MBC1Memory::MBC1Memory(bool hasRam, bool hasBattery) {
 	this->has_RAM = hasRam;
 	this->has_Battery = hasBattery;
 	MODE = MODE_16_8; // default
-	RamBank = 1;
+	RamBank = 0;
 }
 MBC1Memory::~MBC1Memory() {}
 
@@ -105,17 +105,12 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 		BANK1 = value & 0x1f;
 	}
 	else if (location >= 0x4000 && location < 0x6000) { // ROM/RAM Switching
-		BANK2 = value & 3;
-		if(RAMG == 0xa) {
-			if (MODE == MODE_16_8) {
-				RamBank = BANK2;
-			} else {
-				RamBank = BANK2;
-			}
-			if(RamBank >= rominfo->GetNumberOfRamBanks()) {
-				RamBank &= (rominfo->GetNumberOfRamBanks());
-			}
+		if (MODE == MODE_16_8) {
+			BANK2 = value & 3;
+		} else {
+			RamBank = value & 3;
 		}
+
 		// printf("MODE: %x, value: %x, BANK2: %x, RamBank:%x, AVB: %x\n", MODE, value, BANK2, RamBank, rominfo->GetNumberOfRamBanks());
 	}
 	else if (location >= 0x6000 && location < 0x8000) { // Set Memory mode

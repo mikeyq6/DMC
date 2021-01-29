@@ -85,12 +85,21 @@ void CPU::initCPU() {
 }
 
 void CPU::setDefaults() {
-	registers->AF.af = 0x11f0;
-	registers->BC.bc = 0x0013;
-	registers->DE.de = 0x00d8;
-	registers->HL.hl = 0x014d;
-	registers->SP = 0xfffe;
-	registers->rDiv = 0;
+	if(rominfo->UseColour()) {
+		registers->AF.af = 0x11f0;
+		registers->BC.bc = 0x0013;
+		registers->DE.de = 0x00d8;
+		registers->HL.hl = 0x014d;
+		registers->SP = 0xfffe;
+		registers->rDiv = 0;
+	} else {
+		registers->AF.af = 0x01f0;
+		registers->BC.bc = 0x0013;
+		registers->DE.de = 0x00d8;
+		registers->HL.hl = 0x014d;
+		registers->SP = 0xfffe;
+		registers->rDiv = 0;
+	}
 	registers->PC = 0x100;
 	memory->WriteMem(TIMA, 0x00); // TIMA
 	memory->WriteMem(TMA, 0x00); // TMA

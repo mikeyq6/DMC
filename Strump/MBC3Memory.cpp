@@ -125,23 +125,23 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if(location == OCPD && rominfo->UseColour()) {
 		setPaletteData(value);
 	}
-	else if(location == HDMA1) {
+	else if(location == HDMA1 && rominfo->UseColour()) {
 		printf("HDMA1 value: %x\n", value);
 		setHDMASourceHigh(value);
 	}
-	else if(location == HDMA2) {
+	else if(location == HDMA2 && rominfo->UseColour()) {
 		printf("HDMA2 value: %x\n", value);
 		setHDMASourceLow(value);
 	}
-	else if(location == HDMA3) {
+	else if(location == HDMA3 && rominfo->UseColour()) {
 		printf("HDMA3 value: %x\n", value);
 		setHDMADestinationHigh(value);
 	}
-	else if(location == HDMA4) {
+	else if(location == HDMA4 && rominfo->UseColour()) {
 		printf("HDMA4 value: %x\n", value);
 		setHDMADestinationLow(value);
 	}
-	else if(location == HDMA5) {
+	else if(location == HDMA5 && rominfo->UseColour()) {
 		printf("HDMA5 value: %x\n", value);
 		printf("source: %x, dest: %x\n", dmaSource, dmaDestination);
 		doHDMATransfer(value);
