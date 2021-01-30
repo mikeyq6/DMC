@@ -36,14 +36,16 @@ uint8_t MBC2Memory::internalReadMem(uint16_t location) {
 		return GetVramForAddress(location);
 	}
 	else if (location >= 0xa000 && location < 0xc000) {
-
 		if(RAMG == 0xa) {
-			nAddress = 0xa000 + (location & 0x1ff);
-			data = internal_get(0xa000 + (location & 0x1ff));
+			nAddress = getRamLocationAddress(location);
+			data = internal_get(nAddress) & 0x0f;
+			data |= 0xf0;
+			// printf("getting memory[%x] = %x\n", nAddress, data);
 		} else {
-			data = 0;
+			data = 0xff;
 		}
-		printf("RAMG: %x, location: %x, nAddress: %x, data: %x\n", RAMG, location, nAddress, data);
+		return data;
+		// printf("RAMG: %x, location: %x, nAddress: %x, data: %x\n", RAMG, location, nAddress, data);
 	}
 	else if (location == P1) { // Joypad register
 		uint8_t state = internal_get(P1);
@@ -83,37 +85,35 @@ void MBC2Memory::WriteMem(uint16_t location, uint8_t value) {
 			// ROM Select
 			ROMG = value & 0x0f;
 			if(ROMG == 0) ROMG++;
-			// printf("ROMG: %x\n", ROMG);
 		} else {
 			// RAM Enable/Disable
 			RAMG = value & 0xf;
-			printf("RAMG: %x\n", RAMG);
+			// printf("location: %x, value: %x, RAMG: %x\n", location, value, RAMG);
 		}
 	}
 	else if(location >= 0x4000 && location < 0x8000) {
 		return;
 	}
 	else if (location >= 0x8000 && location < 0xa000) {
-		// internal_set(location, value);
 		SetVramForAddress(location, value);
 	}
-	else if (location >= 0xe000 && location < 0xfe00) { // Allow for the mirrored internal RAM
-		internal_set(location - 0x2000, value);
-		internal_set(location, value);
+	else if (location >= 0xa000 && location < 0xc000) { // Writing to RAM
+		if (RAMG == 0xa) {
+			uint16_t nLocation = getRamLocationAddress(location);
+			internal_set(nLocation, value);
+		}
+		else {
+			cout << "Trying to write to RAM but it is not enabled" << endl;
+		}
 	}
 	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
 		if (location + 0x2000 < 0xfe00)
 			internal_set(location + 0x2000, value);
 		internal_set(location, value);
 	}
-	else if (location >= 0xa000 && location < 0xc000) { // Writing to RAM
-		if (RAMG == 0xa) {
-			uint16_t nLocation = 0xa000 + (location & 0x1ff);
-			internal_set(nLocation, value);
-		}
-		else {
-			cout << "Trying to write to RAM but it is not enabled" << endl;
-		}
+	else if (location >= 0xe000 && location < 0xfe00) { // Allow for the mirrored internal RAM
+		internal_set(location - 0x2000, value);
+		internal_set(location, value);
 	}
 	else {
 		internal_set(location, value);
@@ -126,4 +126,8 @@ uint16_t MBC2Memory::GetRomBank() {
 		bank &= (rominfo->GetNumberOfRomBanks() - 1);
 	}
 	return bank;
+}
+
+uint16_t MBC2Memory::getRamLocationAddress(uint16_t location) {
+	return 0xa000 + (location & 0x1ff);
 }

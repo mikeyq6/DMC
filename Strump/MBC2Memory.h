@@ -17,5 +17,7 @@ private:
 	uint8_t RAMG = 0;
 	uint8_t ROMG = 0;
 	bool has_Battery = false;
+
+	uint16_t getRamLocationAddress(uint16_t location);
 };
 
