@@ -222,16 +222,16 @@ void ROMInfo::SetCartridgeNames() {
 	}
 
 	switch (CartInfo->ramType) {
-	case NO_RAM:
-		CartInfo->ramTypeName = "None"; break;
-	case RAM_1_2:
-		CartInfo->ramTypeName = " 16KBit =   2KByte = 1 bank"; break;
-	case RAM_1_8:
-		CartInfo->ramTypeName = " 64KBit =   8KByte = 1 bank"; break;
-	case RAM_4_32:
-		CartInfo->ramTypeName = "256KBit =  32KByte = 4 banks"; break;
-	case RAM_16_128:
-		CartInfo->ramTypeName = "  1MBit = 128KByte = 16 banks"; break;
+		case NO_RAM:
+			CartInfo->ramTypeName = "None"; break;
+		case RAM_1_2:
+			CartInfo->ramTypeName = " 16KBit =   2KByte = 1 bank"; break;
+		case RAM_1_8:
+			CartInfo->ramTypeName = " 64KBit =   8KByte = 1 bank"; break;
+		case RAM_4_32:
+			CartInfo->ramTypeName = "256KBit =  32KByte = 4 banks"; break;
+		case RAM_16_128:
+			CartInfo->ramTypeName = "  1MBit = 128KByte = 16 banks"; break;
 	}
 }
 

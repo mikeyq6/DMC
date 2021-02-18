@@ -10,7 +10,7 @@ MBC5Memory::MBC5Memory(bool _hasRam, bool _hasBattery, bool _hasRumble, bool _ha
 	this->hasRumble = _hasRumble;
 	
 	RAMG = 0;
-	ROMB0 = 0;
+	ROMB0 = 1;
 	ROMB1 = 0;
 	WRamBank = 1;
 }
@@ -38,9 +38,6 @@ uint8_t MBC5Memory::internalReadMem(uint16_t location) {
 	else if(location == OCPD && rominfo->UseColour()) {
 		return getPaletteData();
 	}
-	else if (location >= 0 && location < 0x4000) {
-		return rominfo->GetCardridgeVal(location);
-	}
 	// Undocumented registers
 	else if (location == FF6C) {
 		return rominfo->UseColour() ? internal_get(location) : 0xff;
@@ -51,11 +48,17 @@ uint8_t MBC5Memory::internalReadMem(uint16_t location) {
 	else if (location == FF75) {
 		return internal_get(location) & 0x70;
 	}
+	else if (location >= 0 && location < 0x4000) {
+		return rominfo->GetCardridgeVal(location);
+	}
 	else if (location >= 0x4000 && location < 0x8000) {
 		uint16_t bank = GetRomBank();
-		nAddress = location + ((bank - 1) * 0x4000);
-		uint8_t data = rominfo->GetCardridgeVal(nAddress);
-		return data;
+		if(bank == 0) {
+			nAddress = location - 0x4000;
+		} else {
+			nAddress = location + ((bank-1) * 0x4000);
+		}
+		return rominfo->GetCardridgeVal(nAddress);
 	}
 	else if (location >= 0x8000 && location < 0xa000) {
 		// printf("VramBank: %x, location:%x\n", VramBank, location);
@@ -68,7 +71,8 @@ uint8_t MBC5Memory::internalReadMem(uint16_t location) {
 			return RamBankData[location + (RamBank * 0x2000)];
 		}
 		else {
-			return internal_get(location);
+			location -= 0xa000;
+			return RamBankData[location];
 		}
 	}
 	else if (location >= 0xc000 && location <= 0xe000 && rominfo->UseColour()) {
@@ -156,7 +160,7 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if(location == SVBK) {
 		WRamBank = value & 0x7;
 		if(WRamBank == 0) WRamBank = 1;
-		printf("SVBK: %x, WRamBank:%x\n", value, WRamBank);
+		// printf("SVBK: %x, WRamBank:%x\n", value, WRamBank);
 	}
 	// Undocumented registers
 	else if (location == FF6C) {
@@ -180,15 +184,10 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		} else {
 			ROMB1 = value & 1;
 		}
+		// printf("ROMB0: %x, ROMB1: %x, bank: %x\n", ROMB0, ROMB1, GetRomBank());
 	}
 	else if (location >= 0x4000 && location < 0x6000) { // ROM/RAM Switching
 		RAMB = value & 0xf;
-	}
-	else if (location >= 0x6000 && location < 0x8000) { // Set Rom or Ram banking
-		if (rominfo->CartInfo->controllerType == MBC1) {
-			RomBanking = (value == 0) ? true : false;
-			RomBank = 0;
-		}
 	}
 	else if (location >= 0x8000 && location < 0xa000) {
 		SetVramForAddress(location, value);
@@ -261,10 +260,7 @@ void MBC5Memory::SetState(uint8_t* state, uint32_t *index) {
 }
 
 uint16_t MBC5Memory::GetRomBank() {
-	uint16_t bank = (ROMB1 << 8) + ROMB0;
-	// if(bank == 0) bank++;
-	if(bank > rominfo->GetNumberOfRomBanks()) {
-		bank &= (rominfo->GetNumberOfRomBanks() - 1);
-	}
-	return bank;
+	uint16_t rmb1 = ((uint16_t) ROMB1) << 8;
+	uint16_t bank = rmb1 + ROMB0;
+	return bank % rominfo->GetNumberOfRomBanks();
 }

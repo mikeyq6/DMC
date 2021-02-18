@@ -159,6 +159,16 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 			case SDLK_2:
 				cpu->InputProcess(START_BUTTON_DOWN);
 				break;
+			case SDLK_c:
+				if(SDL_GetModState() & KMOD_SHIFT) {
+					for(int i=0; i<CARTRIDGE_SIZE; i++) {
+						printf("%x ", cpu->GetRomInfo()->GetCardridgeVal(i));
+						if(i>0 && (i % 0xff) == 0) {
+							printf("\n");
+						}
+					}
+				}
+				break;
 			case SDLK_r:
 				// SDL_Log("Restart");  // doesn't work
 				//cpu->Stop();
