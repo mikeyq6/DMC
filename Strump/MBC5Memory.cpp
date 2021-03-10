@@ -116,7 +116,7 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location == ENDSTART) {
 		Startup = false;
 	}
-	else if(location == BCPS) {
+	else if(location == BCPS && rominfo->UseColour()) {
 		// printf("BCPS: %x\n", value);
 		setPaletteWrite(false, value);
 	}
@@ -228,11 +228,8 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		internal_set(LY, 0);
 	}
 	else if (location >= 0x9000 && location <= 0x98ff) {
-		if (value == 0x30)
-			int c = 1;
 		internal_set(location, value);
 	}
-
 	else {
 		internal_set(location, value);
 	}
