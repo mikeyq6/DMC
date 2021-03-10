@@ -37,6 +37,8 @@ uint8_t Memory::internal_get(uint16_t address) {
 void Memory::internal_set(uint16_t address, uint8_t value) {
 	if(address >= 0x8000 && address < 0xa000) {
 		SetVramForAddress(address, value);
+	} else if(address == SC) {
+		memory[SC] &= 0xfe;
 	} else {
 		// if(address >= 0xa000 && address < 0xc000)
 		// 	printf("setting memory[%x] = %x\n", address, value);
@@ -222,43 +224,89 @@ void Memory::SetState(uint8_t* state, uint32_t *index) {
 	*index = val;
 }
 void Memory::setHDMASourceHigh(uint8_t value) {
-	uint16_t nval = (value & 0x7f) << 8;
-	dmaSource = (dmaSource & 0x00ff) | nval;
+	dmaSource &= 0xf0;
+	dmaSource |= (value << 8);
+	// uint16_t nval = (value & 0x7f) << 8;
+	// dmaSource = (dmaSource & 0x00ff) | nval;
 	printf("dmaSource (H): %x\n", dmaSource);
 }
 void Memory::setHDMASourceLow(uint8_t value) {
-	uint16_t nval = value;
-	dmaSource = (dmaSource & 0xff00) | value;
-	dmaSource &= 0xfff0;
+	dmaSource &= 0xff00;
+	dmaSource |= (value & 0xf0);
+	// uint16_t nval = value;
+	// dmaSource = (dmaSource & 0xff00) | value;
+	// dmaSource &= 0xfff0;
 	printf("dmaSource (L): %x\n", dmaSource);
 }
 void Memory::setHDMADestinationHigh(uint8_t value) {
-	uint16_t nval = value << 8;
-	dmaDestination = (dmaDestination & 0x00ff) | nval;
-	dmaDestination &= 0x1ff0;
+	dmaDestination &= 0xf0;
+	dmaDestination |= (value << 8);
+	// uint16_t nval = value << 8;
+	// dmaDestination = (dmaDestination & 0x00ff) | nval;
+	// dmaDestination &= 0x1ff0;
 	printf("dmaDestination (H): %x\n", dmaDestination);
 }
 void Memory::setHDMADestinationLow(uint8_t value) {
-	uint16_t nval = value;
-	dmaDestination = (dmaDestination & 0xff00) | nval;
-	dmaDestination &= 0x1ff0;
+	dmaDestination &= 0x1f000;
+	dmaDestination |= (value & 0xf0);
+	// uint16_t nval = value;
+	// dmaDestination = (dmaDestination & 0xff00) | nval;
+	// dmaDestination &= 0x1ff0;
 	printf("dmaDestination (L): %x\n", dmaDestination);
 }
 void Memory::doHDMATransfer(uint8_t value) {
-	uint8_t numBytes = 0x10 + ((value & 0x7f) * 0x10);
+	rHDMA5 = value;
+	uint8_t numBlocks = (value & 0x7f) + 1;
+	internal_set(HDMA5, value);
 
-	dmaSource &= 0xfff0;
-	dmaDestination &= 0x1ff0;
-	uint16_t offsetDest = dmaDestination + 0x8000;
+	if(rHDMA5 & 0x80) {
+		hdmaInProgress = true;
+		remainingHdmaTransfers = numBlocks;
+	} else if(hdmaInProgress) {
+		hdmaInProgress = false;
+		remainingHdmaTransfers = 0;
+		return;
+	} else {
+		uint8_t mode = getStatMode();
 
-	// printf("value: %x, numBytes: %x, offsetDest: %x\n", value, numBytes, offsetDest);
-	for(uint8_t i=0; i<numBytes; i++) {
-		// printf("Setting (%x)=%x from $(%x)\n", 
-			// offsetDest + i, internalReadMem(dmaSource + i), dmaSource + i);
-		SetVramForAddress(offsetDest + i, internalReadMem(dmaSource + i));
+		dmaSource &= 0xfff0;
+		dmaDestination &= 0x1fff;
+		uint16_t offsetDest = dmaDestination + 0x8000;
+
+		printf("value: %x, numBlocks: %x, numBytes: %x, offsetDest: %x\n", 
+			value, numBlocks, numBlocks * 0x10, offsetDest);
+		for(uint16_t i=0; i<numBlocks * 0x10; i++) {
+			printf("Setting (%x)=%x from $(%x)\n", 
+				offsetDest + i, internalReadMem(dmaSource + i), dmaSource + i);
+			SetVramForAddress(offsetDest + i, internalReadMem(dmaSource + i));
+		}
 	}
-	internal_set(HDMA5, 0xff);
+}
+void Memory::runHDMATransfer() {
+
+	if(hdmaInProgress) {
+		uint8_t numBlocks = (internal_get(HDMA5) & 0x7f) + 1;
+		uint8_t offset = ((numBlocks - remainingHdmaTransfers) * 0x10);
+		uint16_t source = (dmaSource &= 0xfff0) + offset;
+		uint16_t offsetDest = dmaDestination + 0x8000 + offset;
+		
+		for(uint8_t i=0; i<0x10; i++) {
+			printf("Setting (%x)=%x from $(%x)\n", 
+				offsetDest + i, internalReadMem(source + i), source + i);
+			SetVramForAddress(offsetDest + i, internalReadMem(source + i));
+		}
+
+		remainingHdmaTransfers--;
+
+		if(remainingHdmaTransfers == 0) {
+			hdmaInProgress = false;
+		}
+	}
 }
 void Memory::SetVramBank(uint8_t value) {
 	VramBank = value & 1;
+}
+
+uint8_t Memory::getStatMode() {
+	return internal_get(STAT) & 0x3;
 }

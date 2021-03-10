@@ -69,16 +69,16 @@ void CPU::initCPU() {
 	test->TestInstructions();	
 	delete test;
 
-	Memory* mem5 = new MBC5Memory(false, false, true, true);
-	mem5->init(rominfo, &registers->AF.f, joypadState);
-	testMemory = new TestMemory(commands, mem5, registers);
-	testMemory->RunTests();
-	delete testMemory;
+	// Memory* mem5 = new MBC5Memory(false, false, true, true);
+	// mem5->init(rominfo, &registers->AF.f, joypadState);
+	// testMemory = new TestMemory(commands, mem5, registers);
+	// testMemory->RunTests();
+	// delete testMemory;
 
-	testMBC5 = new TestMBC5(commands, mem5, registers);
-	testMBC5->RunTests();
-	delete mem5;
-	delete testMBC5;
+	// testMBC5 = new TestMBC5(commands, mem5, registers);
+	// testMBC5->RunTests();
+	// delete mem5;
+	// delete testMBC5;
 #endif
 
 	setDefaults();
@@ -86,10 +86,10 @@ void CPU::initCPU() {
 
 void CPU::setDefaults() {
 	if(rominfo->UseColour()) {
-		registers->AF.af = 0x11f0;
-		registers->BC.bc = 0x0013;
-		registers->DE.de = 0x00d8;
-		registers->HL.hl = 0x014d;
+		registers->AF.af = 0x1180;
+		registers->BC.bc = 0x0000;
+		registers->DE.de = 0x0008;
+		registers->HL.hl = 0x007c;
 		registers->SP = 0xfffe;
 		registers->rDiv = 0;
 	} else {
@@ -233,6 +233,9 @@ void CPU::Start() {
 				if(isHalting) {
 					isHalting = false;
 					Halted = true;
+				}
+				if(rominfo->UseColour() && memory->getStatMode() == HBLANK) {
+					memory->runHDMATransfer();
 				}
 			}
 		}
