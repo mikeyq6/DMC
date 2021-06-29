@@ -29,6 +29,7 @@ constexpr auto I_LCDC = 0x48;
 constexpr auto I_Timer = 0x50;
 constexpr auto I_Serial = 0x58;
 constexpr auto I_Joypad = 0x60;
+constexpr auto HBLANK = 0;
 
 constexpr auto TIMER_STATE_SIZE = 12;
 constexpr auto REGISTERS_STATE_SIZE = 18;
