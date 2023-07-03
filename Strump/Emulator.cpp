@@ -169,28 +169,9 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 					}
 				}
 				break;
-			case SDLK_r:
-				// SDL_Log("Restart");  // doesn't work
-				//cpu->Stop();
-				// cpu->initCPU();
-				//u->Start();
-				printf("Cartridge ROM bank: %x\n", cpu->memory->GetRomBank());
-				break;
-			case SDLK_q:
-				SDL_Log("Quit");
-				isRunning = false;
-				break;
-			case SDLK_t: // Toggle colour mode
-				draw->ToggleColourMode();
-				break;
 			case SDLK_l: // Load state
 				if(SDL_GetModState() & KMOD_SHIFT) {
 					loadGameState();
-				}
-				break;
-			case SDLK_s: // Save state
-				if(SDL_GetModState() & KMOD_SHIFT) {
-					saveGameState();
 				}
 				break;
 			case SDLK_m: // edit memory
@@ -199,6 +180,25 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 				} else {
 					viewMemory();
 				}
+				break;
+			case SDLK_q:
+				SDL_Log("Quit");
+				isRunning = false;
+				break;
+			case SDLK_r:
+				// SDL_Log("Restart");  // doesn't work
+				//cpu->Stop();
+				// cpu->initCPU();
+				//u->Start();
+				printf("Cartridge ROM bank: %x\n", cpu->memory->GetRomBank());
+				break;
+			case SDLK_s: // Save state
+				if(SDL_GetModState() & KMOD_SHIFT) {
+					saveGameState();
+				}
+				break;
+			case SDLK_t: // Toggle colour mode
+				draw->ToggleColourMode();
 				break;
 			default:
 				break;
