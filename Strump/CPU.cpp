@@ -156,7 +156,8 @@ void CPU::Start() {
 		if (!(isPaused)) {
 
 			if (Halted) {
-				UpdateTimer(inst);
+				uint8_t cycles = GetCycles(inst);
+				UpdateTimer(cycles);
 
 				if (IME) {
 					CheckInterrupts();
@@ -219,7 +220,8 @@ void CPU::Start() {
 				#ifdef REAL_TIME_CPU
 				DoCPUWait(&tp, inst);
 				#endif
-				UpdateTimer(inst);
+				uint8_t cycles = GetCycles(inst);
+				UpdateTimer(cycles);
 				UpdateGraphics(inst);
 				SetLCDStatus();
 
@@ -402,9 +404,8 @@ void CPU::ResetInterrupt(uint8_t iRegister) {
 	}
 }
 
-void CPU::UpdateTimer(uint8_t opcode) {
+void CPU::UpdateTimer(uint8_t cycles) {
 
-	uint8_t cycles = GetCycles(opcode);
 	if (timer->UpdateWillInterrupt(cycles)) {
 		SetInterrupt(I_Timer);
 	}

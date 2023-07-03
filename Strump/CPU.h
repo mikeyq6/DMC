@@ -105,7 +105,7 @@ public:
 	void CheckInterrupts();
 	void SetInterrupt(uint8_t iRegister);
 	void ResetInterrupt(uint8_t iRegister);
-	void UpdateTimer(uint8_t opcode);
+	void UpdateTimer(uint8_t cycles);
 
 	// Instructions
 	uint8_t GetNextInstruction();
