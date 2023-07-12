@@ -307,10 +307,9 @@ void CPU::DoCPUWait(chrono::system_clock::time_point* tp, uint8_t inst) {
 	uint8_t cycles = GetCycles(inst);
 	
 	// Determine time instruction should take in nanoseconds
-	long long duration = (cycles / (double)FREQ) * 1000000000;
+	long long duration = (cycles / (double)FREQ) * 10000000;
 	auto finish = *tp + chrono::nanoseconds(duration);
-	this_thread::sleep_until(finish);
-
+	while(finish > chrono::system_clock::now()) {}
 }
 
 
