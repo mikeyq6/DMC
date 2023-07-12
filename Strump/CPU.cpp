@@ -101,6 +101,7 @@ void CPU::setDefaults() {
 		registers->rDiv = 0;
 	}
 	registers->PC = 0x100;
+	registers->sCounter = 0x1c8;
 	memory->WriteMem(TIMA, 0x00); // TIMA
 	memory->WriteMem(TMA, 0x00); // TMA
 	memory->WriteMem(TAC, 0x00); // TAC
@@ -1241,7 +1242,7 @@ void CPU::UpdateGraphics(uint8_t opcode) {
 	uint8_t cycles;
 
 	if (IsLCDEnabled()) {
-		cycles = GetCycles(opcode) * 2;
+		cycles = GetCycles(opcode);
 		registers->sCounter -= cycles;
 	}
 	else return;
