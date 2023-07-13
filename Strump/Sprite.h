@@ -1,17 +1,12 @@
 #pragma once
 
+#include <stdint.h>
 #include "alias.h"
-#include <SDL2/SDL.h>
+#include "tile.h"
 #include "Memory.h"
 
 const int SPRITE_MODE_8x8 = 0;
 const int SPRITE_MODE_8x16 = 1;
-
-typedef struct _tile {
-	uint8_t data[16];
-	uint16_t address;
-	uint8_t attributes;
-} tile;
 
 class Sprite
 {
