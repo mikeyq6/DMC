@@ -35,6 +35,7 @@
 /SDL2_ttf
 /.vs
 /.vscode
+/Strump/localResources
 *.user
 x64
 x86

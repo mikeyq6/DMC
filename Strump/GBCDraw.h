@@ -39,8 +39,6 @@ public:
 
 	void SetColourMode(uint8_t mode);
 	void ToggleColourMode() override;
-	
-	void GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite);
 
 	FILE* out;
 private:

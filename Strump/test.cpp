@@ -1034,7 +1034,7 @@ void Test::TestInstructions() {
 	memory->set(address+3, spriteData);
 	Sprite *sprite = new Sprite();
 	GBCDraw *draw = new GBCDraw(memory, registers);
-	draw->GetSpriteByNumber(spriteNum, sprite);
+	Sprite::GetSpriteByNumber(spriteNum, memory, sprite);
 	assert(sprite->X == _x);
 	assert(sprite->Y == _y);
 	assert(sprite->TileNumber == tileNum);

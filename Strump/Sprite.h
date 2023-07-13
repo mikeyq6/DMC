@@ -21,6 +21,7 @@ class Sprite
 		bool YFlip, XFlip;
 
 		void GetSpriteTile(Memory* memory, tile* t);
+		static void GetSpriteByNumber(uint8_t spriteNum, Memory *memory, Sprite* sprite);
 
 		void Draw();
 };
