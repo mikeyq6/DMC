@@ -12,6 +12,7 @@
 #include "Draw.h"
 #include "registers.h"
 #include "Sprite.h"
+#include "GBCTile.h"
 
 class GBCDraw :
 	public Draw
@@ -20,7 +21,7 @@ public:
 	GBCDraw(Memory* _memory, Registers* _registers);
 	~GBCDraw() override;
 
-	tile* background[BACKGROUNDTILES];
+	GBCTile* background[BACKGROUNDTILES];
 	tile* windowX[BACKGROUNDTILES];
 	uint32_t screenPixels[NUMPIXELS];
 	uint32_t tilePixels[NUM_TILE_PIXELS];

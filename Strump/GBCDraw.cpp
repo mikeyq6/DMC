@@ -31,7 +31,7 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 	}
 
 	for (int i = 0; i < BACKGROUNDTILES; i++) {
-		background[i] = new tile();
+		background[i] = new GBCTile();
 		windowX[i] = new tile();
 	}
 
@@ -213,18 +213,23 @@ void GBCDraw::loadBackground() {
 	uint16_t tileDataTableAddress = GetBackgroundTileMapLocation();
 	uint16_t address = BGWindowTileLocation();
 	uint16_t offset = 16;
-	uint8_t tileNum;
+	uint8_t tileNum, tileAttributes;
+	GBCTile gbcTile;
 	//printf("bMap=%04x, address=%04x\n", bMap, address);
 
 	for (int i = 0; i < BACKGROUNDTILES; i++) {
-		tileNum = memory->get(tileDataTableAddress + i);
+		// tileNum = memory->get(tileDataTableAddress + i);
+		tileNum = memory->GetVramForAddress(tileDataTableAddress + i, 0);
+		tileAttributes = memory->GetVramForAddress(tileDataTableAddress + i, 1);
+		background[i]->TileNumber = tileNum;
 		//printf("tileNum=%02x\n", Memory[bMap + i]);
 		if (address == 0x9000) { // allow for negative numbers
-			getTileAt((offset * (int8_t)tileNum) + address, background[i], 0);
+			getTileAt((offset * (int8_t)tileNum) + address, background[i]->t, 0);
 		}
 		else {
-			getTileAt((offset * tileNum) + address, background[i], 0);
+			getTileAt((offset * tileNum) + address, background[i]->t, 0);
 		}
+		GBCTile::GetBackgroundTile(tileAttributes, background[i]);
 	}
 }
 void GBCDraw::loadWindow() {
@@ -251,7 +256,7 @@ void GBCDraw::printTileData(int tileNum) {
 	//printf("address=%04x\n", (offset * tileNum) + address);
 	printf("Tile data: ");
 	for (int k = 0; k < 16; k++) {
-		printf("%02x ", background[tileNum]->data[k]);
+		printf("%02x ", background[tileNum]->t->data[k]);
 	}
 	printf("\n");
 }
@@ -280,7 +285,7 @@ void GBCDraw::setBackgroundPixels() {
 			pY = tY % 8;
 
 			index = ((tY / 8) * 32) + (tX / 8);
-			cur = background[index];
+			cur = background[index]->t;
 			if (tileIsNotEmpty(cur)) {
 				int q = 0;
 			}
@@ -353,7 +358,7 @@ void GBCDraw::setFullBackgroundPixels() {
 			pY = y % 8;
 
 			index = ((y / 8) * 32) + (x / 8);
-			cur = background[index];
+			cur = background[index]->t;
 
 			getPixel(cur, pX, pY, &pixel);
 
@@ -481,6 +486,8 @@ Palette* GBCDraw::GetPaletteNumber(bool isSprite, uint8_t number) {
 
 #pragma endregion
 
+#pragma region Tile Methods
+
 void GBCDraw::setTilePixels() {
 	tile tile;
 	uint8_t pX = 0;
@@ -528,12 +535,14 @@ void GBCDraw::getTileAt(uint16_t address, tile* t, uint8_t vramBank) {
 	}
 }
 
+#pragma endregion
+
+#pragma region Colour Methods
+
 uint32_t GBCDraw::GetColourFor(uint8_t number, tile *t) {
+	// uint16_t colourData = memory->GetPaletteColourInfo((palette << 3) + (number << 1));
 	// uint8_t attributes = memory->GetVramForAddress(t->address);
 	// uint8_t palette = t->attributes & 0x3;
-
-	// uint16_t colourData = memory->GetPaletteColourInfo((palette << 3) + (number << 1));
-
 	// // printf("address: %x, attributes: %x, palette: %x, colourData: %x\n", t->address, attributes, palette, colourData);
 
 	// uint8_t red = colourData & 0x1f;
@@ -604,6 +613,7 @@ void GBCDraw::ToggleColourMode() {
 	colourMode = colourMode == MODE_CLASSIC ? MODE_CLEAR : MODE_CLASSIC;
 }
 
+#pragma endregion
 
 void GBCDraw::clean() {
 	SDL_DestroyWindow(window);
