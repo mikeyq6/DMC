@@ -273,11 +273,11 @@ void Memory::doHDMATransfer(uint8_t value) {
 		dmaDestination &= 0x1fff;
 		uint16_t offsetDest = dmaDestination + 0x8000;
 
-		printf("value: %x, numBlocks: %x, numBytes: %x, offsetDest: %x\n", 
-			value, numBlocks, numBlocks * 0x10, offsetDest);
+		// printf("value: %x, numBlocks: %x, numBytes: %x, offsetDest: %x\n", 
+		// 	value, numBlocks, numBlocks * 0x10, offsetDest);
 		for(uint16_t i=0; i<numBlocks * 0x10; i++) {
-			printf("Setting (%x)=%x from $(%x)\n", 
-				offsetDest + i, internalReadMem(dmaSource + i), dmaSource + i);
+			// printf("Setting (%x)=%x from $(%x)\n", 
+				// offsetDest + i, internalReadMem(dmaSource + i), dmaSource + i);
 			SetVramForAddress(offsetDest + i, internalReadMem(dmaSource + i));
 		}
 	}
@@ -291,8 +291,8 @@ void Memory::runHDMATransfer() {
 		uint16_t offsetDest = dmaDestination + 0x8000 + offset;
 		
 		for(uint8_t i=0; i<0x10; i++) {
-			printf("Setting (%x)=%x from $(%x)\n", 
-				offsetDest + i, internalReadMem(source + i), source + i);
+			// printf("Setting (%x)=%x from $(%x)\n", 
+			// 	offsetDest + i, internalReadMem(source + i), source + i);
 			SetVramForAddress(offsetDest + i, internalReadMem(source + i));
 		}
 

@@ -13,7 +13,7 @@ GBCDraw::GBCDraw(Memory* _memory, Registers* _registers) {
 	Width = Height = 0;
 }
 GBCDraw::~GBCDraw() {
-	;
+
 }
 
 void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, bool fullscreen, 
@@ -32,7 +32,7 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 
 	for (int i = 0; i < BACKGROUNDTILES; i++) {
 		background[i] = new GBCTile();
-		windowX[i] = new tile();
+		windowX[i] = new GBCTile();
 	}
 
 	int gogogo = 1;
@@ -192,9 +192,10 @@ void GBCDraw::DrawPalette(SDL_Renderer* r, uint8_t pType, uint8_t pNum) {
 	uint8_t x_offset = 120;
 	uint8_t x_gap = 5;
 	uint8_t y_offset = 30;
-	Palette* p = GetPaletteNumber(pType == 1, pNum);
+	Palette *palette = (Palette*)malloc(sizeof(Palette));
+	GetPaletteByNumber(pType == 1, pNum, palette);
 	for(uint8_t i=0; i<4; i++) {
-		RGB rgb = PaletteColourToRGB(p->Colours[i]);
+		RGB rgb = PaletteColourToRGB(palette->Colours[i]);
 		rect.x = left_gutter + (pType * x_offset) + (i * (x_gap + width));
 		rect.y = left_gutter + (pNum * y_offset);
 		rect.w = width, rect.h = height;
@@ -214,20 +215,18 @@ void GBCDraw::loadBackground() {
 	uint16_t address = BGWindowTileLocation();
 	uint16_t offset = 16;
 	uint8_t tileNum, tileAttributes;
-	GBCTile gbcTile;
 	//printf("bMap=%04x, address=%04x\n", bMap, address);
 
 	for (int i = 0; i < BACKGROUNDTILES; i++) {
-		// tileNum = memory->get(tileDataTableAddress + i);
 		tileNum = memory->GetVramForAddress(tileDataTableAddress + i, 0);
 		tileAttributes = memory->GetVramForAddress(tileDataTableAddress + i, 1);
 		background[i]->TileNumber = tileNum;
 		//printf("tileNum=%02x\n", Memory[bMap + i]);
 		if (address == 0x9000) { // allow for negative numbers
-			getTileAt((offset * (int8_t)tileNum) + address, background[i]->t, 0);
+			getTileAt((offset * (int8_t)tileNum) + address, background[i]->t, background[i]->CGBVbank);
 		}
 		else {
-			getTileAt((offset * tileNum) + address, background[i]->t, 0);
+			getTileAt((offset * tileNum) + address, background[i]->t, background[i]->CGBVbank);
 		}
 		GBCTile::GetBackgroundTile(tileAttributes, background[i]);
 	}
@@ -237,17 +236,19 @@ void GBCDraw::loadWindow() {
 	uint16_t tileDataTableAddress = GetWindowTileMapLocation();
 	uint16_t address = BGWindowTileLocation();
 	uint16_t offset = 16;
-	uint8_t tileNum;
+	uint8_t tileNum, tileAttributes;
 
 	for (int i = 0; i < BACKGROUNDTILES; i++) {
-		tileNum = memory->get(tileDataTableAddress + i);
+		tileNum = memory->GetVramForAddress(tileDataTableAddress + i, 0);
+		tileAttributes = memory->GetVramForAddress(tileDataTableAddress + i, 1);
 		//printf("tileNum=%02x\n", Memory[bMap + i]);
 		if (address == 0x9000) { // allow for negative numbers
-			getTileAt((offset * (int8_t)tileNum) + address, windowX[i], 0);
+			getTileAt((offset * (int8_t)tileNum) + address, windowX[i]->t, windowX[i]->CGBVbank);
 		}
 		else {
-			getTileAt((offset * tileNum) + address, windowX[i], 0);
+			getTileAt((offset * tileNum) + address, windowX[i]->t, windowX[i]->CGBVbank);
 		}
+		GBCTile::GetBackgroundTile(tileAttributes, background[i]);
 	}
 }
 
@@ -285,35 +286,15 @@ void GBCDraw::setBackgroundPixels() {
 			pY = tY % 8;
 
 			index = ((tY / 8) * 32) + (tX / 8);
-			cur = background[index]->t;
-			if (tileIsNotEmpty(cur)) {
-				int q = 0;
-			}
-			getPixel(cur, pX, pY, &pixel);
 
-			//printf("windowPixels[%04x] = %08x\n", sPixelsIndex, sPixel);
-			screenPixels[sPixelsIndex] = GetColourFor(pixel, cur);
-			switch (pixel) {
-				case 0:
-					pixel = 32; break;
-				case 1:
-					pixel = 46; break;
-				case 2:
-					pixel = 56; break;
-				case 3:
-					pixel = 35; break;
-			}
+			getPixel(background[index]->t, pX, pY, &pixel);
+
+			screenPixels[sPixelsIndex] = GetColourForPixel(false, pixel, background[index]->CGBPalette);
 		}
 		pixel = (uint8_t)10;
 	}
 
-	// TEST: Set one random pixel as black each refresh
-	/*int randomnumber;
-	randomnumber = rand() % (Height * Height);
-	screenPixels[randomnumber] = BLACK;*/
-
 	// Draw the window if it is enabled
-
 	if (GetWindowEnabled() || true) {
 		wX = memory->get(WX);
 		wY = memory->get(WY);
@@ -329,11 +310,10 @@ void GBCDraw::setBackgroundPixels() {
 					pY = sY % 8;
 
 					index = ((sY / 8) * 32) + (sX / 8);
-					cur = windowX[index];
 					sPixelsIndex = (sX + offsetX) + ((sY + offsetY) * Width);
 
-					getPixel(cur, pX, pY, &pixel);
-					screenPixels[sPixelsIndex] = GetColourFor(pixel, cur);
+					getPixel(windowX[index]->t, pX, pY, &pixel);
+					screenPixels[sPixelsIndex] = GetColourForPixel(false, pixel, windowX[index]->CGBPalette);
 				}
 			}
 		}
@@ -362,17 +342,7 @@ void GBCDraw::setFullBackgroundPixels() {
 
 			getPixel(cur, pX, pY, &pixel);
 
-			fullBackgroundPixels[sPixelsIndex] = GetColourFor(pixel, cur);
-			switch (pixel) {
-				case 0:
-					pixel = 32; break;
-				case 1:
-					pixel = 46; break;
-				case 2:
-					pixel = 56; break;
-				case 3:
-					pixel = 35; break;
-			}
+			fullBackgroundPixels[sPixelsIndex] = GetColourForPixel(false, pixel, background[index]->CGBPalette);
 		}
 		pixel = (uint8_t)10;
 	}
@@ -387,6 +357,7 @@ void GBCDraw::setSpritePixels() {
 	uint8_t pixel = 0;
 	uint8_t spriteMode = (memory->ReadMem(LCDC) & 0x4) > 0 ? SPRITE_MODE_8x16 : SPRITE_MODE_8x8;
 	vector<Sprite*> sprites = {};
+	Palette *palette = (Palette*)malloc(sizeof(Palette));
 
 	for (int i = 0; i < 40; i++) {
 		Sprite::GetSpriteByNumber(i, memory, sprite);
@@ -416,7 +387,7 @@ void GBCDraw::setSpritePixels() {
 						getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
 						uint32_t curPixel = screenPixels[(scY + y) * 160 + (scX + x)];
 						if (sprite->SpritePriority == 0 || (sprite->SpritePriority == 1 && (curPixel == WHITE || curPixel == CLASSIC_WHITE))) {
-							uint32_t colour = GetSpriteColourFor(pixel, sprite, &cur);
+							uint32_t colour = GetColourForPixel(true, pixel, sprite->CGBPalette);
 							if(colour != TRANSPARENT)
 								screenPixels[(scY + y) * 160 + (scX + x)] = colour;
 						}
@@ -435,7 +406,7 @@ void GBCDraw::setSpritePixels() {
 							getPixel(&cur, x, y, &pixel, sprite->XFlip, sprite->YFlip);
 							uint32_t curPixel = screenPixels[(scY + y) * 160 + (scX + x)];
 							if (sprite->SpritePriority == 0 || (sprite->SpritePriority == 1 && (curPixel == WHITE || curPixel == CLASSIC_WHITE))) {
-								uint32_t colour = GetSpriteColourFor(pixel, sprite, &cur);
+								uint32_t colour = GetColourForPixel(true, pixel, sprite->CGBPalette);
 								if (colour != TRANSPARENT)
 									screenPixels[(scY + y) * 160 + (scX + x)] = colour;
 							}
@@ -445,32 +416,10 @@ void GBCDraw::setSpritePixels() {
 			}
 		}
 	}
-}
-
-uint32_t GBCDraw::GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t) {
-	// uint8_t attributes = sprite->Attributes;
-	// printf("palette: %x\n", palette);
-	if(number == 0) return TRANSPARENT;
-	Palette *palette = GetPaletteNumber(true, sprite->CGBPalette);
-
-	uint16_t colourData = palette->Colours[number];
-
-	RGB rgb = PaletteColourToRGB(colourData);
-	uint32_t colour = static_cast<uint32_t>(rgb.b) +
-		(static_cast<uint32_t>(rgb.g) << 8) + 
-		(static_cast<uint32_t>(rgb.r) << 16);
-
-	// printf("red: %x, green: %x, blue: %x, redP: %f, greenP: %f, blueP: %f, colour: %x\n",
-	// 	red, green, blue, redP, greenP, blueP, colour);
-	
 	free(palette);
-
-	return colour;
 }
 
-Palette* GBCDraw::GetPaletteNumber(bool isSprite, uint8_t number) {
-	Palette *palette = (Palette*)malloc(sizeof(Palette));
-
+void GBCDraw::GetPaletteByNumber(bool isSprite, uint8_t number, Palette *palette) {
 	uint16_t colour = 0;
 	uint8_t index = (number * 8) + (isSprite ? 0x40 : 0);
 	uint8_t paletteDataH,  paletteDataL;
@@ -480,8 +429,6 @@ Palette* GBCDraw::GetPaletteNumber(bool isSprite, uint8_t number) {
 		paletteDataH = memory->PaletteData[index++];
 		palette->Colours[i] = paletteDataL + (((uint16_t)paletteDataH) << 8);
 	}
-
-	return palette;
 }
 
 #pragma endregion
@@ -525,13 +472,10 @@ void GBCDraw::setTilePixels() {
 
 void GBCDraw::getTileAt(uint16_t address, tile* t, uint8_t vramBank) {
 	for (int i = 0; i < 16; i++) {
-		if(vramBank == 0) {
-			t->data[i] = memory->ReadMem(address + i);
-		} else {
-			t->data[i] = memory->GetVramForAddress(address + i, vramBank);
-		}
+		// TODO: Why is tattributes taking the same location as data?
+		t->data[i] = memory->GetVramForAddress(address + i, vramBank);
 		t->address = address + i;
-		t->attributes = memory->GetVramForAddress(address + i, vramBank);
+		t->attributes = memory->GetVramForAddress(address + i, vramBank); // ???
 	}
 }
 
@@ -539,27 +483,25 @@ void GBCDraw::getTileAt(uint16_t address, tile* t, uint8_t vramBank) {
 
 #pragma region Colour Methods
 
+uint32_t GBCDraw::GetColourForPixel(bool isSprite, uint8_t pixel, uint8_t paletteNumber) {
+	if(isSprite && pixel == 0) return TRANSPARENT;
+
+	Palette *palette = (Palette*)malloc(sizeof(Palette));
+	GetPaletteByNumber(isSprite, paletteNumber, palette);
+
+	uint16_t colourData = palette->Colours[pixel];
+	RGB rgb = PaletteColourToRGB(colourData);
+	uint32_t colour = static_cast<uint32_t>(rgb.b) +
+		(static_cast<uint32_t>(rgb.g) << 8) + 
+		(static_cast<uint32_t>(rgb.r) << 16);
+	
+	free(palette);
+
+	return colour;
+}
+
+
 uint32_t GBCDraw::GetColourFor(uint8_t number, tile *t) {
-	// uint16_t colourData = memory->GetPaletteColourInfo((palette << 3) + (number << 1));
-	// uint8_t attributes = memory->GetVramForAddress(t->address);
-	// uint8_t palette = t->attributes & 0x3;
-	// // printf("address: %x, attributes: %x, palette: %x, colourData: %x\n", t->address, attributes, palette, colourData);
-
-	// uint8_t red = colourData & 0x1f;
-	// uint8_t green = colourData & (0x1f << 5);
-	// uint8_t blue = colourData & (0x1f << 10);
-
-	// float redP = red / 0x1f;
-	// float greenP = green / 0x1f;
-	// float blueP = blue / 0x1f;
-
-	// uint32_t colour = static_cast<uint32_t>(redP * 0xff) +
-	// 	(static_cast<uint32_t>(greenP * 0xff) << 8) + 
-	// 	(static_cast<uint32_t>(blueP * 0xff) << 16);
-
-	// // printf("red: %x, green: %x, blue: %x, redP: %f, greenP: %f, blueP: %f, colour: %x\n",
-	// // 	red, green, blue, redP, greenP, blueP, colour);
-	// return colour;
 
 	uint8_t palette = memory->get(BGP);
 
@@ -575,35 +517,36 @@ uint32_t GBCDraw::GetColourFor(uint8_t number, tile *t) {
 	}
 	return WHITE;
 }
-uint32_t GBCDraw::GetColourForPaletteNumber(uint8_t pNumber) {
-	switch (pNumber) {
-	case 0:
-		if (colourMode == MODE_CLEAR)
-			return WHITE;
-		else
-			return CLASSIC_WHITE;
-		break;
-	case 1:
-		if (colourMode == MODE_CLEAR)
-			return DK_GRAY;
-		else
-			return CLASSIC_LT_GRAY;
-		break;
-	case 2:
-		if (colourMode == MODE_CLEAR)
-			return LT_GRAY;
-		else
-			return CLASSIC_DK_GRAY;
-		break;
-	case 3:
-		if (colourMode == MODE_CLEAR)
-			return BLACK;
-		else
-			return CLASSIC_BLACK;
-		break;
-	default:
-		return WHITE; break;
-	}
+
+uint32_t GBCDraw::GetColourForPaletteNumber(uint8_t paletteNumber) {
+	switch (paletteNumber) {
+		case 0:
+			if (colourMode == MODE_CLEAR)
+				return WHITE;
+			else
+				return CLASSIC_WHITE;
+			break;
+		case 1:
+			if (colourMode == MODE_CLEAR)
+				return DK_GRAY;
+			else
+				return CLASSIC_LT_GRAY;
+			break;
+		case 2:
+			if (colourMode == MODE_CLEAR)
+				return LT_GRAY;
+			else
+				return CLASSIC_DK_GRAY;
+			break;
+		case 3:
+			if (colourMode == MODE_CLEAR)
+				return BLACK;
+			else
+				return CLASSIC_BLACK;
+			break;
+		default:
+			return WHITE; break;
+		}
 }
 
 void GBCDraw::SetColourMode(uint8_t mode) {

@@ -22,7 +22,7 @@ public:
 	~GBCDraw() override;
 
 	GBCTile* background[BACKGROUNDTILES];
-	tile* windowX[BACKGROUNDTILES];
+	GBCTile* windowX[BACKGROUNDTILES];
 	uint32_t screenPixels[NUMPIXELS];
 	uint32_t tilePixels[NUM_TILE_PIXELS];
 
@@ -34,9 +34,6 @@ public:
 	void render(bool CPUIsStopped) override;
 	void clean() override;
 	void printTileData(int tileNum);
-
-	uint32_t GetColourFor(uint8_t number, tile *t) override;
-	uint32_t GetColourForPaletteNumber(uint8_t pNumber) override;
 
 	void SetColourMode(uint8_t mode);
 	void ToggleColourMode() override;
@@ -81,10 +78,12 @@ private:
 	void setFullBackgroundPixels();
 	void setTilePixels();
 	void setSpritePixels();
-	Palette* GetPaletteNumber(bool isSprite, uint8_t number);
-	string registerInfo;
-	uint32_t GetSpriteColourFor(uint8_t number, Sprite *sprite, tile* t);
+	void GetPaletteByNumber(bool isSprite, uint8_t paletteNumber, Palette *palette);
 	void DrawPalette(SDL_Renderer* r, uint8_t pType, uint8_t pNum);
+	uint32_t GetColourForPixel(bool isSprite, uint8_t pixel, uint8_t paletteNumber);
+	uint32_t GetColourFor(uint8_t pixel, tile *t) override;
+	uint32_t GetColourForPaletteNumber(uint8_t paletteNumber) override;
+	string registerInfo;
 
 	int text_width, text_height;
 	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];
