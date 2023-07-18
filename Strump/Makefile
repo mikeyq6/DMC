@@ -5,7 +5,7 @@ SUPPRESS=-Wno-unused-variable -Wno-unused-private-field
 EXENAME=strump
 
 debug:
-	${CC} -g -Wall ${SUPPRESS} -DRUNTESTS=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
+	${CC} -g -Wall ${SUPPRESS} -DRUNTESTS=1 -DSHOW_TILE_INFO=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 debug-notests:
 	${CC} -g -Wall ${SUPPRESS} ${LFLAGS} -o ${EXENAME} ${OBJS}

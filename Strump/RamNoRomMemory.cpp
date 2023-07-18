@@ -167,7 +167,7 @@ void RamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 			//_getch();
 		}
 		else {
-			cout << "Trying to write to RAM but it is not enabled" << endl;
+			// cout << "Trying to write to RAM but it is not enabled" << endl;
 			//_getch();
 		}
 	}

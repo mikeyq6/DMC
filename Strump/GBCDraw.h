@@ -68,6 +68,10 @@ private:
 	SDL_Texture* oamTexture;
 	SDL_Renderer* oamRenderer;
 
+	SDL_Window* tileInfoWindow;
+	SDL_Texture* tileInfoTexture;
+	SDL_Renderer* tileInfoRenderer;
+
 	TTF_Font *font;
 	
 	uint8_t Width, Height;

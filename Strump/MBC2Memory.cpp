@@ -103,7 +103,7 @@ void MBC2Memory::WriteMem(uint16_t location, uint8_t value) {
 			internal_set(nLocation, value);
 		}
 		else {
-			cout << "Trying to write to RAM but it is not enabled" << endl;
+			// cout << "Trying to write to RAM but it is not enabled" << endl;
 		}
 	}
 	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM

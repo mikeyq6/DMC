@@ -134,7 +134,7 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 			// printf("Writing (%02x) to RAM at address(%04x) (Rambank: %02x)\n", value, (location + ((RamBank - 1) * 0x2000)), RamBank);
 			//_getch();
 		} else {
-			cout << "Trying to write to RAM but it is not enabled" << endl;
+			// cout << "Trying to write to RAM but it is not enabled" << endl;
 			// internal_set(location, value);
 		}
 	}

@@ -5,6 +5,8 @@
 
 int oamWidth = 330;
 int oamHeight = 260;
+int tileInfoWidth = 830;
+int tileInfoHeight = 660;
 
 GBCDraw::GBCDraw(Memory* _memory, Registers* _registers) {
 	memory = _memory;
@@ -76,7 +78,16 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 		oamWindow = SDL_CreateWindow("OAM Sprite Info", 1050, 0, oamWidth, oamHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		oamRenderer = SDL_CreateRenderer(oamWindow, -1, 0);
 		oamTexture = SDL_CreateTexture(oamRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
+
 	}
+
+	#ifdef SHOW_TILE_INFO
+	TTF_Init();
+	font = TTF_OpenFont("./arial.ttf", 9);
+	tileInfoWindow = SDL_CreateWindow("Background Tile Info", 1050, 400, tileInfoWidth, tileInfoHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	tileInfoRenderer = SDL_CreateRenderer(tileInfoWindow, -1, 0);
+	tileInfoTexture = SDL_CreateTexture(tileInfoRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
+	#endif
 
 	// 
 	// if (showCommandOutput) {
@@ -91,8 +102,10 @@ void GBCDraw::render(bool CPUIsStopped) {
 
 	loadBackground();
 	loadWindow();
-	setBackgroundPixels();
+
 	if(!CPUIsStopped) {
+		setBackgroundPixels();
+
 		if (showBackgroundMap) {
 			setFullBackgroundPixels();
 		}
@@ -157,12 +170,13 @@ void GBCDraw::render(bool CPUIsStopped) {
 		Sprite *sprite = new Sprite();
 		char *hexString = (char*)malloc(sizeof(char) * 4);
 		uint8_t val;
+		uint16_t address;
 		
 		for(int i=0; i<40; i++) {
 			if(i > 0 && i % 8 == 0) {
 				vgspacer += 50;
 			}
-			uint16_t address = 0xfe00 + (i * 4); // Start address of sprite data
+			address = 0xfe00 + (i * 4); // Start address of sprite data
 			for(int j=0; j<4; j++) {
 				val = memory->ReadMem(address + j);
 				sprintf(hexString, "%X", val); //convert number to hex
@@ -179,9 +193,53 @@ void GBCDraw::render(bool CPUIsStopped) {
 			}
 		}
 
-		free(hexString);
 		SDL_RenderPresent(oamRenderer);
+		free(hexString);
 	}
+
+	#ifdef SHOW_TILE_INFO
+	SDL_Color colour = { 0, 0, 0 };
+
+	SDL_Surface *surface;
+	SDL_Texture *texture;
+	int texW = 0;
+	int texH = 0;
+	int gspacer = 25;
+	int vgspacer = 0;
+	char *hexString = (char*)malloc(sizeof(char) * 4);
+	uint16_t address, tileInfo;
+	
+	SDL_SetRenderDrawColor(tileInfoRenderer, 0xff, 0xff, 0xff, 0xff);
+	SDL_RenderClear(tileInfoRenderer);
+
+	for(int i=0; i<1024; i++) {
+		if(i > 0 && i % 32 == 0) {
+			vgspacer += 20;
+		} 
+		address = 0x9800 + i; // Start address of background tile data
+		// for(int j=0; j<4; j++) {
+			tileInfo = memory->GetVramForAddress(address, 0) << 8;
+			tileInfo |= memory->GetVramForAddress(address, 1);
+			sprintf(hexString, "%X", tileInfo); //convert number to hex
+
+			surface = TTF_RenderText_Solid(font, hexString, colour);
+			texture = SDL_CreateTextureFromSurface(tileInfoRenderer, surface);
+			
+			SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
+			SDL_Rect dstrect = { 20 + ((i % 32) * gspacer), 10 + vgspacer, texW, texH };
+			SDL_RenderCopy(tileInfoRenderer, texture, NULL, &dstrect);
+
+			SDL_DestroyTexture(texture);
+			SDL_FreeSurface(surface);
+
+			// if(tileInfo > 0) {
+			// 	printf("i: %x, tileInfo: %x, [x: %d, y: %d]\n", i, tileInfo, dstrect.x, dstrect.y);
+			// }
+		// }
+	}
+	SDL_RenderPresent(tileInfoRenderer);
+
+	#endif
 }
 
 void GBCDraw::DrawPalette(SDL_Renderer* r, uint8_t pType, uint8_t pNum) {
@@ -362,14 +420,6 @@ void GBCDraw::setSpritePixels() {
 	for (int i = 0; i < 40; i++) {
 		Sprite::GetSpriteByNumber(i, memory, sprite);
 		
-		// if(i == 25) {
-		// 	sprite->Draw();
-		// }
-		//	sprites.push_back(sprite);
-		//}
-		//// Sort sprites by X
-		////sort(sprites.begin(), sprites.end(), compareSpriteX);
-		//for(Sprite* s : sprites) {
 		if (sprite->X <= 0 || sprite->Y <= 0) {
 			continue; // Sprite is hidden
 		}
