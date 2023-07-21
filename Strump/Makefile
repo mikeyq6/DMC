@@ -3,23 +3,30 @@ OBJS=Commands.cpp CPU.cpp JoypadState.cpp Draw.cpp GBDraw.cpp GBCTile.cpp GBCDra
 LFLAGS=-lSDL2 -lSDL2_image -lSDL2_ttf
 SUPPRESS=-Wno-unused-variable -Wno-unused-private-field
 EXENAME=strump
+DEBUGVARIABLES=-DRUNTESTS=1 -DSHOW_TILE_INFO=1
 
 debug:
-	${CC} -g -Wall ${SUPPRESS} -DRUNTESTS=1 -DSHOW_TILE_INFO=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
+	make clean
+	${CC} -g -Wall ${SUPPRESS} ${DEBUGVARIABLES} ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 debug-notests:
+	make clean
 	${CC} -g -Wall ${SUPPRESS} ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 log:
+	make clean
 	${CC} -g -Wall ${SUPPRESS} -DLOG_COMMANDS=1 -DRUNTESTS=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 release:
+	make clean
 	${CC} -Wall ${SUPPRESS} -DREAL_TIME_CPU=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 drelease:
+	make clean
 	${CC} -g -Wall ${SUPPRESS} -DREAL_TIME_CPU=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 logreader:
+	make clean
 	${CC} -Wall ${SUPPRESS} -o ../LogReader/LogReader ../LogReader/Main.cpp
 
 clean:
