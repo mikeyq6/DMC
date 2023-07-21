@@ -282,21 +282,19 @@ void GBCDraw::loadBackground() {
 	uint16_t address = BGWindowTileLocation();
 	uint16_t offset = 16;
 	uint8_t tileNum, tileAttributes;
-	//printf("bMap=%04x, address=%04x\n", bMap, address);
 
 	for (int i = 0; i < BACKGROUNDTILES; i++) {
 		tileNum = memory->GetVramForAddress(tileDataTableAddress + i, 0);
 		tileAttributes = memory->GetVramForAddress(tileDataTableAddress + i, 1);
 		background[i]->TileNumber = tileNum;
-		// printf("tileNum=%02x\n", Memory[bMap + i]);
+		GBCTile::GetBackgroundTile(tileAttributes, background[i]);
+
 		if (address == 0x9000) { // allow for negative numbers
 			getTileAt((offset * (int8_t)tileNum) + address, background[i]->t, background[i]->CGBVbank);
 		}
 		else {
 			getTileAt((offset * tileNum) + address, background[i]->t, background[i]->CGBVbank);
 		}
-		// getTileAt((offset * tileNum) + address, background[i]->t, 0);
-		GBCTile::GetBackgroundTile(tileAttributes, background[i]);
 	}
 }
 void GBCDraw::loadWindow() {
@@ -309,14 +307,15 @@ void GBCDraw::loadWindow() {
 	for (int i = 0; i < BACKGROUNDTILES; i++) {
 		tileNum = memory->GetVramForAddress(tileDataTableAddress + i, 0);
 		tileAttributes = memory->GetVramForAddress(tileDataTableAddress + i, 1);
-		//printf("tileNum=%02x\n", Memory[bMap + i]);
+		windowX[i]->TileNumber = tileNum;
+		GBCTile::GetBackgroundTile(tileAttributes, windowX[i]);
+
 		if (address == 0x9000) { // allow for negative numbers
 			getTileAt((offset * (int8_t)tileNum) + address, windowX[i]->t, windowX[i]->CGBVbank);
 		}
 		else {
 			getTileAt((offset * tileNum) + address, windowX[i]->t, windowX[i]->CGBVbank);
 		}
-		GBCTile::GetBackgroundTile(tileAttributes, background[i]);
 	}
 }
 
