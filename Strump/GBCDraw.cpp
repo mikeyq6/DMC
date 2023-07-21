@@ -288,13 +288,14 @@ void GBCDraw::loadBackground() {
 		tileNum = memory->GetVramForAddress(tileDataTableAddress + i, 0);
 		tileAttributes = memory->GetVramForAddress(tileDataTableAddress + i, 1);
 		background[i]->TileNumber = tileNum;
-		//printf("tileNum=%02x\n", Memory[bMap + i]);
+		// printf("tileNum=%02x\n", Memory[bMap + i]);
 		if (address == 0x9000) { // allow for negative numbers
 			getTileAt((offset * (int8_t)tileNum) + address, background[i]->t, background[i]->CGBVbank);
 		}
 		else {
 			getTileAt((offset * tileNum) + address, background[i]->t, background[i]->CGBVbank);
 		}
+		// getTileAt((offset * tileNum) + address, background[i]->t, 0);
 		GBCTile::GetBackgroundTile(tileAttributes, background[i]);
 	}
 }
