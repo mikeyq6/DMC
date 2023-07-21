@@ -224,48 +224,31 @@ void Memory::SetState(uint8_t* state, uint32_t *index) {
 	*index = val;
 }
 void Memory::setHDMASourceHigh(uint8_t value) {
-	// dmaSource &= 0xf0;
 	dmaSource &= 0x00ff; // Clear high bits
 	dmaSource |= (value << 8);
 	dmaSource &= 0xfff0;
-	// uint16_t nval = (value & 0x7f) << 8;
-	// dmaSource = (dmaSource & 0x00ff) | nval;
+	
 	printf("dmaSource (H): %x\n", dmaSource);
 }
 void Memory::setHDMASourceLow(uint8_t value) {
-	// dmaSource &= 0xff00;
-	// dmaSource |= (value & 0xf0);
-
 	dmaSource &= 0xff00; // Clear low bits
 	dmaSource |= value;
 	dmaSource &= 0xfff0;
 	
-	// uint16_t nval = value;
-	// dmaSource = (dmaSource & 0xff00) | value;
-	// dmaSource &= 0xfff0;
 	printf("dmaSource (L): %x\n", dmaSource);
 }
 void Memory::setHDMADestinationHigh(uint8_t value) {
 	dmaDestination &= 0x00ff;
 	dmaDestination |= (value << 8);
 	dmaDestination &= 0xfff0;
-	// dmaDestination += 0x8000;
-	// uint16_t nval = value << 8;
-	// dmaDestination = (dmaDestination & 0x00ff) | nval;
-	// dmaDestination &= 0x1ff0;
+
 	printf("dmaDestination (H): %x\n", dmaDestination);
 }
 void Memory::setHDMADestinationLow(uint8_t value) {
-	// dmaDestination &= 0x1f000;
-	// dmaDestination |= (value & 0xf0);
-
 	dmaDestination &= 0xff00;
 	dmaDestination |= value;
 	dmaDestination &= 0xfff0;
-	// dmaDestination += 0x8000;
-	// uint16_t nval = value;
-	// dmaDestination = (dmaDestination & 0xff00) | nval;
-	// dmaDestination &= 0x1ff0;
+
 	printf("dmaDestination (L): %x\n", dmaDestination);
 }
 void Memory::doHDMATransfer(uint8_t value) {
@@ -274,9 +257,6 @@ void Memory::doHDMATransfer(uint8_t value) {
 
 	uint16_t blocksDataSize = numBlocks * 0x10;
 	internal_set(HDMA5, value);
-		if(dmaDestination >= 0x9800) {
-	printf("hdmaInProgress: %x\n", hdmaInProgress);
-		}
 
 	if(rHDMA5 & 0x80) {
 		hdmaInProgress = true;
@@ -290,31 +270,15 @@ void Memory::doHDMATransfer(uint8_t value) {
 		uint8_t mode = getStatMode();
 
 		dmaSource &= 0xfff0;
-		// dmaDestination &= 0x1fff;
-		// uint16_t offsetDest = dmaDestination + 0x8000;
 
-		// for(uint16_t i=0; i<numBlocks * 0x10; i++) {
-		// 	// printf("Setting (%x)=%x from $(%x)\n", 
-		// 		// offsetDest + i, internalReadMem(dmaSource + i), dmaSource + i);
-		// 	SetVramForAddress(offsetDest + i, internalReadMem(dmaSource + i));
-		// }
-		printf("value: %x, numBlocks: %x, numBytes: %x, dmaDestination: %x\n", 
-			value, numBlocks, blocksDataSize * 0x10, dmaDestination);
-		// for(uint16_t i=0; i<numBlocks * 0x10; i++) {
-		// 	// printf("Setting (%x)=%x from $(%x)\n", 
-		// 		// offsetDest + i, internalReadMem(dmaSource + i), dmaSource + i);
-		// 	SetVramForAddress(offsetDest + i, internalReadMem(dmaSource + i));
-		// }
-
-		// if(dmaDestination + i  >= 0x9800) {
 		// printf("value: %x, numBlocks: %x, numBytes: %x, dmaDestination: %x\n", 
-		// 	value, numBlocks, numBlocks, dmaDestination);
-		// };
+		// 	value, numBlocks, blocksDataSize * 0x10, dmaDestination);
+
 		for(uint16_t i=0; i<blocksDataSize; i++) {
-			if(dmaDestination + i >= 0x9800) {
-			printf("Setting $(%x)=%x from $(%x)\n", 
-				dmaDestination + i, GetVramForAddress(dmaDestination + i), dmaSource + i);
-			}
+			// if(dmaDestination + i >= 0x9800) {
+			// printf("Setting $(%x)=%x from $(%x)\n", 
+			// 	dmaDestination + i, GetVramForAddress(dmaDestination + i), dmaSource + i);
+			// }
 			if(dmaSource <= 0x7FF0 || (dmaSource >= 0xA000 && dmaSource <= 0xDFF0)) {
 				SetVramForAddress(dmaDestination + i, internalReadMem(dmaSource + i));
 			}
@@ -330,15 +294,11 @@ void Memory::runHDMATransfer() {
 		uint16_t offsetSource = (dmaSource &= 0xfff0) + offset;
 		uint16_t offsetDest = dmaDestination + 0x8000 + offset;
 
-		// uint16_t offsetSource = dmaSource + offset;
-		// uint16_t offsetDest = dmaDestination + offset;
 		
 		for(uint8_t i=0; i<0x10; i++) {
 			printf("Setting (%x)=%x from $(%x)\n", 
 				offsetDest + i, internalReadMem(offsetSource + i), offsetSource + i);
 			SetVramForAddress(offsetDest + i, internalReadMem(offsetSource + i));
-
-			// SetVramForAddress(offsetDest + i, internalReadMem(offsetSource + i));
 		}
 
 		remainingHdmaTransfers--;
