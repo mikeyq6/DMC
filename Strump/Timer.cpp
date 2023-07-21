@@ -83,8 +83,10 @@ void Timer::SetState(uint8_t* state, uint32_t index) {
 	*tima = *(state+index++);
 	*tma = *(state+index++);
 	*div = *(state+index++);
+	timerCounter = 0;
+	divCounter = 0;
 	for(int i=0; i<4; i++) {
-		*(state + index + i) = (timerCounter >> (i * 8)) & 0xff;
-		*(state + 4 + index + i) = (divCounter >> (i * 8)) & 0xff;
+		timerCounter |= (*(state + index + i) >> (i * 8));
+		divCounter |= (*(state + 4 + index + i) >> (i * 8));
 	}
 }
