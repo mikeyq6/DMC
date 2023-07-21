@@ -1358,6 +1358,9 @@ Memory* CPU::GetMemory() {
 Registers* CPU::GetRegisters() {
 	return registers;
 }
+Timer* CPU::GetTimer() {
+	return timer;
+}
 
 string CPU::ToHexString(uint8_t val) {
 	std::stringstream st;

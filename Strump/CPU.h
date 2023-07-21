@@ -123,6 +123,7 @@ public:
 
 	Memory* GetMemory();
 	Registers* GetRegisters();
+	Timer* GetTimer();
 
 	string GetLastInstruction();
 
