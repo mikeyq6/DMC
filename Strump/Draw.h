@@ -47,6 +47,7 @@ class Draw {
 	virtual void render(bool CPUIsStopped) = 0;
 	virtual void clean() = 0;
 	virtual void ToggleColourMode() = 0;
+	virtual void ToggleVRAMLocation() = 0;
 
 	virtual uint32_t GetColourFor(uint8_t number, tile *t) = 0;
 	virtual uint32_t GetColourForPaletteNumber(uint8_t pNumber) = 0;

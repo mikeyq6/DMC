@@ -84,7 +84,7 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 	#ifdef SHOW_TILE_INFO
 	TTF_Init();
 	font = TTF_OpenFont("./arial.ttf", 9);
-	tileInfoWindow = SDL_CreateWindow("Background Tile Info", 1050, 400, tileInfoWidth, tileInfoHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	tileInfoWindow = SDL_CreateWindow("Background Tile Info", 1080, 400, tileInfoWidth, tileInfoHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	tileInfoRenderer = SDL_CreateRenderer(tileInfoWindow, -1, 0);
 	tileInfoTexture = SDL_CreateTexture(tileInfoRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
 	#endif
@@ -206,6 +206,7 @@ void GBCDraw::render(bool CPUIsStopped) {
 	int texH = 0;
 	int gspacer = 25;
 	int vgspacer = 0;
+	int labelGutter = 30;
 	char *hexString = (char*)malloc(sizeof(char) * 4);
 	uint16_t address, tileInfo;
 	
@@ -213,20 +214,28 @@ void GBCDraw::render(bool CPUIsStopped) {
 	SDL_RenderClear(tileInfoRenderer);
 
 	for(int i=0; i<1024; i++) {
-		if(i > 0 && i % 32 == 0) {
+		if(i > 0 && i % 0x20 == 0) {
 			vgspacer += 20;
 		} 
-		address = 0x9800 + i; // Start address of background tile data
+		address = vRAMLocation + i; // Start address of background tile data
 		// for(int j=0; j<4; j++) {
 			tileInfo = memory->GetVramForAddress(address, 0) << 8;
 			tileInfo |= memory->GetVramForAddress(address, 1);
-			sprintf(hexString, "%X", tileInfo); //convert number to hex
+			
+			if(i % 0x20 == 0) {
+				sprintf(hexString, "%X", address); //convert address to hex
+				surface = TTF_RenderText_Solid(font, hexString, colour);
+				texture = SDL_CreateTextureFromSurface(tileInfoRenderer, surface);
+				SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
+				SDL_Rect labelrect = { 10, 10 + vgspacer, texW, texH };
+				SDL_RenderCopy(tileInfoRenderer, texture, NULL, &labelrect);
+			}
 
+			sprintf(hexString, "%X", tileInfo); //convert number to hex
 			surface = TTF_RenderText_Solid(font, hexString, colour);
 			texture = SDL_CreateTextureFromSurface(tileInfoRenderer, surface);
-			
 			SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
-			SDL_Rect dstrect = { 20 + ((i % 32) * gspacer), 10 + vgspacer, texW, texH };
+			SDL_Rect dstrect = { labelGutter + 10 + ((i % 32) * gspacer), 10 + vgspacer, texW, texH };
 			SDL_RenderCopy(tileInfoRenderer, texture, NULL, &dstrect);
 
 			SDL_DestroyTexture(texture);
@@ -604,6 +613,9 @@ void GBCDraw::SetColourMode(uint8_t mode) {
 }
 void GBCDraw::ToggleColourMode() {
 	colourMode = colourMode == MODE_CLASSIC ? MODE_CLEAR : MODE_CLASSIC;
+}
+void GBCDraw::ToggleVRAMLocation() {
+	vRAMLocation = vRAMLocation == 0x9800 ? 0x9c00 : 0x9800;
 }
 
 #pragma endregion

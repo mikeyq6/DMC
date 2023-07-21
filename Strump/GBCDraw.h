@@ -37,6 +37,7 @@ public:
 
 	void SetColourMode(uint8_t mode);
 	void ToggleColourMode() override;
+	void ToggleVRAMLocation() override;
 
 	FILE* out;
 private:
@@ -92,6 +93,6 @@ private:
 	int text_width, text_height;
 	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];
 	uint8_t colourMode;
-
+	uint16_t vRAMLocation;
 
 };

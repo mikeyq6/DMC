@@ -21,6 +21,7 @@ void GBDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint
 	showBackgroundMap = _showBackgroundMap;
 	showTileMap = _showTileMap;
 	showPaletteMap = _showPaletteMap;
+	vRAMLocation = 0x9800;
 	
 	int flags = 0;
 	if (fullscreen) {
@@ -499,6 +500,9 @@ void GBDraw::SetColourMode(uint8_t mode) {
 }
 void GBDraw::ToggleColourMode() {
 	colourMode = colourMode == MODE_CLASSIC ? MODE_CLEAR : MODE_CLASSIC;
+}
+void GBDraw::ToggleVRAMLocation() {
+	vRAMLocation = vRAMLocation == 0x9800 ? 0x9c00 : 0x9800;
 }
 
 

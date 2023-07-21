@@ -200,6 +200,9 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 			case SDLK_t: // Toggle colour mode
 				draw->ToggleColourMode();
 				break;
+			case SDLK_o: // Toggle VRAM Location
+				draw->ToggleVRAMLocation();
+				break;
 			default:
 				break;
 		}
