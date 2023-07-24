@@ -234,9 +234,20 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 	}
 }
 
+uint32_t MBC5Memory::GetMemorySize() {
+	uint32_t size = RAM_SIZE;
+	size += RAM_BANK_SIZE;
+	size += (VRAM_BANK_SIZE * 2);
+	size += (WRAM_BANK_SIZE * 8);
+	size += PALETTE_SIZE;
+	size += (CART_RAM_BANK_SIZE * MAX_RAM_BANKS);
+	return size;
+}
+
 void MBC5Memory::GetState(uint8_t* state, uint32_t *index) {
 	Memory::GetState(state, index);
 	uint32_t val = *index;
+	uint32_t ind = 0;
 	*(state+val++) = (uint8_t)RAMB;
 	*(state+val++) = (uint8_t)RAMG;
 	*(state+val++) = (uint8_t)ROMB0;
@@ -244,7 +255,7 @@ void MBC5Memory::GetState(uint8_t* state, uint32_t *index) {
 	*(state+val++) = hasRAM ? 0x1 : 0;
 	for(int i=0; i<MAX_RAM_BANKS; i++) {
 		for(int j=0; j<CART_RAM_BANK_SIZE; j++) {
-			uint32_t ind = (i * CART_RAM_BANK_SIZE) + j; 
+			ind = (i * CART_RAM_BANK_SIZE) + j; 
 			*(state+val+ind) = CartRamBankData[i][j];
 		}
 	}
@@ -254,6 +265,7 @@ void MBC5Memory::GetState(uint8_t* state, uint32_t *index) {
 void MBC5Memory::SetState(uint8_t* state, uint32_t *index) {
 	Memory::SetState(state, index);
 	uint32_t val = *index;
+	uint32_t ind = 0;
 	RAMB = *(state+val++);
 	RAMG = *(state+val++);
 	ROMB0 = *(state+val++);
@@ -261,8 +273,8 @@ void MBC5Memory::SetState(uint8_t* state, uint32_t *index) {
 	hasRAM = *(state+val++) == 0x1;
 	for(int i=0; i<MAX_RAM_BANKS; i++) {
 		for(int j=0; j<CART_RAM_BANK_SIZE; j++) {
-			uint32_t ind = (i * CART_RAM_BANK_SIZE) + j; 
-			*(state+val+ind) = CartRamBankData[i][j];
+			ind = (i * CART_RAM_BANK_SIZE) + j; 
+			CartRamBankData[i][j] = *(state+val+ind);
 		}
 	}
 	val += (CART_RAM_BANK_SIZE * MAX_RAM_BANKS);

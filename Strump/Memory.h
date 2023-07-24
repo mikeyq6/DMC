@@ -43,6 +43,7 @@ public:
 	virtual void WriteMem(uint16_t location, uint8_t value) = 0;
 	virtual uint8_t ReadMem(uint16_t location) = 0;
 	virtual uint16_t GetRomBank() = 0;
+	virtual uint32_t GetMemorySize();
 
 	uint8_t GetRamBankData(uint16_t address);
 	void SetRamBankData(uint16_t address, uint8_t value);
@@ -58,7 +59,6 @@ public:
 	void SetVramBank(uint8_t value);
 
 	uint8_t* GetPointerTo(uint16_t location);
-	uint32_t GetMemorySize();
 
 	virtual void GetState(uint8_t* state, uint32_t *index);
 	virtual void SetState(uint8_t* state, uint32_t *index);
