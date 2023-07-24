@@ -15,6 +15,12 @@ MBC5Memory::MBC5Memory(bool _hasRam, bool _hasBattery, bool _hasRumble, bool _ha
 	WRamBank = 1;
 }
 
+void MBC5Memory::init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState) {
+	Memory::init(_rominfo, _zreg, _joypadState);
+
+	std::memset(CartRamBankData, 0, sizeof(CartRamBankData));
+}
+
 // Memory
 uint8_t MBC5Memory::ReadMem(uint16_t location) {
 	std::lock_guard<mutex> locker(mem_mutex);
@@ -68,21 +74,20 @@ uint8_t MBC5Memory::internalReadMem(uint16_t location) {
 		// switchable Ram bank
 		if (RAMG == 0xa) {
 			location -= 0xa000;
-			return RamBankData[location + (RamBank * 0x2000)];
+			return CartRamBankData[RAMB][location];
 		}
 		else {
-			location -= 0xa000;
-			return RamBankData[location];
+			return 0;
 		}
 	}
-	else if (location >= 0xc000 && location <= 0xe000 && rominfo->UseColour()) {
+	else if (location >= 0xc000 && location <= 0xe000) {
 		if(location < 0xd000) {
 			return internal_get(location);
 		} else {
-			if(WRamBank == 1) {
-				return internal_get(location);
-			} else {
+			if(WRamBank > 1 && rominfo->UseColour()) {
 				return WRamBankData[WRamBank][location - 0xd000];
+			} else {
+				return internal_get(location);
 			}
 		}
 	}
@@ -133,24 +138,24 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 		setPaletteData(value);
 	}
 	else if(location == HDMA1) {
-		printf("HDMA1 value: %x\n", value);
+		// printf("HDMA1 value: %x\n", value);
 		setHDMASourceHigh(value);
 	}
 	else if(location == HDMA2) {
-		printf("HDMA2 value: %x\n", value);
+		// printf("HDMA2 value: %x\n", value);
 		setHDMASourceLow(value);
 	}
 	else if(location == HDMA3) {
-		printf("HDMA3 value: %x\n", value);
+		// printf("HDMA3 value: %x\n", value);
 		setHDMADestinationHigh(value);
 	}
 	else if(location == HDMA4) {
-		printf("HDMA4 value: %x\n", value);
+		// printf("HDMA4 value: %x\n", value);
 		setHDMADestinationLow(value);
 	}
 	else if(location == HDMA5) {
-		printf("HDMA5 value: %x\n", value);
-		printf("source: %x, dest: %x\n", dmaSource, dmaDestination);
+		// printf("HDMA5 value: %x\n", value);
+		// printf("source: %x, dest: %x\n", dmaSource, dmaDestination);
 		doHDMATransfer(value);
 	}
 	else if(location == VBK) {
@@ -195,13 +200,7 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location >= 0xa000 && location < 0xc000) { // Writing to RAM
 		if (RAMG == 0xa) {
 			location -= 0xa000;
-			RamBankData[location + (RAMB * 0x2000)] = value;
-			// printf("Writing (%02x) to RAM at address(%04x)\n", value, (location + (RamBank * 0x2000)));
-			//_getch();
-		}
-		else {
-			// cout << "Trying to write to RAM but it is not enabled" << endl;
-			//_getch();
+			CartRamBankData[RAMB][location] = value;
 		}
 	}
 	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
@@ -243,6 +242,13 @@ void MBC5Memory::GetState(uint8_t* state, uint32_t *index) {
 	*(state+val++) = (uint8_t)ROMB0;
 	*(state+val++) = (uint8_t)ROMB1;
 	*(state+val++) = hasRAM ? 0x1 : 0;
+	for(int i=0; i<MAX_RAM_BANKS; i++) {
+		for(int j=0; j<CART_RAM_BANK_SIZE; j++) {
+			uint32_t ind = (i * CART_RAM_BANK_SIZE) + j; 
+			*(state+val+ind) = CartRamBankData[i][j];
+		}
+	}
+	val += (CART_RAM_BANK_SIZE * MAX_RAM_BANKS);
 	*index = val;
 }
 void MBC5Memory::SetState(uint8_t* state, uint32_t *index) {
@@ -253,6 +259,13 @@ void MBC5Memory::SetState(uint8_t* state, uint32_t *index) {
 	ROMB0 = *(state+val++);
 	ROMB1 = *(state+val++);
 	hasRAM = *(state+val++) == 0x1;
+	for(int i=0; i<MAX_RAM_BANKS; i++) {
+		for(int j=0; j<CART_RAM_BANK_SIZE; j++) {
+			uint32_t ind = (i * CART_RAM_BANK_SIZE) + j; 
+			*(state+val+ind) = CartRamBankData[i][j];
+		}
+	}
+	val += (CART_RAM_BANK_SIZE * MAX_RAM_BANKS);
 	*index = val;
 }
 

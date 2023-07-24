@@ -30,7 +30,7 @@ public:
 	uint8_t WRamBankData[8][WRAM_BANK_SIZE];
 
 	virtual ~Memory() = 0;
-	void init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState);
+	virtual void init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState);
 
 	// Flags
 	uint8_t getFlag(uint8_t flag);
