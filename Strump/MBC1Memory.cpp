@@ -19,7 +19,7 @@ uint8_t MBC1Memory::ReadMem(uint16_t location) {
 uint8_t MBC1Memory::internalReadMem(uint16_t location) {
 
 	uint32_t nAddress = location;
-	uint8_t bank = 0;
+	uint16_t bank = 0;
 
 	if (location < 0x100 && Startup) {
 		return InternalRom[(uint8_t)location];
@@ -148,7 +148,7 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 }
 
 uint16_t MBC1Memory::GetRomBank() {
-	uint8_t bank = BANK1;
+	uint16_t bank = BANK1;
 	bank |= (BANK2 << 5);
 	if(bank % 0x20 == 0) bank++;
 	if(bank > rominfo->GetNumberOfRomBanks()) {

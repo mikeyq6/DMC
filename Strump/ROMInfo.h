@@ -20,7 +20,7 @@ constexpr auto RAM_1_8 = 2;
 constexpr auto RAM_4_32 = 3;
 constexpr auto RAM_16_128 = 4;
 
-const long long CARTRIDGE_SIZE = 0x200000;
+const long long CARTRIDGE_SIZE = 0x800000;
 
 typedef struct _cartridgeInfo {
 	string title;
@@ -57,7 +57,7 @@ public:
 	void SetCartridgeNames();
 	void SetCartridgeInfo();
 	void DisplayCartridgeInfo();
-	uint8_t GetNumberOfRomBanks();
+	uint16_t GetNumberOfRomBanks();
 	uint8_t GetNumberOfRamBanks();
 	bool UseColour();
 

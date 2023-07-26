@@ -239,8 +239,8 @@ uint8_t ROMInfo::GetCardridgeVal(uint32_t address) {
 	return cartridge[address];
 }
 
-uint8_t ROMInfo::GetNumberOfRomBanks() {
-	uint8_t banks = 0;
+uint16_t ROMInfo::GetNumberOfRomBanks() {
+	uint16_t banks = 0;
 	switch (CartInfo->romType) {
 		case 0:
 			banks = 2; break;
@@ -256,6 +256,10 @@ uint8_t ROMInfo::GetNumberOfRomBanks() {
 			banks = 64; break;
 		case 6:
 			banks = 128; break;
+		case 7:
+			banks = 256; break;
+		case 8:
+			banks = 512; break;
 		case 0x52:
 			banks = 72; break;
 		case 0x53:

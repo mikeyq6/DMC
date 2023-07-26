@@ -282,7 +282,7 @@ void MBC5Memory::SetState(uint8_t* state, uint32_t *index) {
 }
 
 uint16_t MBC5Memory::GetRomBank() {
-	uint16_t rmb1 = ((uint16_t) ROMB1) << 8;
+	uint16_t rmb1 = ROMB1 << 8;
 	uint16_t bank = rmb1 + ROMB0;
 	return bank % rominfo->GetNumberOfRomBanks();
 }

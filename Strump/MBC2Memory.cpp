@@ -121,7 +121,7 @@ void MBC2Memory::WriteMem(uint16_t location, uint8_t value) {
 }
 
 uint16_t MBC2Memory::GetRomBank() {
-	uint8_t bank = ROMG;
+	uint16_t bank = ROMG;
 	if(bank > rominfo->GetNumberOfRomBanks()) {
 		bank &= (rominfo->GetNumberOfRomBanks() - 1);
 	}

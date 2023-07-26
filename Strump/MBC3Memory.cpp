@@ -273,9 +273,9 @@ void MBC3Memory::SetState(uint8_t* state, uint32_t *index) {
 }
 
 uint16_t MBC3Memory::GetRomBank() {
-	uint8_t bank = ROMB;
+	uint16_t bank = ROMB;
 	if(bank > rominfo->GetNumberOfRomBanks()) {
 		bank &= (rominfo->GetNumberOfRomBanks() - 1);
 	}
-	return (uint16_t)bank;
+	return bank;
 }

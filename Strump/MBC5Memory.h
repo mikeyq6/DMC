@@ -26,8 +26,8 @@ protected:
 
 private:
 	uint8_t RAMG = 0;
-	uint8_t ROMB0 = 0;
-	uint8_t ROMB1 = 0;
+	uint16_t ROMB0 = 0;
+	uint16_t ROMB1 = 0;
 	uint8_t RAMB = 0;
 	uint8_t CartRamBankData[MAX_RAM_BANKS][CART_RAM_BANK_SIZE];
 	bool hasRAM = false, hasBattery = false, hasRumble = false, hasSRAM = false;
