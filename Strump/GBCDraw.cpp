@@ -354,7 +354,7 @@ void GBCDraw::setBackgroundPixels() {
 
 			index = ((tY / 8) * 32) + (tX / 8);
 
-			getPixel(background[index]->t, pX, pY, &pixel);
+			getPixel(background[index]->t, pX, pY, &pixel, background[index]->XFlip, background[index]->YFlip);
 
 			screenPixels[sPixelsIndex] = GetColourForPixel(false, pixel, background[index]->CGBPalette);
 		}
@@ -379,7 +379,7 @@ void GBCDraw::setBackgroundPixels() {
 					index = ((sY / 8) * 32) + (sX / 8);
 					sPixelsIndex = (sX + offsetX) + ((sY + offsetY) * Width);
 
-					getPixel(windowX[index]->t, pX, pY, &pixel);
+					getPixel(windowX[index]->t, pX, pY, &pixel, windowX[index]->XFlip, windowX[index]->YFlip);
 					screenPixels[sPixelsIndex] = GetColourForPixel(false, pixel, windowX[index]->CGBPalette);
 				}
 			}
@@ -407,7 +407,7 @@ void GBCDraw::setFullBackgroundPixels() {
 			index = ((y / 8) * 32) + (x / 8);
 			cur = background[index]->t;
 
-			getPixel(cur, pX, pY, &pixel);
+			getPixel(cur, pX, pY, &pixel, background[index]->XFlip, background[index]->YFlip);
 
 			fullBackgroundPixels[sPixelsIndex] = GetColourForPixel(false, pixel, background[index]->CGBPalette);
 		}
