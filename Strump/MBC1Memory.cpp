@@ -77,8 +77,9 @@ uint8_t MBC1Memory::internalReadMem(uint16_t location) {
 	else if (location >= 0xc000 && location <= 0xffff) {
 		// Internal Work RAM
 		return internal_get(location);
+	} else {
+		return internal_get(location);
 	}
-	return 0;
 }
 
 void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {

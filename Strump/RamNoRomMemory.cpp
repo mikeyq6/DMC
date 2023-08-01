@@ -73,8 +73,9 @@ uint8_t RamNoRomMemory::internalReadMem(uint16_t location) {
 	else if (location >= 0xc000 && location <= 0xffff) {
 		// Internal Work RAM
 		return internal_get(location);
+	} else {
+		return internal_get(location);
 	}
-	return 0;
 }
 void RamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 	std::lock_guard<mutex> locker(mem_mutex);
@@ -100,20 +101,12 @@ void RamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 		value |= cur;
 		internal_set(location, value);
 	}
-	//else if (location == IE) {
-	//	internal_set(location, value);
-	//}
 	else if (location == DIV) {
 		internal_set(location, 0); // Always set DIV to 0 on write
 	}
 	else if (location == ENDSTART) {
 		Startup = false;
 	}
-	//else if (rominfo->CartInfo->controllerType == NO_ROMBANK) {
-	//	if (location >= 0x8000) {
-	//		internal_set(location, value);
-	//	}
-	//} 
 	else if (location >= 0 && location < 0x2000) {
 		printf("Enabling RAM/ROM: %02x\n", value);
 		//_getch();
@@ -175,11 +168,8 @@ void RamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 		internal_set(LY, 0);
 	}
 	else if (location >= 0x9000 && location <= 0x98ff) {
-		// if (value == 0x30)
-		// 	int c = 1;
 		internal_set(location, value);
 	}
-
 	else {
 		internal_set(location, value);
 	}

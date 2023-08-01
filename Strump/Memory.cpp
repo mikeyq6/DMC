@@ -38,7 +38,11 @@ void Memory::internal_set(uint16_t address, uint8_t value) {
 	if(address >= 0x8000 && address < 0xa000) {
 		SetVramForAddress(address, value);
 	} else if(address == SC) {
-		memory[SC] &= 0xfe;
+		if(rominfo->UseColour()) {
+			memory[SC] = value | 0x7c;
+		} else {
+			memory[SC] = value | 0x7e;
+		}
 	} else {
 		// if(address >= 0xa000 && address < 0xc000)
 		// 	printf("setting memory[%x] = %x\n", address, value);

@@ -11,10 +11,6 @@ uint8_t NoRamNoRomMemory::internalReadMem(uint16_t location) {
 
 	uint32_t nAddress = location;
 
-	if (location == IE) {
-		int x = 1;
-	}
-
 	if (location < 0x100 && Startup) {
 		return InternalRom[(uint8_t)location];
 	}
@@ -45,8 +41,9 @@ uint8_t NoRamNoRomMemory::internalReadMem(uint16_t location) {
 	}
 	else if (location >= 0xc000 && location <= 0xffff) {
 		return internal_get(location);
+	} else {
+		return internal_get(location);
 	}
-	return 0;
 }
 void NoRamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 	std::lock_guard<mutex> locker(mem_mutex);

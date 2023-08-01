@@ -57,6 +57,8 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 						return RTC_DL; break;
 					case 0xc:
 						return RTC_DH; break;
+					default:
+						return 0; break;
 				}
 			} else {
 				if(RAMB > rominfo->GetNumberOfRamBanks()) {
@@ -70,7 +72,7 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 				// printf("read: RAMG: %x, RAMB: %x, location: %x, address: %x, data: %x\n", RAMG, RAMB, location, nlocation, data);
 				return data;
 			}
-		}
+		} else { return 0; }
 	}
 	else if (location == P1) { // Joypad register
 		uint8_t state = internal_get(P1);
@@ -95,8 +97,9 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 	else if (location >= 0xc000 && location <= 0xffff) {
 		// Internal Work RAM
 		return internal_get(location);
+	} else {
+		return internal_get(location);
 	}
-	return 0;
 }
 void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 	std::lock_guard<mutex> locker(mem_mutex);

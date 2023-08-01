@@ -59,8 +59,9 @@ uint8_t MBC2Memory::internalReadMem(uint16_t location) {
 	else if (location >= 0xc000 && location <= 0xffff) {
 		// Internal Work RAM
 		return internal_get(location);
+	} else {
+		return internal_get(location);
 	}
-	return 0;
 }
 void MBC2Memory::WriteMem(uint16_t location, uint8_t value) {
 	std::lock_guard<mutex> locker(mem_mutex);
