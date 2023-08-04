@@ -77,3 +77,24 @@ constexpr auto FF76 = 0xff76;
 constexpr auto FF77 = 0xff77;
 
 constexpr auto IE = 0xffff;
+
+// Other undocumented registers
+constexpr auto FF03 = 0xff03;
+constexpr auto FF08 = 0xff08;
+constexpr auto FF09 = 0xff09;
+constexpr auto FF0A = 0xff0a;
+constexpr auto FF0B = 0xff0b;
+constexpr auto FF0C = 0xff0c;
+constexpr auto FF0D = 0xff0d;
+constexpr auto FF0E = 0xff0e;
+constexpr auto FF15 = 0xff15;
+constexpr auto FF1F = 0xff1f;
+constexpr auto FF27 = 0xff27;
+constexpr auto FF28 = 0xff28;
+constexpr auto FF29 = 0xff29;
+constexpr auto FF2A = 0xff2a;
+constexpr auto FF2B = 0xff2b;
+constexpr auto FF2C = 0xff2c;
+constexpr auto FF2D = 0xff2d;
+constexpr auto FF2E = 0xff2e;
+constexpr auto FF2F = 0xff2f;

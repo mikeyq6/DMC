@@ -80,12 +80,6 @@ uint8_t RamNoRomMemory::internalReadMem(uint16_t location) {
 void RamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 	std::lock_guard<mutex> locker(mem_mutex);
 
-	if (value == 0xca) {
-		int x = 1;
-	}
-	if (location == IE) {
-		int x = 1;
-	}
 	if (location == DMA) {
 		doDMATransfer(value);
 	}

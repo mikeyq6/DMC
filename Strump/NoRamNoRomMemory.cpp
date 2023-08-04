@@ -27,9 +27,6 @@ uint8_t NoRamNoRomMemory::internalReadMem(uint16_t location) {
 	else if (location == FF74) {
 		return rominfo->UseColour() ? internal_get(location) : 0xff;
 	}
-	else if (location == FF75) {
-		return internal_get(location) & 0x70;
-	}
 	else if (location == P1) { // Joypad register
 		uint8_t state = internal_get(P1);
 		if ((state & 0x10) == 0) // Bit 4 P14 low
@@ -105,9 +102,6 @@ void NoRamNoRomMemory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location == FF74) {
 		if(rominfo->UseColour())
 			internal_set(location, value);
-	}
-	else if (location == FF75) {
-		internal_set(location, value & 0x70);
 	}
 	else if (location >= 0 && location < 0x8000) {
 		printf("No Ram/Rom Banking allowed at address(%04x)\n", value);

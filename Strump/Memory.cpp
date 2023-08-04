@@ -30,22 +30,97 @@ void Memory::CopyRamCartridgeData() {
 uint8_t Memory::internal_get(uint16_t address) {
 	if(address >= 0x8000 && address < 0xa000) {
 		return GetVramForAddress(address);
-	} else {
+	} else { 
 		return memory[address];
 	}
 }
 void Memory::internal_set(uint16_t address, uint8_t value) {
 	if(address >= 0x8000 && address < 0xa000) {
 		SetVramForAddress(address, value);
-	} else if(address == SC) {
-		if(rominfo->UseColour()) {
-			memory[SC] = value | 0x7c;
-		} else {
-			memory[SC] = value | 0x7e;
+	} else if(address >= 0xff02) {
+		uint8_t bitmask = 0;
+
+		switch(address) {
+			case SC:
+				if(rominfo->UseColour()) {
+					bitmask = 0b01111100;
+				} else {
+					bitmask = 0b01111110;
+				}
+				break;
+			case TAC:
+				bitmask = 0b11111000; break;
+			case IE:
+			case IF:
+				if(address == IE && (value & 0x1f) == 0) {
+					bitmask = 0;
+				} else {
+					bitmask = 0b11100000; }
+				break;
+			case STAT:
+			case NR10:
+				bitmask = 0b10000000; break;
+			case NR30:
+				bitmask = 0b01111111; break;
+			case NR32:
+				bitmask = 0b10011111; break;
+			case NR41:
+				bitmask = 0b11000000; break;
+			case NR44:
+				bitmask = 0b00111111; break;
+			case NR52:
+				bitmask = 0b01110000; break;
+			case VBK:
+				bitmask = 0b11111110; break;
+			case BCPS:
+			case OCPS:
+				bitmask = 0b01000000; break;
+			case FF75:
+				bitmask = 0b10001111; break;
+			case FF76:
+			case FF77:
+				value = rominfo->UseColour() ? value : 0; break;
+			case FF03:
+			case FF08:
+			case FF09:
+			case FF0A:
+			case FF0B:
+			case FF0C:
+			case FF0D:
+			case FF0E:
+			case FF15:
+			case FF1F:
+			case FF27:
+			case FF28:
+			case FF29:
+			case FF2A:
+			case FF2B:
+			case FF2C:
+			case FF2D:
+			case FF2E:
+			case FF2F:
+				value = 0xff; break;
+			case BCPD:
+			case OCPD:
+			case ENDSTART:
+			case HDMA1:
+			case HDMA2:
+			case HDMA3:
+			case HDMA4:
+			case HDMA5:
+			case FF72:
+			case FF73:
+			case FF74:
+				bitmask = 0; break;
+			default:
+				if(address >= 0xff4C && address < 0xff80) {
+					value = 0xff;
+				}
+				break;
 		}
+
+		memory[address] = value | bitmask;
 	} else {
-		// if(address >= 0xa000 && address < 0xc000)
-		// 	printf("setting memory[%x] = %x\n", address, value);
 		memory[address] = value;
 	}
 }
@@ -232,28 +307,28 @@ void Memory::setHDMASourceHigh(uint8_t value) {
 	dmaSource |= (value << 8);
 	dmaSource &= 0xfff0;
 	
-	printf("dmaSource (H): %x\n", dmaSource);
+	// printf("dmaSource (H): %x\n", dmaSource);
 }
 void Memory::setHDMASourceLow(uint8_t value) {
 	dmaSource &= 0xff00; // Clear low bits
 	dmaSource |= value;
 	dmaSource &= 0xfff0;
 	
-	printf("dmaSource (L): %x\n", dmaSource);
+	// printf("dmaSource (L): %x\n", dmaSource);
 }
 void Memory::setHDMADestinationHigh(uint8_t value) {
 	dmaDestination &= 0x00ff;
 	dmaDestination |= (value << 8);
 	dmaDestination &= 0xfff0;
 
-	printf("dmaDestination (H): %x\n", dmaDestination);
+	// printf("dmaDestination (H): %x\n", dmaDestination);
 }
 void Memory::setHDMADestinationLow(uint8_t value) {
 	dmaDestination &= 0xff00;
 	dmaDestination |= value;
 	dmaDestination &= 0xfff0;
 
-	printf("dmaDestination (L): %x\n", dmaDestination);
+	// printf("dmaDestination (L): %x\n", dmaDestination);
 }
 void Memory::doHDMATransfer(uint8_t value) {
 	rHDMA5 = value;
@@ -300,8 +375,7 @@ void Memory::runHDMATransfer() {
 
 		
 		for(uint8_t i=0; i<0x10; i++) {
-			printf("Setting (%x)=%x from $(%x)\n", 
-				offsetDest + i, internalReadMem(offsetSource + i), offsetSource + i);
+			// printf("Setting (%x)=%x from $(%x)\n", q
 			SetVramForAddress(offsetDest + i, internalReadMem(offsetSource + i));
 		}
 
