@@ -11,8 +11,8 @@ You can install them with `brew` using the following commands:<br/>
 `brew install sdl2_ttf`
 
 # Building
-Build from the command line with the following:
-* `make` - to build the release version
+Switch to the Strump directory and build from the command line with the following:
+* `make release` - to build the release version
 * `make debug` - for the debug version
 
 # In-application commands
