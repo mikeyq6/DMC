@@ -13,7 +13,7 @@ You can install them with `brew` using the following commands:<br/>
 # Building
 Switch to the Strump directory and build from the command line with the following:
 * `make release` - to build the release version
-* `make debug` - for the debug version
+* `make debug` - for the debug version 
 
 # In-application commands
 * Use the arrow keys to emulate the joypad
