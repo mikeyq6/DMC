@@ -17,5 +17,4 @@ class GBCTile
 
 		void GetGBCTile(Memory* memory, tile* t);
 		static void GetBackgroundTile(uint8_t attributes, GBCTile* gbcTile);
-        // static void GetBackgroundTileByNumber(uint8_t spriteNum, Memory *memory, GBCTile* gbcTile);
 };
