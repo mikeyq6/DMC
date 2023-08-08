@@ -64,8 +64,10 @@ class Draw {
     uint16_t GetBackgroundTileMapLocation();
 	uint16_t GetWindowTileMapLocation();
 	uint16_t BGWindowTileLocation();
+	uint16_t GetTileMapLocation(int8_t offset);
 	bool GetWindowEnabled();
 	bool tileIsNotEmpty(tile* t);
 	bool SpritesEnabled();
 	RGB PaletteColourToRGB(uint16_t colour);
+
 };
