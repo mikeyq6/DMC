@@ -1,5 +1,5 @@
 CC=g++ -std=c++17
-OBJS=Commands.cpp CPU.cpp JoypadState.cpp *Draw.cpp GBCTile.cpp DrawFactory.cpp Emulator.cpp Log.cpp *Memory.cpp MemoryFactory.cpp ROMInfo.cpp Sprite.cpp test.cpp testMBC5.cpp Timer.cpp Main.cpp 
+OBJS=Commands.cpp CPU.cpp JoypadState.cpp *Draw.cpp GBCTile.cpp DrawFactory.cpp Emulator.cpp Log.cpp *Memory.cpp MemoryFactory.cpp ROMInfo.cpp Sprite.cpp test.cpp testMBC5.cpp Timer.cpp SaveStateManager*.cpp Main.cpp 
 LFLAGS=-lSDL2 -lSDL2_image -lSDL2_ttf
 SUPPRESS=-Wno-unused-variable -Wno-unused-private-field
 EXENAME=strump

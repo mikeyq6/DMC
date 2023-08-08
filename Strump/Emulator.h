@@ -1,7 +1,10 @@
 #pragma once
+
+#include <thread>
+
 #include "CPU.h"
 #include "DrawFactory.h"
-#include <thread>
+#include "SaveStateManagerFactory.h"
 
 constexpr auto S_WIDTH = 160;
 constexpr auto S_HEIGHT = 144;
@@ -12,6 +15,7 @@ private:
 	CPU* cpu;
 	FILE* fp;
 	Draw* draw;
+	SaveStateManagerFactory *saveStateManagerFactory;
 	string cartridgeFileName;
 	string saveFileName; 
 	string windowTitle;

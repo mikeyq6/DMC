@@ -4,12 +4,14 @@ Emulator::Emulator(const char* _cartridgeFileName) {
 	string s(_cartridgeFileName);
 	cartridgeFileName = s;
 	draw = NULL;
+	saveStateManagerFactory = new SaveStateManagerFactory();
 
 	cpu = new CPU();
 }
 Emulator::~Emulator() {
 	delete draw;
 	delete cpu;
+	delete saveStateManagerFactory;
 }
 
 void Emulator::End() {
@@ -265,8 +267,29 @@ void Emulator::loadGameState() {
 	cpu->SetState(gameState);
 
 	free(gameState);
-
 	cpu->Unpause();
+
+
+	// int8_t version = 0;
+	// // Try to open ROM file
+	// cout << "save file: " << saveFileName << endl;
+	// FILE *sfp = fopen(saveFileName.c_str(), "rb");
+	// if (sfp == NULL) {
+	// 	cout << "Couldn't open save file \n" << saveFileName << endl;
+	// 	return;
+	// } else {
+	// 	fread(&version, sizeof(uint8_t), sizeof(uint8_t), sfp);
+	// }
+	// fclose(sfp);
+
+	// SaveStateManager *saveManager = saveStateManagerFactory->GetStateManager(version);
+	// saveManager->LoadState(&saveFileName, cpu);
+	
+	// // cpu->SetState(gameState);
+
+	// // free(gameState);
+
+	// // cpu->Unpause();
 }
 
 void Emulator::viewMemory() {
