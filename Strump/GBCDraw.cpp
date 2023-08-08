@@ -397,21 +397,24 @@ void GBCDraw::setFullBackgroundPixels() {
 	uint8_t pY = 0;
 	uint8_t wX, wY;
 	uint16_t x, y, tY, tX, index;
+	uint16_t yDiv = 0;
 
 	for (y = 0; y < FULL_BACKGROUND_HEIGHT; y++) {
+		yDiv = (y / 8) * 32;
+
 		for (x = 0; x < FULL_BACKGROUND_WIDTH; x++, sPixelsIndex++) {
 
 			pX = x % 8;
 			pY = y % 8;
 
-			index = ((y / 8) * 32) + (x / 8);
+			index = yDiv + (x / 8);
 			cur = background[index]->t;
 
 			getPixel(cur, pX, pY, &pixel, background[index]->XFlip, background[index]->YFlip);
-
-			fullBackgroundPixels[sPixelsIndex] = GetColourForPixel(false, pixel, background[index]->CGBPalette);
+			uint32_t colour = GetColourForPixel(false, pixel, background[index]->CGBPalette);
+			fullBackgroundPixels[sPixelsIndex] = colour;
 		}
-		pixel = (uint8_t)10;
+		// pixel = (uint8_t)10;
 	}
 }
 
