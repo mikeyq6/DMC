@@ -17,7 +17,7 @@ protected:
 	uint8_t internalReadMem(uint16_t location) override;
 
 private:
-	bool hasRAM = false, hasBattery = false, hasTimer = false;
+	bool hasRAM = false, hasBattery = false, hasTimer = false, useRAM = false;
 	uint8_t ROMB = 0;
 	uint8_t RAMB = 0;
 	uint8_t RAMG = 0;

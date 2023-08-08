@@ -212,14 +212,14 @@ void Test::TestInstructions() {
 
 	// PUSH/POP
 	registers->AF.af = 0x2450;
-	registers->SP = 0xe010;
+	registers->SP = 0xd010;
 	commands->PUSH(PUSH_AF);
-	assert(registers->SP == 0xe00e);
+	assert(registers->SP == 0xd00e);
 	assert(memory->get(registers->SP) == 0x50);
 	assert(memory->get(registers->SP + 1) == 0x24);
 	registers->AF.af = 0;
 	commands->POP(POP_AF);
-	assert(registers->SP == 0xe010);
+	assert(registers->SP == 0xd010);
 	assert(registers->AF.af == 0x2450);
 
 	registers->SP = 0xd000;
@@ -918,12 +918,12 @@ void Test::TestInstructions() {
 	assert(registers->BC.b == 0x4);
 	commands->RES(RES2_B, 2);
 	assert(registers->BC.b == 0);
-	registers->HL.hl = 0xe055;
-	memory->WriteMem(0xe055, 0);
+	registers->HL.hl = 0xd055;
+	memory->WriteMem(0xd055, 0);
 	commands->SET(SET2_HL, 7);
-	assert(memory->get(0xe055) == 0x80);
+	assert(memory->get(0xd055) == 0x80);
 	commands->RES(RES2_HL, 7);
-	assert(memory->get(0xe055) == 0x0);
+	assert(memory->get(0xd055) == 0x0);
 
 	clearFlags();
 	memory->setFlag(N);
@@ -936,8 +936,8 @@ void Test::TestInstructions() {
 	assert(memory->getFlag(Z) == 1);
 	commands->BIT(BIT7_E, 7);
 	assert(memory->getFlag(Z) == 0);
-	registers->HL.hl = 0xe055;
-	memory->WriteMem(0xe055, 0x94);
+	registers->HL.hl = 0xd055;
+	memory->WriteMem(0xd055, 0x94);
 	commands->BIT(BIT0_HL, 0);
 	assert(memory->getFlag(Z) == 1);
 	commands->BIT(BIT7_HL, 7);
@@ -945,58 +945,58 @@ void Test::TestInstructions() {
 
 	// JR / JP
 	uint8_t skip = 0;
-	registers->HL.hl = 0xe055;
+	registers->HL.hl = 0xd055;
 	commands->JR(JP_HL, 0, 0, &skip);
-	assert(registers->PC == 0xe055);
-	commands->JR(JP_nn, 0x44, 0xe1, &skip);
-	assert(registers->PC == 0xe144);
+	assert(registers->PC == 0xd055);
+	commands->JR(JP_nn, 0x44, 0xd1, &skip);
+	assert(registers->PC == 0xd144);
 	
 	clearFlags();
-	registers->PC = 0xe122;
-	commands->JR(JP_Z_nn, 0x44, 0xe1, &skip);
-	assert(registers->PC == 0xe122);
+	registers->PC = 0xd122;
+	commands->JR(JP_Z_nn, 0x44, 0xd1, &skip);
+	assert(registers->PC == 0xd122);
 	memory->setFlag(Z);
-	commands->JR(JP_Z_nn, 0x44, 0xe1, &skip);
-	assert(registers->PC == 0xe144);
+	commands->JR(JP_Z_nn, 0x44, 0xd1, &skip);
+	assert(registers->PC == 0xd144);
 
 	clearFlags();
-	registers->PC = 0xe122;
-	commands->JR(JP_NC_nn, 0x44, 0xe1, &skip);
-	assert(registers->PC == 0xe144);
+	registers->PC = 0xd122;
+	commands->JR(JP_NC_nn, 0x44, 0xd1, &skip);
+	assert(registers->PC == 0xd144);
 	memory->setFlag(C);
-	registers->PC = 0xe122;
-	commands->JR(JP_NC_nn, 0x44, 0xe1, &skip);
-	assert(registers->PC == 0xe122);
+	registers->PC = 0xd122;
+	commands->JR(JP_NC_nn, 0x44, 0xd1, &skip);
+	assert(registers->PC == 0xd122);
 
-	registers->PC = 0xe122;
+	registers->PC = 0xd122;
 	commands->JR(JR_n, 0x50, 0, &skip);
-	assert(registers->PC == 0xe172);
+	assert(registers->PC == 0xd172);
 
 	clearFlags();
-	registers->PC = 0xe122;
+	registers->PC = 0xd122;
 	commands->JR(JR_C_n, 0x50, 0, &skip);
-	assert(registers->PC == 0xe122);
+	assert(registers->PC == 0xd122);
 	commands->JR(JR_NC_n, 0x50, 0, &skip);
-	assert(registers->PC == 0xe172);
-	registers->PC = 0xe122;
+	assert(registers->PC == 0xd172);
+	registers->PC = 0xd122;
 	memory->setFlag(C);
 	commands->JR(JR_NC_n, 0x50, 0, &skip);
-	assert(registers->PC == 0xe122);
+	assert(registers->PC == 0xd122);
 	commands->JR(JR_C_n, 0x50, 0, &skip);
-	assert(registers->PC == 0xe172);
+	assert(registers->PC == 0xd172);
 
 	clearFlags();
-	registers->PC = 0xe122;
+	registers->PC = 0xd122;
 	commands->JR(JR_Z_n, 0x50, 0, &skip);
-	assert(registers->PC == 0xe122);
+	assert(registers->PC == 0xd122);
 	commands->JR(JR_NZ_n, 0x50, 0, &skip);
-	assert(registers->PC == 0xe172);
-	registers->PC = 0xe122;
+	assert(registers->PC == 0xd172);
+	registers->PC = 0xd122;
 	memory->setFlag(Z);
 	commands->JR(JR_NZ_n, 0x50, 0, &skip);
-	assert(registers->PC == 0xe122);
+	assert(registers->PC == 0xd122);
 	commands->JR(JR_Z_n, 0x50, 0, &skip);
-	assert(registers->PC == 0xe172);
+	assert(registers->PC == 0xd172);
 
 	// LD
 
