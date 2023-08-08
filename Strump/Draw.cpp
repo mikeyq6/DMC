@@ -20,12 +20,14 @@ void Draw::getPixel(tile* t, uint8_t col, uint8_t row, uint8_t* val, bool xFlip,
 	*val = ((t->data[rIndex] & bit) ? 1 : 0) + (((t->data[rIndex + 1]) & bit) ? 2 : 0);
 }
 uint16_t Draw::GetBackgroundTileMapLocation() {
-	uint8_t val = memory->get(LCDC);
-	return (((val & (1 << 3)) == 0) ? 0x9800 : 0x9c00);
+	return GetTileMapLocation(3);
 }
 uint16_t Draw::GetWindowTileMapLocation() {
+	return GetTileMapLocation(6);
+}
+uint16_t Draw::GetTileMapLocation(int8_t offset) {
 	uint8_t val = memory->get(LCDC);
-	return (((val & (1 << 6)) == 0) ? 0x9800 : 0x9c00);
+	return (((val & (1 << offset)) == 0) ? 0x9800 : 0x9c00);
 }
 uint16_t Draw::BGWindowTileLocation() {
 	uint8_t val = memory->get(LCDC);
