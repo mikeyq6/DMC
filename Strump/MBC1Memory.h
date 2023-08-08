@@ -22,5 +22,10 @@ private:
 	uint8_t RAMG = 0;
 	uint8_t BANK1 = 1;
 	uint8_t BANK2 = 0;
+
+	uint16_t GetRom1BankMask();
+	uint16_t GetRom2BankMask();
+	uint16_t GetRomBankHigh();
+	uint16_t GetRomBankLow();
 };
 

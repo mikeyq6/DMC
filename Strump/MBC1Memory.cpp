@@ -29,20 +29,33 @@ uint8_t MBC1Memory::internalReadMem(uint16_t location) {
 		if(MODE == MODE_16_8)
 			data = rominfo->GetCardridgeVal(location);
 		else {
-			bank = BANK2 << 5;
-			if(bank % 0x20 == 0) bank++;
-			if(bank > rominfo->GetNumberOfRomBanks()) {
-				bank &= (rominfo->GetNumberOfRomBanks() - 1);
+			bank = GetRomBankLow();
+			// if(bank % 0x20 == 0) bank++;
+			// if(bank > rominfo->GetNumberOfRomBanks()) {
+			// 	bank &= (rominfo->GetNumberOfRomBanks() - 1);
+			// }
+			if(bank == 0) {
+				nAddress = location;
+			} else {
+				nAddress = location + ((bank - 1) * 0x4000);
 			}
-			nAddress = location + ((bank - 1) * 0x4000);
 			data = rominfo->GetCardridgeVal(nAddress);
 		}
 		// printf("ROM MODE: %x, location: %x, data: %x\n", MODE, location, data);
 		return data;
 	}
 	else if (location >= 0x4000 && location < 0x8000) {
-		bank = GetRomBank();
-		nAddress = location + ((bank - 1) * 0x4000);
+		bank = GetRomBankHigh();
+		if(bank == 0) {
+			nAddress = location - 0x4000;
+		} else {
+			// if(bank % 0x20 == 0) bank++;
+			nAddress = location + ((bank - 1) * 0x4000);
+		}
+		if(bank != 1) {
+		printf("nAddress: %x\n\n", nAddress);
+		}
+		
 		return rominfo->GetCardridgeVal(nAddress);
 	}
 	else if (location >= 0x8000 && location < 0xa000) {
@@ -104,10 +117,14 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 	}
 	else if (location >= 0x2000 && location < 0x4000) { // ROM Switching
 		BANK1 = value & 0x1f;
+		printf("GetRom1BankMask:%x, value: %x, BANK1: %x, BANK2: %x, location: %x\n", GetRom1BankMask(), value, BANK1, BANK2, location);
 	}
 	else if (location >= 0x4000 && location < 0x6000) { // ROM/RAM Switching
 		if (MODE == MODE_16_8) {
+			if((((value & 3) << 5) | BANK1) < rominfo->GetNumberOfRomBanks()) {
 			BANK2 = value & 3;
+			}
+			printf("MODE_16_8 value: %x, BANK1: %x, BANK2: %x, location: %x\n", value, BANK1, BANK2, location);
 		} else {
 			RamBank = value & 3;
 		}
@@ -148,12 +165,80 @@ void MBC1Memory::WriteMem(uint16_t location, uint8_t value) {
 	}
 }
 
+// uint16_t MBC1Memory::GetRomBank() {
+// 	uint16_t rawBank = BANK1;
+// 	// rawBank |= (BANK2 << 5);
+// 	uint16_t bank = rawBank;
+// 	uint16_t fullBank = rawBank | (BANK2 << 5);
+// 	// if(bank % 0x20 == 0) bank++;
+// 	uint16_t numAvailableBanks = rominfo->GetNumberOfRomBanks();
+// 	if(bank > 1) {
+// 	printf("BANK1: %x, BANK2: %x, raw bank: %x, numAvailableBanks:%x\n", BANK1, BANK2, bank, numAvailableBanks);
+// 	}
+// 	if(fullBank  > numAvailableBanks) {
+// 		bank &= GetRom1BankMask();   
+// 	} 
+// 	if(rawBank == 0) {
+// 		bank++;
+// 	}
+// 	if(bank != 1) {                                                                                                                                                     
+// 	printf("calculated bank: %x\n", bank);
+// 	}
+// 	return bank;
+// }
 uint16_t MBC1Memory::GetRomBank() {
-	uint16_t bank = BANK1;
-	bank |= (BANK2 << 5);
-	if(bank % 0x20 == 0) bank++;
+	return 0;
+}
+
+uint16_t MBC1Memory::GetRomBankHigh() {
+	uint16_t rawBank = BANK1;
+	uint16_t bank = rawBank;
+	uint16_t fullBank = rawBank | (BANK2 << 5);
+	bool addOne = false;
+
+	bank &= GetRom1BankMask();
+	if (MODE == MODE_16_8) {
+		bank |= (BANK2 << 5);
+	}
+
 	if(bank > rominfo->GetNumberOfRomBanks()) {
 		bank &= (rominfo->GetNumberOfRomBanks() - 1);
 	}
+	if(BANK1 == 0) {
+		bank++;
+	}
 	return bank;
+}
+
+uint16_t MBC1Memory::GetRomBankLow() {
+	uint16_t rawBank = BANK1;
+	uint16_t bank = (BANK2 << 5);
+	// uint16_t fullBank = rawBank | (BANK2 << 5);
+	// bool addOne = false;
+
+	// bank &= GetRom1BankMask();
+	// if(BANK1 == 0) {
+	// 	bank++;
+	// }
+	// bank |= (BANK2 << 5);
+
+	// if(bank > rominfo->GetNumberOfRomBanks()) {
+	// 	bank &= (rominfo->GetNumberOfRomBanks() - 1);
+	// }
+	return bank;
+}
+
+uint16_t MBC1Memory::GetRom1BankMask() {
+	uint16_t romBankMask = rominfo->GetNumberOfRomBanks() - 1;
+	romBankMask = romBankMask & 0x1f;
+
+	return romBankMask;
+}
+
+uint16_t MBC1Memory::GetRom2BankMask() {
+	uint16_t romBankMask = rominfo->GetNumberOfRomBanks() - 1;
+	// romBankMask = (romBankMask >> 5) & 0x3;
+	romBankMask = 0x3;
+
+	return romBankMask;
 }
