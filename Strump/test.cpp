@@ -464,7 +464,7 @@ void Test::TestInstructions() {
 	registers->AF.a = 0x09;
 	memory->set(0xffff, 0x40);
 	commands->LD(LDH_n_A, 0xff, 0);
-	assert(memory->get(0xffff) == 0x09);
+	assert(memory->get(0xffff) == 0xe9);
 
 	commands->LD(LD_BC_nn, 0x1e, 0xfb);
 	assert(registers->BC.bc == 0xfb1e);

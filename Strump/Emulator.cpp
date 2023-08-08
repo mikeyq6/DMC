@@ -52,10 +52,11 @@ void Emulator::Start() {
 	while (running()) {
 		handleEvents();
 		update();
-		draw->render(cpu->IsStopped());
+		// if(cpu->GetMemory()->getStatMode() != 0b01) {
+			draw->render(cpu->IsStopped());
+		// }
 	}
 	draw->clean();
-
 	cpu->Stop();
 }
 
@@ -252,11 +253,11 @@ void Emulator::loadGameState() {
 		*(gameState + i) = 0;
 	}
 
-	// Try to open ROM file
 	cout << "save file: " << saveFileName << endl;
 	FILE *sfp = fopen(saveFileName.c_str(), "rb");
 	if (sfp == NULL) {
 		cout << "Couldn't open save file \n" << saveFileName << endl;
+		return;
 	} else {
 		fread(gameState, sizeof(uint8_t), sizeof(uint8_t) * size, sfp);
 	}

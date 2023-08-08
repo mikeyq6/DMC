@@ -2,7 +2,7 @@
 
 #include "alias.h"
 
-constexpr auto NOP = 0x00;
+constexpr auto  NOP = 0x00;
 constexpr auto  LD_BC_nn = 0x01;
 constexpr auto  LD_BC_A = 0x02;
 constexpr auto  INC_BC = 0x03;
@@ -247,7 +247,7 @@ constexpr auto  LD_A_nn = 0xfa;
 constexpr auto  EI = 0xfb;
 constexpr auto  CP_n = 0xfe;
 constexpr auto  RST_38H = 0xff;
-;
+
 // Extra CB Codes;
 constexpr auto  RLC_B = 0x00;
 constexpr auto  RLC_C = 0x01;

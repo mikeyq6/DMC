@@ -510,12 +510,15 @@ void GBDraw::clean() {
 	SDL_DestroyWindow(window);
 	SDL_DestroyWindow(debugWindow);
 	SDL_DestroyWindow(fullBackgroundWindow);
+	SDL_DestroyWindow(tileWindow);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyRenderer(debugRenderer);
 	SDL_DestroyRenderer(fullBackgroundRenderer);
+	SDL_DestroyRenderer(tileRenderer);
 	SDL_DestroyTexture(texture);
 	SDL_DestroyTexture(debugTexture);
 	SDL_DestroyTexture(fullBackgroundTexture);
+	SDL_DestroyTexture(tileTexture);
 	SDL_FreeSurface(textSurface);
 	SDL_Quit();
 }
