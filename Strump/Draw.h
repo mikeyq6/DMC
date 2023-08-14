@@ -9,6 +9,8 @@
 
 constexpr auto BACKGROUNDTILES = 0x400;
 constexpr auto NUMPIXELS = 0x5a00;
+constexpr auto TILE_PIXELS_WIDTH = 256;
+constexpr auto TILE_PIXELS_HEIGHT = 192;
 constexpr auto NUM_TILE_PIXELS = 0xc000;
 
 constexpr auto WHITE = 0x00ffffff;

@@ -57,9 +57,9 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 	}
 
 	if (showTileMap) {
-		tileWindow = SDL_CreateWindow("Tile info", 50, 326, 256, 192, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		tileWindow = SDL_CreateWindow("Tile info", 50, 326, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		tileRenderer = SDL_CreateRenderer(tileWindow, -1, 0);
-		tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 256, 192);
+		tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT);
 	}
 
 	if (showPaletteMap) {
@@ -121,13 +121,6 @@ void GBCDraw::render(bool CPUIsStopped) {
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
 	SDL_RenderPresent(renderer);
 
-	if (showTileMap) {
-		SDL_UpdateTexture(tileTexture, NULL, tilePixels, 256 * sizeof(uint32_t));
-		SDL_RenderClear(tileRenderer);
-		SDL_RenderCopy(tileRenderer, tileTexture, NULL, NULL);
-		SDL_RenderPresent(tileRenderer);
-	}
-
 	if (showBackgroundMap) {
 		SDL_UpdateTexture(fullBackgroundTexture, NULL, fullBackgroundPixels, FULL_BACKGROUND_WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(fullBackgroundRenderer);
@@ -135,10 +128,14 @@ void GBCDraw::render(bool CPUIsStopped) {
 		SDL_RenderPresent(fullBackgroundRenderer);
 	}
 
+	if (showTileMap) {
+		SDL_UpdateTexture(tileTexture, NULL, tilePixels, 256 * sizeof(uint32_t));
+		SDL_RenderClear(tileRenderer);
+		SDL_RenderCopy(tileRenderer, tileTexture, NULL, NULL);
+		SDL_RenderPresent(tileRenderer);
+	}
+
 	if(showPaletteMap) {
-		// SDL_Surface *pSurface = SDL_GetWindowSurface(paletteWindow);
-		// SDL_FillRect(pSurface, &rect, SDL_MapRGB(pSurface->format, 0x30, 0x40, 0x00));
-		// paletteTexture = SDL_CreateTextureFromSurface(paletteRenderer, pSurface);
 		SDL_SetRenderDrawColor(paletteRenderer, 0xff, 0xff, 0xff, 0xff);
 		SDL_RenderClear(paletteRenderer);
 		// Draw palette colours
@@ -147,9 +144,6 @@ void GBCDraw::render(bool CPUIsStopped) {
 				DrawPalette(paletteRenderer, i, j);
 			}
 		}
-		
-		// SDL_UpdateTexture(paletteTexture, NULL, fullBackgroundPixels, FULL_BACKGROUND_WIDTH * sizeof(uint32_t));
-		// SDL_RenderCopy(paletteRenderer, paletteTexture, NULL, NULL);
 		SDL_RenderPresent(paletteRenderer);
 	}
 
@@ -362,7 +356,7 @@ void GBCDraw::setBackgroundPixels() {
 	}
 
 	// Draw the window if it is enabled
-	if (GetWindowEnabled() || true) {
+	if (GetWindowEnabled()) {
 		wX = memory->get(WX);
 		wY = memory->get(WY);
 		pX = pY = 0;

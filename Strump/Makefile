@@ -3,12 +3,20 @@ OBJS=Commands.cpp CPU.cpp JoypadState.cpp *Draw.cpp GBCTile.cpp DrawFactory.cpp 
 LFLAGS=-lSDL2 -lSDL2_image -lSDL2_ttf
 SUPPRESS=-Wno-unused-variable -Wno-unused-private-field
 EXENAME=strump
-# DEBUGVARIABLES=-DRUNTESTS=1 -DSHOW_TILE_INFO=1
-DEBUGVARIABLES=-DRUNTESTS=1
+DEBUGVARIABLES=-DRUNTESTS=1 -DSHOW_OAM_MAP=1 -DSHOW_TILE_MAP=1 -DSHOW_PALETTES=1
+DEBUGVARIABLESNOWINDOWS=-DRUNTESTS=1
 
 debug:
 	make clean
 	${CC} -g -Wall ${SUPPRESS} ${DEBUGVARIABLES} ${LFLAGS} -o ${EXENAME} ${OBJS}
+
+debug-tile:
+	make clean
+	${CC} -g -Wall ${SUPPRESS} ${DEBUGVARIABLES} -DSHOW_TILE_INFO=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
+
+debug-no-windows:
+	make clean
+	${CC} -g -Wall ${SUPPRESS} ${DEBUGVARIABLESNOWINDOWS} ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 debug-notests:
 	make clean

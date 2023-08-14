@@ -15,6 +15,9 @@ private:
 	string cartridgeFileName;
 	string saveFileName; 
 	string windowTitle;
+	bool showOAMMap;
+	bool showPalettes;
+	bool showTileMap;
 
 	void handleEvents();
 	void update();

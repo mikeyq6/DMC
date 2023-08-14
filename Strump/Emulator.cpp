@@ -6,6 +6,25 @@ Emulator::Emulator(const char* _cartridgeFileName) {
 	draw = NULL;
 
 	cpu = new CPU();
+
+	#ifdef SHOW_OAM_MAP
+	showOAMMap = true;
+	#else
+	showOAMMap = false;
+	#endif
+
+	#ifdef SHOW_TILE_MAP
+	showTileMap = true;
+	#else
+	showTileMap = false;
+	#endif
+
+	#ifdef SHOW_PALETTES
+	showPalettes = true;
+	#else
+	showPalettes = false;
+	#endif
+	
 }
 Emulator::~Emulator() {
 	delete draw;
@@ -47,7 +66,7 @@ void Emulator::Start() {
 	delete drawFactory;
 
 	draw->drawInit(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, S_WIDTH, S_HEIGHT, 
-		false, false, true, true, true, true);
+		false, false, true, showTileMap, showPalettes, showOAMMap);
 
 	while (running()) {
 		handleEvents();

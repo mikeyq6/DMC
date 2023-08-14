@@ -24,6 +24,7 @@ public:
 	GBCTile* background[BACKGROUNDTILES];
 	GBCTile* windowX[BACKGROUNDTILES];
 	uint32_t screenPixels[NUMPIXELS];
+	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];
 	uint32_t tilePixels[NUM_TILE_PIXELS];
 
 	void drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, 
@@ -91,7 +92,6 @@ private:
 	string registerInfo;
 
 	int text_width, text_height;
-	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];
 	uint8_t colourMode;
 	uint16_t vRAMLocation;
 
