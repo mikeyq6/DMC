@@ -528,10 +528,8 @@ void GBCDraw::setTilePixels() {
 
 void GBCDraw::getTileAt(uint16_t address, tile* t, uint8_t vramBank) {
 	for (int i = 0; i < 16; i++) {
-		// TODO: Why is tattributes taking the same location as data?
 		t->data[i] = memory->GetVramForAddress(address + i, vramBank);
 		t->address = address + i;
-		t->attributes = memory->GetVramForAddress(address + i, vramBank); // ???
 	}
 }
 
