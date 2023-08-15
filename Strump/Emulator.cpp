@@ -24,6 +24,12 @@ Emulator::Emulator(const char* _cartridgeFileName) {
 	#else
 	showPalettes = false;
 	#endif
+
+	#ifdef SHOW_FULL_BACKGROUND
+	showFullBackground = true;
+	#else
+	showFullBackground = false;
+	#endif
 	
 }
 Emulator::~Emulator() {
@@ -66,7 +72,7 @@ void Emulator::Start() {
 	delete drawFactory;
 
 	draw->drawInit(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, S_WIDTH, S_HEIGHT, 
-		false, false, true, showTileMap, showPalettes, showOAMMap);
+		false, false, showFullBackground, showTileMap, showPalettes, showOAMMap);
 
 	while (running()) {
 		handleEvents();

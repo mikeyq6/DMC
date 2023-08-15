@@ -37,8 +37,6 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 		windowX[i] = new GBCTile();
 	}
 
-	int gogogo = 1;
-
 	Width = width;
 	Height = height;
 

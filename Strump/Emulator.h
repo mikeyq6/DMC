@@ -15,9 +15,7 @@ private:
 	string cartridgeFileName;
 	string saveFileName; 
 	string windowTitle;
-	bool showOAMMap;
-	bool showPalettes;
-	bool showTileMap;
+	bool showOAMMap, showPalettes, showTileMap, showFullBackground;
 
 	void handleEvents();
 	void update();
@@ -33,6 +31,9 @@ private:
 
 	void viewMemory();
 	void editMemory();
+
+	void viewRegisterState();
+	void editRegister();
 
 public:
 	Emulator(const char* _cartridgeFileName);
