@@ -14,6 +14,8 @@
 #include "Sprite.h"
 #include "GBCTile.h"
 
+constexpr auto TILE_MAP_HEADER = 10;
+
 class GBCDraw :
 	public Draw
 {

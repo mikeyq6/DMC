@@ -62,20 +62,20 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 	fullBackgroundTexture = SDL_CreateTexture(fullBackgroundRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT);
 
 	SDL_Color colour = { 0, 0, 0 };
-	tileWindow = SDL_CreateWindow("[4] Tile info", 50, 326, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT + 50, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	tileWindow = SDL_CreateWindow("[4] Tile info", 50, 326, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT + TILE_MAP_HEADER, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (!showTileMap ? SDL_WINDOW_HIDDEN : 0));
 	tileRenderer = SDL_CreateRenderer(tileWindow, -1, 0);
-	tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT + 50);
+	tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT + TILE_MAP_HEADER);
 	SDL_SetRenderDrawColor(tileRenderer, 0xff, 0xff, 0xff, 0xff);
 	bank0Surface = TTF_RenderText_Solid(font, "BANK 0", colour);
 	bank0Texture = SDL_CreateTextureFromSurface(tileRenderer, bank0Surface);
 	bank1Surface = TTF_RenderText_Solid(font, "BANK 1", colour);
 	bank1Texture = SDL_CreateTextureFromSurface(tileRenderer, bank1Surface);
 
-	paletteWindow = SDL_CreateWindow("[5] Palette Info", 50, 544, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	paletteWindow = SDL_CreateWindow("[5] Palette Info", 50, 544, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (!showPaletteMap ? SDL_WINDOW_HIDDEN : 0));
 	paletteRenderer = SDL_CreateRenderer(paletteWindow, -1, 0);
 	paletteTexture = SDL_CreateTexture(paletteRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
 
-	oamWindow = SDL_CreateWindow("[6] OAM Sprite Info", 1050, 0, oamWidth, oamHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	oamWindow = SDL_CreateWindow("[6] OAM Sprite Info", 1050, 0, oamWidth, oamHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (!showOAMMap ? SDL_WINDOW_HIDDEN : 0));
 	oamRenderer = SDL_CreateRenderer(oamWindow, -1, 0);
 	oamTexture = SDL_CreateTexture(oamRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
 
@@ -132,17 +132,16 @@ void GBCDraw::render(bool CPUIsStopped) {
 		SDL_RenderClear(tileRenderer);
 
 		SDL_QueryTexture(bank0Texture, NULL, NULL, &texW, &texH);
-		SDL_Rect dstrect = { 5, 10, texW, texH };
+		SDL_Rect dstrect = { 2, 0, texW, texH };
 		SDL_RenderCopy(tileRenderer, bank0Texture, NULL, &dstrect);
 		
 		SDL_QueryTexture(bank1Texture, NULL, NULL, &texW, &texH);
-		dstrect = { 133, 10, texW, texH };
+		dstrect = { 130, 0, texW, texH };
 		SDL_RenderCopy(tileRenderer, bank1Texture, NULL, &dstrect);
 
-		dstrect = { 0, 50, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT };
-		SDL_Rect destRect = { 0, 0, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT };
+		dstrect = { 0, TILE_MAP_HEADER, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT };
 		SDL_UpdateTexture(tileTexture, &dstrect, tilePixels, 256 * sizeof(uint32_t));
-		SDL_RenderCopy(tileRenderer, tileTexture, &destRect, &dstrect);
+		SDL_RenderCopy(tileRenderer, tileTexture, &dstrect, &dstrect);
 		SDL_RenderPresent(tileRenderer);
 	}
 
