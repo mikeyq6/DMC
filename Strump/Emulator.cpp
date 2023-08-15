@@ -223,6 +223,13 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 			case SDLK_o: // Toggle VRAM Location
 				draw->ToggleVRAMLocation();
 				break;
+			case SDLK_g: // View/Edit register
+				if(SDL_GetModState() & KMOD_SHIFT) {
+					editRegister();
+				} else {
+					viewRegisterState();
+				}
+				break;
 			default:
 				break;
 		}
@@ -323,4 +330,42 @@ void Emulator::editMemory() {
 	cpu->GetMemory()->set(location, value);
 
 	cpu->Unpause();
+}
+
+void Emulator::viewRegisterState() {
+	cpu->Pause();
+
+	uint16_t location;
+	uint8_t value;
+	Registers *registers = cpu->GetRegisters();
+
+	cout << "Registers: " << endl;
+	cout << "PC: " << hex << setw(4) << setfill('0') << registers->PC;
+	cout << "  SP: " << hex << setw(4) << setfill('0') << registers->SP << endl;
+	cout << "AF: " << hex << setw(4) << setfill('0') << registers->AF.af;
+	cout << "  BC: " << hex << setw(4) << setfill('0') << registers->BC.bc << endl;
+	cout << "DE: " << hex << setw(4) << setfill('0') << registers->DE.de;
+	cout << "  HL: " << hex << setw(4) << setfill('0') << registers->HL.hl;
+	cout << endl;
+
+	cpu->Unpause();
+}
+
+void Emulator::editRegister() {
+	// cpu->Pause();
+
+	// uint16_t location;
+	// int invalue;
+
+	// cout << "Enter register to edit: ";
+	// cin >> hex >> location;
+	// cout << "Set value: ";
+	// cin >> hex >> invalue;
+	// uint8_t value = static_cast<uint8_t>(invalue);
+
+	// cout << "Will edit: " << hex << setw(4) << setfill('0') << location;
+	// cout << ", set to: " << hex << setw(2) << setfill('0') << static_cast<int>(value) << endl;
+	// cpu->GetMemory()->set(location, value);
+
+	// cpu->Unpause();
 }
