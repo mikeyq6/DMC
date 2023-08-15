@@ -39,6 +39,10 @@ public:
 	void SetColourMode(uint8_t mode);
 	void ToggleColourMode() override;
 	void ToggleVRAMLocation() override;
+	void toggleBackgroundMap() override;
+	void toggleTileMap() override;
+	void togglePaletteMap() override;
+	void toggleOAMMap() override;
 
 	FILE* out;
 private:
@@ -57,6 +61,8 @@ private:
 	SDL_Window* tileWindow;
 	SDL_Texture* tileTexture;
 	SDL_Renderer* tileRenderer;
+	SDL_Surface *bank0Surface, *bank1Surface;
+	SDL_Texture *bank0Texture, *bank1Texture;
 
 	SDL_Window* fullBackgroundWindow;
 	SDL_Texture* fullBackgroundTexture;

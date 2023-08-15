@@ -20,7 +20,6 @@ void GBDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint
 	showCommandOutput = _showCommandOutput;
 	showBackgroundMap = _showBackgroundMap;
 	showTileMap = _showTileMap;
-	showPaletteMap = _showPaletteMap;
 	vRAMLocation = 0x9800;
 	
 	int flags = 0;
@@ -46,28 +45,13 @@ void GBDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uint
 		SDL_TEXTUREACCESS_STREAMING,
 		Width, Height);
 
-	if (showTileMap) {
-		tileWindow = SDL_CreateWindow("Tile info", 50, 260, 256, 192, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		tileRenderer = SDL_CreateRenderer(tileWindow, -1, 0);
-		tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 256, 192);
-	}
+	tileWindow = SDL_CreateWindow("[4] Tile info", 50, 260, 256, 192, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (!showTileMap ? SDL_WINDOW_HIDDEN : 0));
+	tileRenderer = SDL_CreateRenderer(tileWindow, -1, 0);
+	tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 256, 192);
 
-	// TTF_Init();
-	// if (showCommandOutput) {
-	// 	debugWindow = SDL_CreateWindow("Output", 1400, 400, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-	// 	debugRenderer = SDL_CreateRenderer(debugWindow, -1, 0);
-	// 	font = TTF_OpenFont("./VeraMono.ttf", 16);
-	// 	if (!font) {
-	// 		cout << "TTF_OpenFont: " << TTF_GetError() << endl;
-	// 		// handle error
-	// 	}
-	// }
-
-	if (showBackgroundMap) {
-		fullBackgroundWindow = SDL_CreateWindow("Full Background", 350, 40, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		fullBackgroundRenderer = SDL_CreateRenderer(fullBackgroundWindow, -1, 0);
-		fullBackgroundTexture = SDL_CreateTexture(fullBackgroundRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT);
-	}
+	fullBackgroundWindow = SDL_CreateWindow("[3] Full Background", 350, 40, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (!showBackgroundMap ? SDL_WINDOW_HIDDEN : 0));
+	fullBackgroundRenderer = SDL_CreateRenderer(fullBackgroundWindow, -1, 0);
+	fullBackgroundTexture = SDL_CreateTexture(fullBackgroundRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT);
 }
 
 void GBDraw::render(bool CPUIsStopped) {
@@ -499,6 +483,26 @@ void GBDraw::ToggleColourMode() {
 void GBDraw::ToggleVRAMLocation() {
 	vRAMLocation = vRAMLocation == 0x9800 ? 0x9c00 : 0x9800;
 }
+void GBDraw::toggleBackgroundMap() {
+	showBackgroundMap = !showBackgroundMap;
+
+	if(showBackgroundMap) {
+		SDL_ShowWindow(fullBackgroundWindow);
+	} else {
+		SDL_HideWindow(fullBackgroundWindow);
+	}
+}
+void GBDraw::toggleTileMap() {
+	showTileMap = !showTileMap;
+
+	if(showTileMap) {
+		SDL_ShowWindow(tileWindow);
+	} else {
+		SDL_HideWindow(tileWindow);
+	}
+}
+void GBDraw::togglePaletteMap() { }
+void GBDraw::toggleOAMMap() { }
 
 
 void GBDraw::clean() {

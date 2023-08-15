@@ -236,6 +236,18 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 					viewRegisterState();
 				}
 				break;
+			case SDLK_3: // Show/hide full background window
+				draw->toggleBackgroundMap();
+				break;
+			case SDLK_4: // Show/hide tile map window
+				draw->toggleTileMap();
+				break;
+			case SDLK_5: // Show/hide Palette window (BGC only)
+				draw->togglePaletteMap();
+				break;
+			case SDLK_6: // Show/hide OAM window
+				draw->toggleOAMMap();
+				break;
 			default:
 				break;
 		}

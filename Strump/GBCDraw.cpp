@@ -48,36 +48,36 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 		SDL_TEXTUREACCESS_STREAMING,
 		Width, Height);
 
-	if (showBackgroundMap) {
-		fullBackgroundWindow = SDL_CreateWindow("Full Background", 50, 0, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		fullBackgroundRenderer = SDL_CreateRenderer(fullBackgroundWindow, -1, 0);
-		fullBackgroundTexture = SDL_CreateTexture(fullBackgroundRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT);
-	}
-
-	if (showTileMap) {
-		tileWindow = SDL_CreateWindow("Tile info", 50, 326, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		tileRenderer = SDL_CreateRenderer(tileWindow, -1, 0);
-		tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT);
-	}
-
-	if (showPaletteMap) {
-		paletteWindow = SDL_CreateWindow("Palette Info", 50, 544, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		paletteRenderer = SDL_CreateRenderer(paletteWindow, -1, 0);
-		paletteTexture = SDL_CreateTexture(paletteRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
-	}
-
-	if (showOAMMap) {
+	if(showTileMap || showOAMMap) {
 		TTF_Init();
 		font = TTF_OpenFont("./arial.ttf", 9);
 		if (!font) {
 			cout << "TTF_OpenFont: " << TTF_GetError() << endl;
 			// handle error
 		}
-		oamWindow = SDL_CreateWindow("OAM Sprite Info", 1050, 0, oamWidth, oamHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		oamRenderer = SDL_CreateRenderer(oamWindow, -1, 0);
-		oamTexture = SDL_CreateTexture(oamRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
-
 	}
+
+	fullBackgroundWindow = SDL_CreateWindow("[3] Full Background", 50, 0, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (!showBackgroundMap ? SDL_WINDOW_HIDDEN : 0));
+	fullBackgroundRenderer = SDL_CreateRenderer(fullBackgroundWindow, -1, 0);
+	fullBackgroundTexture = SDL_CreateTexture(fullBackgroundRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT);
+
+	SDL_Color colour = { 0, 0, 0 };
+	tileWindow = SDL_CreateWindow("[4] Tile info", 50, 326, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT + 50, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	tileRenderer = SDL_CreateRenderer(tileWindow, -1, 0);
+	tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT + 50);
+	SDL_SetRenderDrawColor(tileRenderer, 0xff, 0xff, 0xff, 0xff);
+	bank0Surface = TTF_RenderText_Solid(font, "BANK 0", colour);
+	bank0Texture = SDL_CreateTextureFromSurface(tileRenderer, bank0Surface);
+	bank1Surface = TTF_RenderText_Solid(font, "BANK 1", colour);
+	bank1Texture = SDL_CreateTextureFromSurface(tileRenderer, bank1Surface);
+
+	paletteWindow = SDL_CreateWindow("[5] Palette Info", 50, 544, 300, 300, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	paletteRenderer = SDL_CreateRenderer(paletteWindow, -1, 0);
+	paletteTexture = SDL_CreateTexture(paletteRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
+
+	oamWindow = SDL_CreateWindow("[6] OAM Sprite Info", 1050, 0, oamWidth, oamHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+	oamRenderer = SDL_CreateRenderer(oamWindow, -1, 0);
+	oamTexture = SDL_CreateTexture(oamRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, 300, 300);
 
 	#ifdef SHOW_TILE_INFO
 	TTF_Init();
@@ -127,9 +127,22 @@ void GBCDraw::render(bool CPUIsStopped) {
 	}
 
 	if (showTileMap) {
-		SDL_UpdateTexture(tileTexture, NULL, tilePixels, 256 * sizeof(uint32_t));
+		int texW = 0;
+		int texH = 0;
 		SDL_RenderClear(tileRenderer);
-		SDL_RenderCopy(tileRenderer, tileTexture, NULL, NULL);
+
+		SDL_QueryTexture(bank0Texture, NULL, NULL, &texW, &texH);
+		SDL_Rect dstrect = { 5, 10, texW, texH };
+		SDL_RenderCopy(tileRenderer, bank0Texture, NULL, &dstrect);
+		
+		SDL_QueryTexture(bank1Texture, NULL, NULL, &texW, &texH);
+		dstrect = { 133, 10, texW, texH };
+		SDL_RenderCopy(tileRenderer, bank1Texture, NULL, &dstrect);
+
+		dstrect = { 0, 50, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT };
+		SDL_Rect destRect = { 0, 0, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT };
+		SDL_UpdateTexture(tileTexture, &dstrect, tilePixels, 256 * sizeof(uint32_t));
+		SDL_RenderCopy(tileRenderer, tileTexture, &destRect, &dstrect);
 		SDL_RenderPresent(tileRenderer);
 	}
 
@@ -284,6 +297,7 @@ void GBCDraw::loadBackground() {
 		}
 	}
 }
+
 void GBCDraw::loadWindow() {
 	// Get wchich tile set to use
 	uint16_t tileDataTableAddress = GetWindowTileMapLocation();
@@ -486,8 +500,7 @@ void GBCDraw::GetPaletteByNumber(bool isSprite, uint8_t number, Palette *palette
 
 void GBCDraw::setTilePixels() {
 	tile tile;
-	uint8_t pX = 0;
-	uint8_t pY = 0;
+	uint8_t pX = 0, pY = 0;
 	uint8_t pixel;
 	uint16_t sPixelsIndex = 0;
 	uint16_t i, x, y, tile_x, tile_y;
@@ -604,6 +617,43 @@ void GBCDraw::ToggleColourMode() {
 }
 void GBCDraw::ToggleVRAMLocation() {
 	vRAMLocation = vRAMLocation == 0x9800 ? 0x9c00 : 0x9800;
+}
+
+void GBCDraw::toggleBackgroundMap() {
+	showBackgroundMap = !showBackgroundMap;
+
+	if(showBackgroundMap) {
+		SDL_ShowWindow(fullBackgroundWindow);
+	} else {
+		SDL_HideWindow(fullBackgroundWindow);
+	}
+}
+void GBCDraw::toggleTileMap() {
+	showTileMap = !showTileMap;
+
+	if(showTileMap) {
+		SDL_ShowWindow(tileWindow);
+	} else {
+		SDL_HideWindow(tileWindow);
+	}
+}
+void GBCDraw::togglePaletteMap() {
+	showPaletteMap = !showPaletteMap;
+
+	if(showPaletteMap) {
+		SDL_ShowWindow(paletteWindow);
+	} else {
+		SDL_HideWindow(paletteWindow);
+	}
+}
+void GBCDraw::toggleOAMMap() {
+	showOAMMap = !showOAMMap;
+
+	if(showOAMMap) {
+		SDL_ShowWindow(oamWindow);
+	} else {
+		SDL_HideWindow(oamWindow);
+	}
 }
 
 #pragma endregion

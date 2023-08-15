@@ -39,6 +39,10 @@ public:
 	void SetColourMode(uint8_t mode);
 	void ToggleColourMode() override;
 	void ToggleVRAMLocation() override;
+	void toggleBackgroundMap() override;
+	void toggleTileMap() override;
+	void togglePaletteMap() override;
+	void toggleOAMMap() override;
 
 	FILE* out;
 

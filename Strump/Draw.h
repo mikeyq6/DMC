@@ -51,6 +51,11 @@ class Draw {
 	virtual void ToggleColourMode() = 0;
 	virtual void ToggleVRAMLocation() = 0;
 
+	virtual void toggleBackgroundMap() = 0;
+	virtual void toggleTileMap() = 0;
+	virtual void togglePaletteMap() = 0;
+	virtual void toggleOAMMap() = 0;
+
 	virtual uint32_t GetColourFor(uint8_t number, tile *t) = 0;
 	virtual uint32_t GetColourForPaletteNumber(uint8_t pNumber) = 0;
 
