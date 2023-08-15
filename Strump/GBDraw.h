@@ -69,7 +69,6 @@ private:
 	
 	uint8_t Width, Height;
 
-	void displayMe(void);
 	void getTileAt(uint16_t address, tile* t);
 	void setBackgroundPixels();
 	void setFullBackgroundPixels();

@@ -263,11 +263,6 @@ void GBCDraw::DrawPalette(SDL_Renderer* r, uint8_t pType, uint8_t pNum) {
 	}
 }
 
-void GBCDraw::displayMe(void)
-{
-	loadBackground();
-}
-
 void GBCDraw::loadBackground() {
 	// Get wchich tile set to use
 	uint16_t tileDataTableAddress = GetBackgroundTileMapLocation();

@@ -143,11 +143,6 @@ string GBDraw::ToHexString(uint16_t val) {
 	return st.str();
 }
 
-void GBDraw::displayMe(void)
-{
-	loadBackground();
-}
-
 void GBDraw::loadBackground() {
 	// Get wchich tile set to use
 	uint16_t tileDataTableAddress = GetBackgroundTileMapLocation();
