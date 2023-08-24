@@ -35,7 +35,7 @@ uint16_t Draw::BGWindowTileLocation() {
 }
 bool Draw::GetWindowEnabled() {
 	uint8_t val = memory->get(LCDC);
-	return (val & (1 << 5)) == 1;
+	return (val & (1 << 5)) != 0;
 }
 
 bool Draw::tileIsNotEmpty(tile* t) {
