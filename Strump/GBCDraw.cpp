@@ -362,7 +362,7 @@ void GBCDraw::setBackgroundPixels() {
 	}
 
 	// Draw the window if it is enabled
-	if (GetWindowEnabled()) {
+	if (GetWindowEnabled() || true) { // why do we need the true for it to work in battles?
 		wX = memory->get(WX);
 		wY = memory->get(WY);
 		pX = pY = 0;
