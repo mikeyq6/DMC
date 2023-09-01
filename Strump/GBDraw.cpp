@@ -521,3 +521,5 @@ void GBDraw::clean() {
 	SDL_FreeSurface(textSurface);
 	SDL_Quit();
 }
+
+void GBDraw::HandleWindowResizeEvent(SDL_Event event) {}

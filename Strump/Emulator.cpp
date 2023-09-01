@@ -100,8 +100,8 @@ void Emulator::setWindowTitle() {
 
 void Emulator::handleEvents() {
 	SDL_Event event;
+	bool resizeDone = false;
 	while (SDL_PollEvent(&event)) {
-
 		switch (event.type)
 		{
 			case SDL_QUIT:
@@ -117,8 +117,20 @@ void Emulator::handleEvents() {
 				else
 					cpu->Pause();
 				break;
+			case SDL_WINDOWEVENT:  {
+				if(resizeDone) {
+					resizeDone = false;
+				} else {
+					cpu->Pause();
+					draw->HandleWindowResizeEvent(event);
+					resizeDone = true;
+					cpu->Unpause();
+				}
+				break;
 			default:
 				break;
+        }
+
 		}
 	}
 }

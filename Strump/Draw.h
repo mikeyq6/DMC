@@ -59,6 +59,8 @@ class Draw {
 	virtual uint32_t GetColourFor(uint8_t number, tile *t) = 0;
 	virtual uint32_t GetColourForPaletteNumber(uint8_t pNumber) = 0;
 
+	virtual void HandleWindowResizeEvent(SDL_Event event) = 0;
+
     protected:
 	bool showCommandOutput, showBackgroundMap, showTileMap, showPaletteMap, showOAMMap;
 

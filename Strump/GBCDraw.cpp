@@ -13,6 +13,8 @@ GBCDraw::GBCDraw(Memory* _memory, Registers* _registers) {
 	registers = _registers;
 
 	Width = Height = 0;
+
+	std::fill(screenPixels, screenPixels + NUMPIXELS, 0);
 }
 GBCDraw::~GBCDraw() {
 
@@ -22,7 +24,7 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 		bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap, 
 		bool _showOAMMap) {
 	showCommandOutput = _showCommandOutput;
-	showBackgroundMap = _showBackgroundMap;
+	showBackgroundMap = true; // TODO: Figure out why get segmentation fault in certain roms when this is true
 	showTileMap = _showTileMap;
 	showPaletteMap = _showPaletteMap;
 	showOAMMap = _showOAMMap;
@@ -62,9 +64,9 @@ void GBCDraw::drawInit(const char* title, int xpos, int ypos, uint8_t width, uin
 	fullBackgroundTexture = SDL_CreateTexture(fullBackgroundRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, FULL_BACKGROUND_WIDTH, FULL_BACKGROUND_HEIGHT);
 
 	SDL_Color colour = { 0, 0, 0 };
-	tileWindow = SDL_CreateWindow("[4] Tile info", 50, 326, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT + TILE_MAP_HEADER, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (!showTileMap ? SDL_WINDOW_HIDDEN : 0));
+	tileWindow = SDL_CreateWindow("[4] Tile info", 50, 326, GBC_TILE_PIXELS_WIDTH, GBC_TILE_PIXELS_HEIGHT + TILE_MAP_HEADER, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | (!showTileMap ? SDL_WINDOW_HIDDEN : 0));
 	tileRenderer = SDL_CreateRenderer(tileWindow, -1, 0);
-	tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT + TILE_MAP_HEADER);
+	tileTexture = SDL_CreateTexture(tileRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, GBC_TILE_PIXELS_WIDTH, GBC_TILE_PIXELS_HEIGHT + TILE_MAP_HEADER);
 	SDL_SetRenderDrawColor(tileRenderer, 0xff, 0xff, 0xff, 0xff);
 	bank0Surface = TTF_RenderText_Solid(font, "BANK 0", colour);
 	bank0Texture = SDL_CreateTextureFromSurface(tileRenderer, bank0Surface);
@@ -129,19 +131,29 @@ void GBCDraw::render(bool CPUIsStopped) {
 	if (showTileMap) {
 		int texW = 0;
 		int texH = 0;
+		int winW = 0;
+		int winH = 0;
+		int ratio = TILE_PIXELS_WIDTH / TILE_PIXELS_HEIGHT;
+		SDL_GetWindowSize(tileWindow, &winW, &winH);
+		int newTexW = 0;
+		int newTexH = 0;
+		int xPos = winW / 2;
+
 		SDL_RenderClear(tileRenderer);
 
 		SDL_QueryTexture(bank0Texture, NULL, NULL, &texW, &texH);
-		SDL_Rect dstrect = { 2, 0, texW, texH };
-		SDL_RenderCopy(tileRenderer, bank0Texture, NULL, &dstrect);
+		newTexW = (winW / TILE_PIXELS_WIDTH) * texW;
+		newTexH = (winH / TILE_PIXELS_HEIGHT) * texH;
+		SDL_Rect srcrect = { 2, 0, texW, texH };
+		SDL_Rect dstrect = { 2, 0, newTexW, newTexH };
+		SDL_RenderCopy(tileRenderer, bank0Texture, &srcrect, &dstrect);
 		
-		SDL_QueryTexture(bank1Texture, NULL, NULL, &texW, &texH);
-		dstrect = { 130, 0, texW, texH };
+		dstrect.x = xPos;
 		SDL_RenderCopy(tileRenderer, bank1Texture, NULL, &dstrect);
 
-		dstrect = { 0, TILE_MAP_HEADER, TILE_PIXELS_WIDTH, TILE_PIXELS_HEIGHT };
-		SDL_UpdateTexture(tileTexture, &dstrect, tilePixels, 256 * sizeof(uint32_t));
-		SDL_RenderCopy(tileRenderer, tileTexture, &dstrect, &dstrect);
+		dstrect = { 0, newTexH, winW, winH };
+		SDL_UpdateTexture(tileTexture, NULL, tilePixels, GBC_TILE_PIXELS_WIDTH * sizeof(uint32_t));
+		SDL_RenderCopy(tileRenderer, tileTexture, NULL, &dstrect);
 		SDL_RenderPresent(tileRenderer);
 	}
 
@@ -355,10 +367,10 @@ void GBCDraw::setBackgroundPixels() {
 			index = ((tY / 8) * 32) + (tX / 8);
 
 			getPixel(background[index]->t, pX, pY, &pixel, background[index]->XFlip, background[index]->YFlip);
-
-			screenPixels[sPixelsIndex] = GetColourForPixel(false, pixel, background[index]->CGBPalette);
+			uint32_t colour = GetColourForPixel(false, pixel, background[index]->CGBPalette);
+			screenPixels[sPixelsIndex] = colour;
 		}
-		pixel = (uint8_t)10;
+		// pixel = (uint8_t)10;
 	}
 
 	// Draw the window if it is enabled
@@ -415,6 +427,23 @@ void GBCDraw::setFullBackgroundPixels() {
 			fullBackgroundPixels[sPixelsIndex] = colour;
 		}
 		// pixel = (uint8_t)10;
+	}
+}
+
+void GBCDraw::HandleWindowResizeEvent(SDL_Event event) {
+	if (event.window.windowID == SDL_GetWindowID(tileWindow))  {
+		switch (event.window.event)  {
+			case SDL_WINDOWEVENT_SIZE_CHANGED:  {
+				int width = event.window.data1;
+				int height = event.window.data2;
+				int ratio = GBC_TILE_PIXELS_WIDTH / (GBC_TILE_PIXELS_HEIGHT + TILE_MAP_HEADER);
+				int newHeight = width / ratio;
+				SDL_SetWindowSize(tileWindow, width, newHeight);
+				break;
+			}
+			default:
+				break;
+		}
 	}
 }
 
@@ -504,31 +533,43 @@ void GBCDraw::setTilePixels() {
 	uint16_t sPixelsIndex = 0;
 	uint16_t i, x, y, tile_x, tile_y;
 	uint16_t tile_index = 0;
-	uint16_t rwidth = 256;
+	// uint16_t rwidth = 257;
 	int index = 0;
 	int loffset = 0;
+	int gapOffset = 0;
 
-	for(int vram = 0; vram < 2; vram++) {
+	uint8_t vram = 0;
+
+	// for(int vram = 0; vram < 2; vram++) {
 		for (i = 0x8000; i < 0x9800; i += 0x10, tile_index++) {
 			
-			getTileAt(i, &tile, vram);
+			getTileAt(i, &tile, vram); /*  *  */
+			if((tile_index % 16) == 0 || (tile_index % 16) == 1 || (tile_index % 16) == 2) {
+				tilePixels[index+1] = LT_GRAY;
+				gapOffset = (tile_index % 16);
+			// gapOffset %= 16;
+			}
 
 			for (y = 0; y < 8; y++) {
 				for (x = 0; x < 8; x++, sPixelsIndex++) {
 					pX = x % 8;
 					pY = y % 8;
 					tile_x = ((tile_index % 16) * 8);
-					tile_y = (tile_index / 16) * rwidth * 8;
+					tile_y = (tile_index / 16) * GBC_TILE_PIXELS_WIDTH * 8;
 
 					getPixel(&tile, pX, pY, &pixel);
-					int index = loffset + tile_x + tile_y + (pY * rwidth) + pX;
+					index = gapOffset + loffset + tile_x + tile_y + (pY * GBC_TILE_PIXELS_WIDTH) + pX;
 
 					tilePixels[index] = GetColourFor(pixel, &tile);
 				}
 			}
+			// tilePixels[index+1] = 0;
+			// gapOffset++;
+			// gapOffset %= 16;
+			// gapOffset = 0;
 		}
-		loffset += 128;
-	}
+	// 	loffset += 129;
+	// }
 }
 
 void GBCDraw::getTileAt(uint16_t address, tile* t, uint8_t vramBank) {

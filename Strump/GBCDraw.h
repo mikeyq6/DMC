@@ -15,6 +15,10 @@
 #include "GBCTile.h"
 
 constexpr auto TILE_MAP_HEADER = 10;
+constexpr auto NUM_GBC_TILE_PIXELS = 0xc240;
+constexpr auto GBC_TILE_PIXELS_WIDTH = 259;
+constexpr auto GBC_TILE_PIXELS_HEIGHT = 192;
+constexpr auto GBC_TILE_MAP_GAP_COLOUR = 0xcccccc;
 
 class GBCDraw :
 	public Draw
@@ -27,7 +31,7 @@ public:
 	GBCTile* windowX[BACKGROUNDTILES];
 	uint32_t screenPixels[NUMPIXELS];
 	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];
-	uint32_t tilePixels[NUM_TILE_PIXELS];
+	uint32_t tilePixels[NUM_GBC_TILE_PIXELS];
 
 	void drawInit(const char* title, int xpos, int ypos, uint8_t width, uint8_t height, 
 		bool fullscreen, bool _showCommandOutput, bool _showBackgroundMap, bool _showTileMap, bool _showPaletteMap,
@@ -96,6 +100,7 @@ private:
 	uint32_t GetColourForPixel(bool isSprite, uint8_t pixel, uint8_t paletteNumber);
 	uint32_t GetColourFor(uint8_t pixel, tile *t) override;
 	uint32_t GetColourForPaletteNumber(uint8_t paletteNumber) override;
+	void HandleWindowResizeEvent(SDL_Event event) override;
 	string registerInfo;
 
 	int text_width, text_height;

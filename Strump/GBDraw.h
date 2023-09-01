@@ -84,6 +84,7 @@ private:
 	void GetSpriteByNumber(uint8_t spriteNum, Sprite* sprite);
 	string registerInfo;
 	uint32_t GetSpriteColourFor(uint8_t number, uint8_t palette);
+	void HandleWindowResizeEvent(SDL_Event event) override;
 
 	int text_width, text_height;
 	uint32_t fullBackgroundPixels[FULL_BACKGROUND_PIXELS];
