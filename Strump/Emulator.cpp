@@ -5,7 +5,13 @@ Emulator::Emulator(const char* _cartridgeFileName) {
 	cartridgeFileName = s;
 	draw = NULL;
 
-	cpu = new CPU();
+	#ifdef REAL_TIME_CPU
+	bool useRealTimeCPU = true;
+	#else
+	bool useRealTimeCPU = false;
+	#endif
+
+	cpu = new CPU(useRealTimeCPU);
 
 	#ifdef SHOW_OAM_MAP
 	showOAMMap = true;
@@ -247,6 +253,9 @@ void Emulator::processKeyEvent(SDL_Event* event) {
 				} else {
 					viewRegisterState();
 				}
+				break;
+			case SDLK_p: // Toggle Real Time CPU mode
+				cpu->ToggleUseRealTimeCPU();
 				break;
 			case SDLK_3: // Show/hide full background window
 				draw->toggleBackgroundMap();

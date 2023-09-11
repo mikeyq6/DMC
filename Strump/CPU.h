@@ -81,7 +81,7 @@ class CPU
 {
 public:
 
-	CPU();
+	CPU(bool willUseRealTimeCPU);
 	~CPU();
 
 	// Init
@@ -133,6 +133,8 @@ public:
 	void GetState(uint8_t *state);
 	void SetState(uint8_t *state);
 
+	void ToggleUseRealTimeCPU();
+
 	Memory* memory; // This should be private, leaving it here for testing
 private:
 	mutex cpu_mutex;
@@ -178,6 +180,7 @@ private:
 	bool isHalting = false;
 	bool stepModeActive = false;
 	bool runNextStep = false;
+	bool useRealTimeCPU = false;
 
 #ifdef LOG_COMMANDS
 	FILE* clog;

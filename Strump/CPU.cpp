@@ -9,7 +9,7 @@
 
 
 
-CPU::CPU() {
+CPU::CPU(bool willUseRealTimeCPU) {
 	rominfo = new ROMInfo();
 	registers = new Registers();
 
@@ -19,6 +19,7 @@ CPU::CPU() {
 	Halted = Stopped = WillEnableInterrupts = WillDisableInterrupts = IME = 0;
 	memset(InstructionStats, 0, sizeof(InstructionStats));
 	doHaltBug = false;
+	useRealTimeCPU = willUseRealTimeCPU;
 
 #ifdef LOG_COMMANDS
 	clog = fopen("commands", "wb");
@@ -218,9 +219,9 @@ void CPU::Start() {
 				uint8_t _if = memory->get(IF);
 				LogCommand(&oldPC, &inst, &param1, &param2, &params, &IME, &_if, &_ie);
 #endif
-				#ifdef REAL_TIME_CPU
-				DoCPUWait(&tp, inst);
-				#endif
+				if(useRealTimeCPU) {
+					DoCPUWait(&tp, inst);
+				}
 				uint8_t cycles = GetCycles(inst);
 				UpdateTimer(cycles);
 				UpdateGraphics(inst);
@@ -1463,6 +1464,10 @@ void CPU::SetState(uint8_t *state) {
 
 	timer->SetState(state, REGISTERS_STATE_SIZE);
 	memory->SetState(state, &index2);
+}
+
+void CPU::ToggleUseRealTimeCPU() {
+	useRealTimeCPU = !useRealTimeCPU;
 }
 
 #ifdef LOG_COMMANDS
