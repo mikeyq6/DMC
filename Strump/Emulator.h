@@ -26,8 +26,8 @@ private:
 
 	void processKeyEvent(SDL_Event* event);
 
-	void saveGameState();
-	void loadGameState();
+	virtual void saveGameState();
+	virtual void loadGameState();
 
 	void viewMemory();
 	void editMemory();
