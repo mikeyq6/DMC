@@ -57,3 +57,4 @@ LogReader/LogReader
 .vscode
 *.dSYM
 Strump/Strump.aps
+tests
