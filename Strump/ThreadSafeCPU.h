@@ -22,7 +22,6 @@ public:
     // Check if state operation is in progress
     bool isStateOperationInProgress() const;
     
-protected:
     // Override original methods to add thread safety
     void GetState(uint8_t* state) override;
     void SetState(uint8_t* state) override;

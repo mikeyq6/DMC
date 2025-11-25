@@ -1,8 +1,7 @@
 #include <iostream>
 #include <thread>  
 #include "CPU.h"
-#include "Emulator.h"
-#include "ThreadSafeEmulator.h"
+#include "EmulatorThreadSafe.h"
 
 using namespace std;
 
@@ -14,7 +13,7 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	ThreadSafeEmulator* emulator = new ThreadSafeEmulator(argv[1]);
+	EmulatorThreadSafe* emulator = new EmulatorThreadSafe(argv[1]);
 	if (!emulator->Init())
 		return 2;
 

@@ -130,8 +130,8 @@ public:
 	// Controls
 	void InputProcess(uint8_t type);
 	
-	void GetState(uint8_t *state);
-	void SetState(uint8_t *state);
+	virtual void GetState(uint8_t *state);
+	virtual void SetState(uint8_t *state);
 
 	void ToggleUseRealTimeCPU();
 

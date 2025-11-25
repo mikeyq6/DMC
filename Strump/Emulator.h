@@ -8,7 +8,7 @@ constexpr auto S_HEIGHT = 144;
 
 class Emulator
 {
-private:
+protected:
 	CPU* cpu;
 	FILE* fp;
 	Draw* draw;
@@ -39,7 +39,7 @@ public:
 	Emulator(const char* _cartridgeFileName);
 	~Emulator();
 
-	bool Init();
+	virtual bool Init();
 	void Start();
 	void End();
 };
