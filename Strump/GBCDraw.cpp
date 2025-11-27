@@ -183,8 +183,7 @@ void GBCDraw::render(bool CPUIsStopped) {
 		int spacer = 9;
 		int gspacer = 40;
 		int vgspacer = 0;
-		Sprite *sprite = new Sprite();
-		char *hexString = (char*)malloc(sizeof(char) * 4);
+		char hexString[8];
 		uint8_t val;
 		uint16_t address;
 		
@@ -210,7 +209,6 @@ void GBCDraw::render(bool CPUIsStopped) {
 		}
 
 		SDL_RenderPresent(oamRenderer);
-		free(hexString);
 	}
 
 	#ifdef SHOW_TILE_INFO
@@ -275,10 +273,10 @@ void GBCDraw::DrawPalette(SDL_Renderer* r, uint8_t pType, uint8_t pNum) {
 	uint8_t x_offset = 120;
 	uint8_t x_gap = 5;
 	uint8_t y_offset = 30;
-	Palette *palette = (Palette*)malloc(sizeof(Palette));
-	GetPaletteByNumber(pType == 1, pNum, palette);
+	Palette palette;
+	GetPaletteByNumber(pType == 1, pNum, &palette);
 	for(uint8_t i=0; i<4; i++) {
-		RGB rgb = PaletteColourToRGB(palette->Colours[i]);
+		RGB rgb = PaletteColourToRGB(palette.Colours[i]);
 		rect.x = left_gutter + (pType * x_offset) + (i * (x_gap + width));
 		rect.y = left_gutter + (pNum * y_offset);
 		rect.w = width, rect.h = height;
@@ -586,16 +584,14 @@ void GBCDraw::getTileAt(uint16_t address, tile* t, uint8_t vramBank) {
 uint32_t GBCDraw::GetColourForPixel(bool isSprite, uint8_t pixel, uint8_t paletteNumber) {
 	if(isSprite && pixel == 0) return TRANSPARENT;
 
-	Palette *palette = (Palette*)malloc(sizeof(Palette));
-	GetPaletteByNumber(isSprite, paletteNumber, palette);
+	Palette palette;
+	GetPaletteByNumber(isSprite, paletteNumber, &palette);
 
-	uint16_t colourData = palette->Colours[pixel];
+	uint16_t colourData = palette.Colours[pixel];
 	RGB rgb = PaletteColourToRGB(colourData);
 	uint32_t colour = static_cast<uint32_t>(rgb.b) +
 		(static_cast<uint32_t>(rgb.g) << 8) + 
 		(static_cast<uint32_t>(rgb.r) << 16);
-	
-	free(palette);
 
 	return colour;
 }

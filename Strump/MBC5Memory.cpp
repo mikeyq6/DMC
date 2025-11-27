@@ -64,14 +64,10 @@ uint8_t MBC5Memory::internalReadMem(uint16_t location) {
 		return GetVramForAddress(location);
 	}
 	else if (location >= 0xa000 && location < 0xc000) {
-		// switchable Ram bank
-		if (RAMG == 0xa) {
-			location -= 0xa000;
-			return CartRamBankData[RAMB][location];
-		}
-		else {
-			return 0;
-		}
+		if (RAMG != 0xa) return 0;
+		location -= 0xa000;
+		uint8_t bank = RAMB & (MAX_RAM_BANKS - 1);
+		return CartRamBankData[bank][location];
 	}
 	else if (location >= 0xc000 && location <= 0xe000) {
 		if(location < 0xd000) {
@@ -188,11 +184,11 @@ void MBC5Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location >= 0x8000 && location < 0xa000) {
 		SetVramForAddress(location, value);
 	}
-	else if (location >= 0xa000 && location < 0xc000) { // Writing to RAM
-		if (RAMG == 0xa) {
-			location -= 0xa000;
-			CartRamBankData[RAMB][location] = value;
-		}
+	else if (location >= 0xa000 && location < 0xc000) {
+		if (RAMG != 0xa) return;
+		location -= 0xa000;
+		uint8_t bank = RAMB & (MAX_RAM_BANKS - 1);
+		CartRamBankData[bank][location] = value;
 	}
 	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
 		//printf("location: %x, setting value: %x\n", location, value);
