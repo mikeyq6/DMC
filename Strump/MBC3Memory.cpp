@@ -40,57 +40,30 @@ uint8_t MBC3Memory::internalReadMem(uint16_t location) {
 		return GetVramForAddress(location);
 	}
 	else if (location >= 0xa000 && location < 0xc000) {
-		if (RAMG == 0xa) {
-			if(useRAM) {
-				uint8_t rBank = RAMB & 0x3;
-				if(rBank > rominfo->GetNumberOfRamBanks()) {
-					rBank &= (rominfo->GetNumberOfRamBanks() - 1);
-				}
-				uint16_t nlocation = location & 0x1fff;
-				uint8_t data = 0;
-				nlocation |= (rBank << 13);
-				
-				data = RamBankData[nlocation];
-				// printf("read: RAMG: %x, RAMB: %x, location: %x, address: %x, data: %x\n", RAMG, RAMB, location, nlocation, data);
-				return data;
-			} else if(RAMB >= 0x8 && RAMB <= 0xc) {
-				switch(RAMB) {
-					case 0x8:
-						return RTC_S; break;
-					case 0x9:
-						return RTC_M; break;
-					case 0xa:
-						return RTC_H; break;
-					case 0xb:
-						return RTC_DL; break;
-					case 0xc:
-						return RTC_DH; break;
-					default:
-						return 0; break;
-				}
-			} 
-		} 
+		if (RAMG != 0xa) return 0;
+		if(useRAM) {
+			uint8_t rBank = RAMB & 0x3;
+			if(rBank > rominfo->GetNumberOfRamBanks())
+				rBank &= (rominfo->GetNumberOfRamBanks() - 1);
+			uint16_t nlocation = (location & 0x1fff) | (rBank << 13);
+			return RamBankData[nlocation];
+		}
+		if(RAMB >= 0x8 && RAMB <= 0xc)
+			return (&RTC_S)[RAMB - 0x8];
 		return 0;
 	}
-	else if (location == P1) { // Joypad register
+	else if (location == P1) {
 		uint8_t state = internal_get(P1);
-		if ((state & 0x10) == 0) // Bit 4 P14 low
+		if ((state & 0x10) == 0)
 			return joypadState->GetDirectionalState();
-		else if ((state & 0x20) == 0) // Bit 5 P15 low
+		if ((state & 0x20) == 0)
 			return joypadState->GetKeypadState();
-
-		return 0xff; // default return everything off
+		return 0xff;
 	}
 	else if (location >= 0xc000 && location <= 0xe000 && rominfo->UseColour()) {
-		if(location < 0xd000) {
-			return internal_get(location);
-		} else {
-			if(WRamBank == 1) {
-				return internal_get(location);
-			} else {
-				return WRamBankData[WRamBank][location - 0xd000];
-			}
-		}
+		if(location >= 0xd000 && WRamBank > 1)
+			return WRamBankData[WRamBank][location - 0xd000];
+		return internal_get(location);
 	}
 	else if (location >= 0xc000 && location <= 0xffff) {
 		// Internal Work RAM
@@ -167,51 +140,25 @@ void MBC3Memory::WriteMem(uint16_t location, uint8_t value) {
 	else if (location >= 0x8000 && location <= 0x98ff) {
 		SetVramForAddress(location, value);
 	}
-	else if (location >= 0xa000 && location < 0xc000) { // Writing to RAM
-		// printf("RAMG: %x\n", RAMG);
-		if (RAMG == 0xa) {
-			if(useRAM) {
-				uint8_t rBank = RAMB & 0x3;
-				if(rBank > rominfo->GetNumberOfRamBanks()) {
-					rBank &= (rominfo->GetNumberOfRamBanks() - 1);
-				}
-				uint16_t nlocation = location & 0x1fff;
-				nlocation |= (rBank << 13);
-				
-				RamBankData[nlocation] = value;
-			} else if(RAMB >= 0x8 && RAMB <= 0xc) {
-					switch(RAMB) {
-						case 0x8:
-							RTC_S = value; break;
-						case 0x9:
-							RTC_M = value; break;
-						case 0xa:
-							RTC_H = value; break;
-						case 0xb:
-							RTC_DL = value; break;
-						case 0xc:
-							RTC_DH = value; break;
-					}
-			}
-		}
-		else {
-			// cout << "Trying to write to RAM but it is not enabled" << endl;
-			// _getch();
+	else if (location >= 0xa000 && location < 0xc000) {
+		if (RAMG != 0xa) return;
+		if(useRAM) {
+			uint8_t rBank = RAMB & 0x3;
+			if(rBank > rominfo->GetNumberOfRamBanks())
+				rBank &= (rominfo->GetNumberOfRamBanks() - 1);
+			uint16_t nlocation = (location & 0x1fff) | (rBank << 13);
+			RamBankData[nlocation] = value;
+		} else if(RAMB >= 0x8 && RAMB <= 0xc) {
+			(&RTC_S)[RAMB - 0x8] = value;
 		}
 	}
-	else if (location >= 0xc000 && location < 0xe000) { // Allow for the mirrored internal RAM
-		if(location < 0xd000) {
-			if (location + 0x2000 < 0xfe00)
-					internal_set(location + 0x2000, value);
-				internal_set(location, value);
+	else if (location >= 0xc000 && location < 0xe000) {
+		if(location >= 0xd000 && rominfo->UseColour() && WRamBank > 1) {
+			WRamBankData[WRamBank][location - 0xd000] = value;
 		} else {
-			if(rominfo->UseColour() && WRamBank > 1) {
-				WRamBankData[WRamBank][location - 0xd000] = value;
-			} else {
-				if (location + 0x2000 < 0xfe00)
-					internal_set(location + 0x2000, value);
-				internal_set(location, value);
-			}
+			if (location + 0x2000 < 0xfe00)
+				internal_set(location + 0x2000, value);
+			internal_set(location, value);
 		}
 	}
 	else if (location >= 0xe000 && location < 0xfe00) { // Allow for the mirrored internal RAM
@@ -255,10 +202,9 @@ void MBC3Memory::SetState(uint8_t* state, uint32_t *index) {
 	*index = val;
 }
 
-uint16_t MBC3Memory::GetRomBank() {
+inline uint16_t MBC3Memory::GetRomBank() {
 	uint16_t bank = ROMB;
-	if(bank > rominfo->GetNumberOfRomBanks()) {
+	if(bank > rominfo->GetNumberOfRomBanks())
 		bank &= (rominfo->GetNumberOfRomBanks() - 1);
-	}
 	return bank;
 }

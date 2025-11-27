@@ -9,35 +9,20 @@ Commands::Commands(Memory* _memory, Registers* _registers) {
 Commands::~Commands() {}
 
 
-bool Commands::IsHalfCarry(uint8_t val1, uint8_t val2) {
-	if ((((val1 & 0xf) + (val2 & 0xf)) & 0x10) == 0x10)
-		return true;
-	else
-		return false;
+inline bool Commands::IsHalfCarry(uint8_t val1, uint8_t val2) {
+	return (((val1 & 0xf) + (val2 & 0xf)) & 0x10) != 0;
 }
-bool Commands::IsHalfCarry(uint8_t val1, int8_t val2) {
-	if ((((val1 & 0xf) + (val2 & 0xf)) & 0x10) == 0x10)
-		return true;
-	else
-		return false;
+inline bool Commands::IsHalfCarry(uint8_t val1, int8_t val2) {
+	return (((val1 & 0xf) + (val2 & 0xf)) & 0x10) != 0;
 }
-bool Commands::IsHalfCarry(uint16_t val1, uint8_t val2) {
-	if ((((val1 & 0xf) + (val2 & 0xf)) & 0x10) == 0x10)
-		return true;
-	else
-		return false;
+inline bool Commands::IsHalfCarry(uint16_t val1, uint8_t val2) {
+	return (((val1 & 0xf) + (val2 & 0xf)) & 0x10) != 0;
 }
-bool Commands::IsHalfCarry(uint16_t val1, int8_t val2) {
-	if ((((val1 & 0xf) + (val2 & 0xf)) & 0x10) == 0x10)
-		return true;
-	else
-		return false;
+inline bool Commands::IsHalfCarry(uint16_t val1, int8_t val2) {
+	return (((val1 & 0xf) + (val2 & 0xf)) & 0x10) != 0;
 }
-bool Commands::IsHalfCarry(uint16_t val1, uint16_t val2) {
-	if ((((val1 & 0xfff) + (val2 & 0xfff)) & 0x1000) == 0x1000)
-		return true;
-	else
-		return false;
+inline bool Commands::IsHalfCarry(uint16_t val1, uint16_t val2) {
+	return (((val1 & 0xfff) + (val2 & 0xfff)) & 0x1000) != 0;
 }
 
 #pragma region ALU methods
@@ -171,12 +156,10 @@ void Commands::ADC(uint8_t opcode, uint8_t param) {
 	else
 		memory->resetFlag(C);
 
-	if (registers->AF.a == 0) {
+	if (registers->AF.a == 0)
 		memory->setFlag(Z);
-	}
-	else {
+	else
 		memory->resetFlag(Z);
-	}
 	memory->resetFlag(N);
 }
 
@@ -213,16 +196,13 @@ void Commands::SUB(uint8_t opcode, uint8_t param) {
 		val = memory->ReadMem(registers->HL.hl); registers->AF.a -= val; break;
 	}
 
-	if (registers->AF.a == 0) { memory->setFlag(Z); }
+	if (registers->AF.a == 0)
+		memory->setFlag(Z);
 
-	// Half carry and full carry
-	//printf("registers->AF.a = 0x%x, val = 0x%x, (registers->AF.a & 0xf) - (val & 0xf) = 0x%x\n", registers->AF.a, val, (registers->AF.a & 0xf) - (val & 0xf));
-	if ((oldA & 0xf) < (val & 0xf)) {
+	if ((oldA & 0xf) < (val & 0xf))
 		memory->setFlag(H);
-	}
-	if (oldA < val) {
+	if (oldA < val)
 		memory->setFlag(C);
-	}
 }
 
 void Commands::SBC(uint8_t opcode) {
@@ -264,15 +244,13 @@ void Commands::SBC(uint8_t opcode, uint8_t param) {
 	res -= cFlag;
 	registers->AF.a = res;
 
-	if (registers->AF.a == 0) { memory->setFlag(Z); }
+	if (registers->AF.a == 0)
+		memory->setFlag(Z);
 
-	// Half carry and full carry
-	if (((oldA & 0xf) - (valToSub & 0xf) - cFlag) < 0) {
+	if (((oldA & 0xf) - (valToSub & 0xf) - cFlag) < 0)
 		memory->setFlag(H);
-	}
-	if ((oldA - valToSub - cFlag) < 0) {
+	if ((oldA - valToSub - cFlag) < 0)
 		memory->setFlag(C);
-	}
 }
 
 #pragma endregion
