@@ -5,38 +5,39 @@ SUPPRESS=-Wno-unused-variable -Wno-unused-private-field
 EXENAME=strump
 DEBUGVARIABLES=-DRUNTESTS=1 -DSHOW_OAM_MAP=1 -DSHOW_TILE_MAP=1 -DSHOW_PALETTES=1 -DSHOW_FULL_BACKGROUND
 DEBUGVARIABLESNOWINDOWS=-DRUNTESTS=1
+CFLAGS += -O3 -march=native -finline-functions
 
 debug:
 	make clean
-	${CC} -g -Wall ${SUPPRESS} ${DEBUGVARIABLES} ${LFLAGS} -o ${EXENAME} ${OBJS}
+	${CC} -g -Wall ${CFLAGS} ${SUPPRESS} ${DEBUGVARIABLES} ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 debug-tile:
 	make clean
-	${CC} -g -Wall ${SUPPRESS} ${DEBUGVARIABLES} -DSHOW_TILE_INFO=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
+	${CC} -g -Wall ${CFLAGS} ${SUPPRESS} ${DEBUGVARIABLES} -DSHOW_TILE_INFO=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 debug-no-windows:
 	make clean
-	${CC} -g -Wall ${SUPPRESS} ${DEBUGVARIABLESNOWINDOWS} ${LFLAGS} -o ${EXENAME} ${OBJS}
+	${CC} -g -Wall ${CFLAGS} ${SUPPRESS} ${DEBUGVARIABLESNOWINDOWS} ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 debug-notests:
 	make clean
-	${CC} -g -Wall ${SUPPRESS} ${LFLAGS} -o ${EXENAME} ${OBJS}
+	${CC} -g -Wall ${CFLAGS} ${SUPPRESS} ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 log:
 	make clean
-	${CC} -g -Wall ${SUPPRESS} -DLOG_COMMANDS=1 -DRUNTESTS=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
+	${CC} -g -Wall ${CFLAGS} ${SUPPRESS} -DLOG_COMMANDS=1 -DRUNTESTS=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 release:
 	make clean
-	${CC} -Wall ${SUPPRESS} -DREAL_TIME_CPU=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
+	${CC} -Wall ${CFLAGS} ${SUPPRESS} -DREAL_TIME_CPU=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 drelease:
 	make clean
-	${CC} -g -Wall ${SUPPRESS} -DREAL_TIME_CPU=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
+	${CC} -g -Wall ${CFLAGS} ${SUPPRESS} -DREAL_TIME_CPU=1 ${LFLAGS} -o ${EXENAME} ${OBJS}
 
 logreader:
 	make clean
-	${CC} -Wall ${SUPPRESS} -o ../LogReader/LogReader ../LogReader/Main.cpp
+	${CC} -Wall ${CFLAGS} ${SUPPRESS} -o ../LogReader/LogReader ../LogReader/Main.cpp
 
 clean:
 	rm -rf ${EXENAME} *.o commands

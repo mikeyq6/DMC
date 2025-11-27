@@ -22,9 +22,8 @@ void Memory::init(ROMInfo* _rominfo, uint8_t* _zreg, JoypadState* _joypadState) 
 }
 
 void Memory::CopyRamCartridgeData() {
-	for(uint16_t i=0; i<0x2000; i++) {
-		this->RamBankData[i] = rominfo->GetCardridgeVal(0xa000 + i);
-	}
+	for(uint16_t i=0; i<0x2000; i++)
+		RamBankData[i] = rominfo->GetCardridgeVal(0xa000 + i);
 }
 
 uint8_t Memory::internal_get(uint16_t address) {
@@ -136,13 +135,13 @@ void Memory::SetRamBankData(uint16_t address, uint8_t value) {
 	RamBankData[address] = value;
 }
 
-uint8_t Memory::get(uint16_t address) {
+inline uint8_t Memory::get(uint16_t address) {
 	return internal_get(address);
 }
-void Memory::set(uint16_t address, uint8_t value) {
+inline void Memory::set(uint16_t address, uint8_t value) {
 	internal_set(address, value);
 }
-void Memory::increment(uint16_t address) {
+inline void Memory::increment(uint16_t address) {
 	internal_increment(address);
 }
 
@@ -191,36 +190,32 @@ void Memory::doDMATransfer(uint8_t startAddress) {
 	}
 }
 
-uint8_t Memory::internal_getFlag(uint8_t flag) {
-	return (*zreg & flag) == flag ? 1 : 0;
+inline uint8_t Memory::internal_getFlag(uint8_t flag) {
+	return (*zreg & flag) != 0;
 }
-void Memory::internal_setFlag(uint8_t flag) {
+inline void Memory::internal_setFlag(uint8_t flag) {
 	*zreg |= flag;
 }
-void Memory::internal_resetFlag(uint8_t flag) {
-	*zreg &= (~flag);
+inline void Memory::internal_resetFlag(uint8_t flag) {
+	*zreg &= ~flag;
 }
-uint8_t Memory::getFlag(uint8_t flag) {
+inline uint8_t Memory::getFlag(uint8_t flag) {
 	return internal_getFlag(flag);
 }
-void Memory::setFlag(uint8_t flag) {
+inline void Memory::setFlag(uint8_t flag) {
 	internal_setFlag(flag);
 }
-void Memory::resetFlag(uint8_t flag) {
+inline void Memory::resetFlag(uint8_t flag) {
 	internal_resetFlag(flag);
 }
-bool Memory::CheckBitSet(uint8_t val, uint8_t bit) {
-	uint8_t b = 1 << bit;
-
-	return ((val & b) == b);
+inline bool Memory::CheckBitSet(uint8_t val, uint8_t bit) {
+	return (val & (1 << bit)) != 0;
 }
-void Memory::SetBit(uint8_t* val, uint8_t bit) {
-	uint8_t b = 1 << bit;
-	(*val) |= b;
+inline void Memory::SetBit(uint8_t* val, uint8_t bit) {
+	*val |= (1 << bit);
 }
-void Memory::ResetBit(uint8_t* val, uint8_t bit) {
-	uint8_t b = (0x1 << bit) ^ 0xff;
-	(*val) &= b;
+inline void Memory::ResetBit(uint8_t* val, uint8_t bit) {
+	*val &= ~(1 << bit);
 }
 
 uint8_t* Memory::GetPointerTo(uint16_t location) {
@@ -236,29 +231,15 @@ uint32_t Memory::GetMemorySize() {
 }
 void Memory::GetState(uint8_t* state, uint32_t *index) {
 	uint32_t val = *index;
-	for(int i=0; i<RAM_SIZE; i++) {
-		*(state+val+i) = memory[i];
-	}
+	std::memcpy(state + val, memory, RAM_SIZE);
 	val += RAM_SIZE;
-	for(int i=0; i<RAM_BANK_SIZE; i++) {
-		*(state+val+i) = RamBankData[i];
-	}
+	std::memcpy(state + val, RamBankData, RAM_BANK_SIZE);
 	val += RAM_BANK_SIZE;
-	for(int i=0; i<2; i++) {
-		for(int j=0; j<VRAM_BANK_SIZE; j++) {
-			*(state+val+j) = VRamBankData[i][j];
-		}
-		val += VRAM_BANK_SIZE;
-	}
-	for(int i=0; i<8; i++) {
-		for(int j=0; j<WRAM_BANK_SIZE; j++) {
-			*(state+val+j) = WRamBankData[i][j];
-		}
-		val += WRAM_BANK_SIZE;
-	}
-	for(int i=0; i<PALETTE_SIZE; i++) {
-		*(state+val+i) = PaletteData[i];
-	}
+	std::memcpy(state + val, VRamBankData, VRAM_BANK_SIZE * 2);
+	val += VRAM_BANK_SIZE * 2;
+	std::memcpy(state + val, WRamBankData, WRAM_BANK_SIZE * 8);
+	val += WRAM_BANK_SIZE * 8;
+	std::memcpy(state + val, PaletteData, PALETTE_SIZE);
 	val += PALETTE_SIZE;
 	*(state+val++) = (uint8_t)RamEnabled;
 	*(state+val++) = (uint8_t)RomBanking;
@@ -270,29 +251,15 @@ void Memory::GetState(uint8_t* state, uint32_t *index) {
 }
 void Memory::SetState(uint8_t* state, uint32_t *index) {
 	uint32_t val = *index;
-	for(int i=0; i<RAM_SIZE; i++) {
-		memory[i] = *(state+val+i);
-	}
+	std::memcpy(memory, state + val, RAM_SIZE);
 	val += RAM_SIZE;
-	for(int i=0; i<RAM_BANK_SIZE; i++) {
-		RamBankData[i] = *(state+val+i);
-	}
+	std::memcpy(RamBankData, state + val, RAM_BANK_SIZE);
 	val += RAM_BANK_SIZE;
-	for(int i=0; i<2; i++) {
-		for(int j=0; j<VRAM_BANK_SIZE; j++) {
-			VRamBankData[i][j] = *(state+val+j);
-		}
-		val += VRAM_BANK_SIZE;
-	}
-	for(int i=0; i<8; i++) {
-		for(int j=0; j<WRAM_BANK_SIZE; j++) {
-			WRamBankData[i][j] = *(state+val+j);
-		}
-		val += WRAM_BANK_SIZE;
-	}
-	for(int i=0; i<PALETTE_SIZE; i++) {
-		PaletteData[i] = *(state+val+i);
-	}
+	std::memcpy(VRamBankData, state + val, VRAM_BANK_SIZE * 2);
+	val += VRAM_BANK_SIZE * 2;
+	std::memcpy(WRamBankData, state + val, WRAM_BANK_SIZE * 8);
+	val += WRAM_BANK_SIZE * 8;
+	std::memcpy(PaletteData, state + val, PALETTE_SIZE);
 	val += PALETTE_SIZE;
 	RamEnabled = *(state+val++);
 	RomBanking = *(state+val++);
